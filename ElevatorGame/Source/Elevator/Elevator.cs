@@ -164,7 +164,10 @@ public class Elevator
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
         _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2());
 
-        _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
+        if(MathF.Round(_floorNumber) == 1)
+            _elevatorNumbersAnimSprite.SetFrame(11);
+        else
+            _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
         _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2());
     }
 
