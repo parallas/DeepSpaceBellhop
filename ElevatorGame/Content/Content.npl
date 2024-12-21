@@ -1,0 +1,93 @@
+{
+	"references": [],
+	"content": {
+		"textures": {
+			"path": "graphics/*.png",
+			"recursive": "True",
+			"action": "build",
+			"importer": "TextureImporter",
+			"processor": "TextureProcessor",
+			"processorParam": {
+				"GenerateMipmaps": "False",
+				"PremultiplyAlpha": "True",
+				"ResizeToPowerOfTwo": "False",
+				"MakeSquare": "False",
+				"TextureFormat": "Color"
+			}
+		},
+		"fonts": {
+			"path": "fonts/*.spritefont",
+			"recursive": "True",
+			"action": "build",
+			"importer": "FontDescriptionImporter",
+			"processor": "FontDescriptionProcessor",
+			"processorParam": {
+				"PremultiplyAlpha": "True",
+				"TextureFormat": "Color"
+			}
+		},
+		"audioWav": {
+			"path": "audio/*.wav",
+			"recursive": "True",
+			"action": "build",
+			"importer": "WavImporter",
+			"processor": "SoundEffectProcessor",
+			"processorParam": {
+				"Quality": "Best"
+			}
+		},
+		"audioMp3": {
+			"path": "audio/*.mp3",
+			"recursive": "True",
+			"action": "build",
+			"importer": "Mp3Importer",
+			"processor": "SoundEffectProcessor",
+			"processorParam": {
+				"Quality": "Best"
+			}
+		},
+		"audioOgg": {
+			"path": "audio/*.ogg",
+			"recursive": "True",
+			"action": "build",
+			"importer": "OggImporter",
+			"processor": "SoundEffectProcessor",
+			"processorParam": {
+				"Quality": "Best"
+			}
+		},
+		"levels": {
+			"path": "levels/*.ldtkl",
+			"recursive": "True",
+			"action": "copy"
+		},
+		"levelImages": {
+			"path": "levels/*.png",
+			"recursive": "True",
+			"action": "build",
+			"importer": "TextureImporter",
+			"processor": "TextureProcessor",
+			"processorParam": {
+				"GenerateMipmaps": "False",
+				"PremultiplyAlpha": "True",
+				"ResizeToPowerOfTwo": "False",
+				"MakeSquare": "False",
+				"TextureFormat": "Color"
+			}
+		},
+		"effects": {
+			"path": "shaders/*.fx",
+			"recursive": "True",
+			"action": "build",
+			"importer": "EffectImporter",
+			"processor": "EffectProcessor",
+			"processorParam": {
+				"Debug": "Auto"
+			}
+		},
+		"localization": {
+			"path": "localization/*.json",
+			"action": "copy"
+		}
+	}
+}
