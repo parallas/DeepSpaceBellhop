@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine.Display;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -6,12 +7,14 @@ namespace ElevatorGame;
 
 public class Game1 : Game
 {
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
+    public static GraphicsDeviceManager Graphics;
+    public static SpriteBatch SpriteBatch;
+    
+    private RenderTarget2D _renderTarget;
 
     public Game1()
     {
-        _graphics = new GraphicsDeviceManager(this);
+        Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
@@ -25,9 +28,9 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // TODO: use this.Content to load your game content here
+        _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
     }
 
     protected override void Update(GameTime gameTime)
@@ -42,9 +45,16 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // TODO: Add your drawing code here
+        RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            {
+            }
+            SpriteBatch.End();
+        });
+
 
         base.Draw(gameTime);
     }

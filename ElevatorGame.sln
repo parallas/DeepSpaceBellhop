@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElevatorGame", "ElevatorGame\ElevatorGame.csproj", "{FF72C868-0A1F-43F3-B138-03E4613B99B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{303548AB-73EA-4C78-AA15-D689FBDEE54F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{FF72C868-0A1F-43F3-B138-03E4613B99B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF72C868-0A1F-43F3-B138-03E4613B99B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF72C868-0A1F-43F3-B138-03E4613B99B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303548AB-73EA-4C78-AA15-D689FBDEE54F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303548AB-73EA-4C78-AA15-D689FBDEE54F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303548AB-73EA-4C78-AA15-D689FBDEE54F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303548AB-73EA-4C78-AA15-D689FBDEE54F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
