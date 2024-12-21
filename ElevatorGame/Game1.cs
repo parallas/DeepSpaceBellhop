@@ -121,7 +121,6 @@ public class Game1 : Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
-                _testMockupSprite.Color = Color.CornflowerBlue;
                 _testMockupSprite.Draw(SpriteBatch, Vector2.Zero);
             }
             SpriteBatch.End();
