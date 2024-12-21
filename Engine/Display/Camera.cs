@@ -14,6 +14,8 @@ public class Camera
     int shakeTime;
 
     public Vector2 Position { get; set; } = Vector2.Zero;
+
+    public Vector2 RootOffset { get; set; } = Vector2.Zero;
     
     public Vector2 VisualPosition { get; private set; }
 
@@ -40,7 +42,7 @@ public class Camera
 
     public void Update()
     {
-        Vector2 basePosition = Position + Vector2.One * 8;
+        Vector2 basePosition = Position + RootOffset;
 
         Vector2 shakePosition = basePosition - new Vector2(
             (Random.Shared.NextSingle() - 0.5f) * 2 * currentShake,
@@ -56,8 +58,13 @@ public class Camera
             shakeTime = 0;
 
         Vector2 finalPosition = Vector2.Round(shakePosition);
-        VisualPosition = finalPosition;
+        VisualPosition = finalPosition - RootOffset;
 
         Transform = Matrix.CreateTranslation(new Vector3(-finalPosition, 0)) * Matrix.CreateScale(Zoom);
+    }
+
+    public Vector2 GetParallaxPosition(Vector2 position, float distance)
+    {
+        return position + Vector2.Round(VisualPosition * (MathUtil.InverseLerp01(0, 100, distance)));
     }
 }

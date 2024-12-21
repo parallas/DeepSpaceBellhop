@@ -22,7 +22,10 @@ public class MainGame : Game
 
     public static Texture2D PixelTexture { get; private set; }
 
-    public static Camera Camera { get; } = new();
+    public static Camera Camera { get; } = new()
+    {
+        RootOffset = Vector2.One * 8
+    };
 
     private static Point _actualWindowSize;
     private static bool _isFullscreen;

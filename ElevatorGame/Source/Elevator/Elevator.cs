@@ -13,6 +13,9 @@ namespace ElevatorGame.Source.Elevator;
 
 public class Elevator
 {
+    private const int ParallaxDoors = 25;
+    private const int ParallaxWalls = 15;
+    
     private Sprite _elevatorInteriorSprite;
     private Sprite _elevatorLeftDoorSprite;
     private Sprite _elevatorRightDoorSprite;
@@ -165,33 +168,35 @@ public class Elevator
 
         DrawLight(spriteBatch, floorTop);
 
-        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + MainGame.Camera.VisualPosition * 0.1f);
-        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.VisualPosition * 0.1f);
-        _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
+        _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin, ParallaxDoors));
+        _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin, ParallaxDoors));
+
+        _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
         if ((int)MathF.Round(_floorNumber) < 10)
             _elevatorNumbersAnimSprite.SetFrame(10);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2());
+        _elevatorNumbersAnimSprite.Draw(spriteBatch,
+            MainGame.Camera.GetParallaxPosition(_elevatorNumberTensSlice.GetLocation(), ParallaxWalls));
 
         if((int)MathF.Round(_floorNumber) == 1)
             _elevatorNumbersAnimSprite.SetFrame(11);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2());
+        _elevatorNumbersAnimSprite.Draw(spriteBatch,
+            MainGame.Camera.GetParallaxPosition(_elevatorNumberOnesSlice.GetLocation(), ParallaxWalls));
     }
 
     private static void DrawLight(SpriteBatch spriteBatch, int floorTop)
     {
         int lightTop = floorTop + 40;
-
-        // spriteBatch.Draw(MainGame.PixelTexture, new Vector2(119, floorTop), Color.White);
+        
+        Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(119 + 8, lightTop), ParallaxDoors);
+        Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(119 + 8, lightTop - 140), ParallaxDoors);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.VisualPosition.X * 0.1f),
-                lightTop + (int)Math.Round(MainGame.Camera.VisualPosition.Y * 0.1f), 2, 100), Color.White);
+            new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 2, 100), Color.White);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.VisualPosition.X * 0.1f),
-                lightTop + (int)Math.Round(MainGame.Camera.VisualPosition.Y * 0.1f) - 140, 2, 100), Color.White);
+            new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 2, 100), Color.White);
     }
 }
