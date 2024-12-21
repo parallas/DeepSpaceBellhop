@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
+using ElevatorGame.Source.Elevator;
 using Engine;
 using Engine.Display;
 using Microsoft.Xna.Framework;
@@ -11,19 +12,22 @@ using MonoGame.Aseprite;
 
 namespace ElevatorGame;
 
-public class Game1 : Game
+public class MainGame : Game
 {
     public static GraphicsDeviceManager Graphics { get; set; }
     public static SpriteBatch SpriteBatch { get; set; }
+    
+    public static long Step { get; private set; }
+    public static long Frame { get; private set; }
 
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
     private RenderTarget2D _renderTarget;
 
-    private Sprite _testMockupSprite;
+    private Elevator _elevator;
 
-    public Game1()
+    public MainGame()
     {
         Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
@@ -59,8 +63,8 @@ public class Game1 : Game
 
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
         
-        var asepriteFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorGameMockup");
-        _testMockupSprite = asepriteFile.CreateSprite(GraphicsDevice, 0, true);
+        _elevator = new Elevator();
+        _elevator.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)
@@ -103,6 +107,8 @@ public class Game1 : Game
         // TODO: Add your update logic here
 
         base.Update(gameTime);
+        
+        Step++;
     }
 
     protected override void Draw(GameTime gameTime)
@@ -113,12 +119,14 @@ public class Game1 : Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
-                _testMockupSprite.Draw(SpriteBatch, Vector2.Zero);
+                _elevator.Draw(SpriteBatch);
             }
             SpriteBatch.End();
         });
 
 
         base.Draw(gameTime);
+        
+        Frame++;
     }
 }
