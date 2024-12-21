@@ -32,7 +32,7 @@ public class Elevator
     private float _velocity;
     private float _lastMaxUnsignedVelocity;
     private float _maxSpeed = 0.16f;
-    private float _targetFloorNumber;
+    private int _targetFloorNumber;
     private float _distToStopTarget;
 
     private int _turns;
@@ -90,8 +90,8 @@ public class Elevator
         {
             _stopping = true;
 
-            var lastFloor = _targetFloorNumber;
-            _targetFloorNumber = MathF.Round(_floorNumber);
+            int lastFloor = _targetFloorNumber;
+            _targetFloorNumber = (int)Math.Round(_floorNumber);
             _distToStopTarget = Math.Abs(_targetFloorNumber - _floorNumber);
 
             if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
