@@ -28,7 +28,7 @@ public static class ContentLoader
         {
             if(typeof(T).IsAssignableTo(typeof(AsepriteFile)))
             {
-                using Stream stream = TitleContainer.OpenStream($"{assetName}.aseprite");
+                using Stream stream = TitleContainer.OpenStream($"Content/{assetName}.aseprite");
                 return AsepriteFileLoader.FromStream(fileName: "file", stream: stream, preMultiplyAlpha: true) as T;
             }
 

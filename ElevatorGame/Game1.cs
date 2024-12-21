@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using AsepriteDotNet.Aseprite;
+using AsepriteDotNet.Processors;
 using Engine;
 using Engine.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Aseprite;
 
 namespace ElevatorGame;
 
@@ -17,6 +20,8 @@ public class Game1 : Game
     private static bool _isFullscreen;
 
     private RenderTarget2D _renderTarget;
+
+    private Sprite _testMockupSprite;
 
     public Game1()
     {
@@ -53,6 +58,9 @@ public class Game1 : Game
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
+        
+        var asepriteFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorGameMockup");
+        _testMockupSprite = asepriteFile.CreateSprite(GraphicsDevice, 0, true);
     }
 
     protected override void Update(GameTime gameTime)
@@ -113,9 +121,8 @@ public class Game1 : Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
-                SpriteBatch.Draw(
-                    ContentLoader.Load<Texture2D>("graphics/ElevatorGameMockup"), Vector2.Zero, Color.White
-                );
+                _testMockupSprite.Color = Color.CornflowerBlue;
+                _testMockupSprite.Draw(SpriteBatch, Vector2.Zero);
             }
             SpriteBatch.End();
         });
