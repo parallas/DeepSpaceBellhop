@@ -22,6 +22,8 @@ public class MainGame : Game
 
     public static Texture2D PixelTexture { get; private set; }
 
+    public static Camera Camera { get; } = new();
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
@@ -109,6 +111,8 @@ public class MainGame : Game
             _isFullscreen = !_isFullscreen;
         }
 
+        Camera.Update();
+
         _elevator.Update(gameTime);
 
         // TODO: Add your update logic here
@@ -124,7 +128,7 @@ public class MainGame : Game
         RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
                 _elevator.Draw(SpriteBatch);
             }

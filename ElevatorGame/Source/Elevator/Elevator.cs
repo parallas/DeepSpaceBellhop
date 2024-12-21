@@ -29,7 +29,6 @@ public class Elevator
     private float _floorNumber = 1;
     private int _targetFloorNumber = 1;
     private float _acceleration = 0.0005f;
-    private float _friction = 0.005f;
     private float _velocity;
     private float _lastMaxUnsignedVelocity;
     private float _maxSpeed = 0.16f;
@@ -74,7 +73,7 @@ public class Elevator
         _elevatorNumbersAnimSprite = elevatorNumbersSpriteSheet.CreateAnimatedSprite("Tag");
         _elevatorNumbersAnimSprite.Speed = 0;
     }
-    
+
     public void Update(GameTime gameTime)
     {
         if (_dir == 0 && !_stopping)
@@ -134,19 +133,24 @@ public class Elevator
         if(_floorNumber < 1 || _floorNumber > 40)
         {
             _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
+
+            if(_velocity != 0)
+                MainGame.Camera.SetShake(10 * _velocity, (int)(60 * _velocity));
+
             _velocity = 0;
+            _velocityParallax *= 0.25f;
         }
 
         float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.5f, _maxSpeed, Math.Abs(_velocity)) * _dir;
         _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
             (float)gameTime.ElapsedGameTime.TotalSeconds);
+        
+        MainGame.Camera.Position = new(0, _velocityParallax);
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        int floorTop = ((int)(_floorNumber * 140) % 140) - 5;
-
-        Vector2 speedOffset = new Vector2(0, _velocityParallax);
+        int floorTop = ((int)(_floorNumber * 140) % 140) - 5 + 8;
 
         spriteBatch.Draw(
             MainGame.PixelTexture,
@@ -154,28 +158,28 @@ public class Elevator
                 _elevatorDoorLeftSlice.Bounds.X,
                 0,
                 _elevatorDoorLeftSlice.Bounds.Width + 2 + _elevatorDoorRightSlice.Bounds.Width,
-                135
+                135 + 16
             ),
             Color.Black
         );
 
         DrawLight(spriteBatch, floorTop);
 
-        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + speedOffset * 0.75f);
-        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + speedOffset * 0.75f);
-        _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero + speedOffset);
+        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + MainGame.Camera.Position * 0.75f);
+        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.Position * 0.75f);
+        _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
 
         if (MathF.Round(_floorNumber) < 10)
             _elevatorNumbersAnimSprite.SetFrame(10);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2() + speedOffset);
+        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2());
 
         if(MathF.Round(_floorNumber) == 1)
             _elevatorNumbersAnimSprite.SetFrame(11);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2() + speedOffset);
+        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2());
     }
 
     private static void DrawLight(SpriteBatch spriteBatch, int floorTop)
@@ -183,7 +187,7 @@ public class Elevator
         int lightTop = floorTop + 40;
 
         // spriteBatch.Draw(MainGame.PixelTexture, new Vector2(119, floorTop), Color.White);
-        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119, lightTop, 2, 100), Color.White);
-        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119, lightTop - 140, 2, 100), Color.White);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119 + 8, lightTop, 2, 100), Color.White);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119 + 8, lightTop - 140, 2, 100), Color.White);
     }
 }
