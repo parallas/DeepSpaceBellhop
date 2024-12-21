@@ -76,17 +76,13 @@ public class Game1 : Game
         if(InputManager.GetPressed(Buttons.Start) || InputManager.GetPressed(Keys.Escape))
             Exit();
 
-        if(InputManager.GetPressed(Keys.F11))
+        if(InputManager.GetPressed(Keys.F11) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             if(_isFullscreen)
             {
                 Graphics.PreferredBackBufferWidth = _actualWindowSize.X;
                 Graphics.PreferredBackBufferHeight = _actualWindowSize.Y;
                 Window.Position = new((GraphicsDevice.DisplayMode.Width - Graphics.PreferredBackBufferWidth) / 2, (GraphicsDevice.DisplayMode.Height - Graphics.PreferredBackBufferHeight) / 2);
-                if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    Graphics.IsFullScreen = false;
-                }
                 Window.IsBorderless = false;
                 Graphics.ApplyChanges();
             }
@@ -97,10 +93,6 @@ public class Game1 : Game
 
                 Graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
                 Graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
-                if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    Graphics.IsFullScreen = true;
-                }
                 Window.IsBorderless = true;
                 Graphics.ApplyChanges();
             }
