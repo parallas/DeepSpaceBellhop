@@ -135,7 +135,7 @@ public class Elevator
             _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
 
             if(_velocity != 0)
-                MainGame.Camera.SetShake(10 * _velocity, (int)(60 * _velocity));
+                MainGame.Camera.SetShake(10 * _velocity, (int)(90 * _velocity));
 
             _velocity = 0;
             _velocityParallax *= 0.25f;
@@ -165,8 +165,8 @@ public class Elevator
 
         DrawLight(spriteBatch, floorTop);
 
-        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + MainGame.Camera.Position * 0.1f);
-        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.Position * 0.1f);
+        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + MainGame.Camera.VisualPosition * 0.1f);
+        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.VisualPosition * 0.1f);
         _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
 
         if ((int)MathF.Round(_floorNumber) < 10)
@@ -188,10 +188,10 @@ public class Elevator
 
         // spriteBatch.Draw(MainGame.PixelTexture, new Vector2(119, floorTop), Color.White);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.Position.X * 0.1f),
-                lightTop + (int)Math.Round(MainGame.Camera.Position.Y * 0.1f), 2, 100), Color.White);
+            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.VisualPosition.X * 0.1f),
+                lightTop + (int)Math.Round(MainGame.Camera.VisualPosition.Y * 0.1f), 2, 100), Color.White);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.Position.X * 0.1f),
-                lightTop + (int)Math.Round(MainGame.Camera.Position.Y * 0.1f) - 140, 2, 100), Color.White);
+            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.VisualPosition.X * 0.1f),
+                lightTop + (int)Math.Round(MainGame.Camera.VisualPosition.Y * 0.1f) - 140, 2, 100), Color.White);
     }
 }

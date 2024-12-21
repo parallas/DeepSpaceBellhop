@@ -14,6 +14,8 @@ public class Camera
     int shakeTime;
 
     public Vector2 Position { get; set; } = Vector2.Zero;
+    
+    public Vector2 VisualPosition { get; private set; }
 
     public float Zoom { get; set; } = 1;
 
@@ -54,6 +56,7 @@ public class Camera
             shakeTime = 0;
 
         Vector2 finalPosition = Vector2.Round(shakePosition);
+        VisualPosition = finalPosition;
 
         Transform = Matrix.CreateTranslation(new Vector3(-finalPosition, 0)) * Matrix.CreateScale(Zoom);
     }
