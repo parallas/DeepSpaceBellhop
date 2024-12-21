@@ -26,14 +26,17 @@ public class Elevator
 
     public void LoadContent()
     {
+        // Load the elevator interior sprite
         var elevatorInteriorFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorInterior");
         _elevatorInteriorSprite = elevatorInteriorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         
+        // Get the slices
         _elevatorDoorLeftSlice = elevatorInteriorFile.GetSlice("DoorL").Keys[0];
         _elevatorDoorRightSlice = elevatorInteriorFile.GetSlice("DoorR").Keys[0];
         _elevatorNumberTensSlice = elevatorInteriorFile.GetSlice("DigitTens").Keys[0];
         _elevatorNumberOnesSlice = elevatorInteriorFile.GetSlice("DigitOnes").Keys[0];
         
+        // Set the target positions for the doors when closed (based on slices)
         var leftDoorSliceBounds = _elevatorDoorLeftSlice.Bounds.ToXnaRectangle();
         var leftDoorTopRight = new Vector2(leftDoorSliceBounds.Right - 1, leftDoorSliceBounds.Y);
         _doorLeftOrigin = leftDoorTopRight;
@@ -41,13 +44,14 @@ public class Elevator
         var rightDoorTopLeft = rightDoorSliceBounds.Location.ToVector2();
         _doorRightOrigin = rightDoorTopLeft;
         
+        // Load the door sprites, and set their properties
         var elevatorDoorFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDoor");
-        
         _elevatorLeftDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         _elevatorRightDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         _elevatorLeftDoorSprite.Origin = new Vector2(_elevatorLeftDoorSprite.Width - 1, 0);
         _elevatorRightDoorSprite.FlipHorizontally = true;
         
+        // Load the animated numbers sprite
         var elevatorNumbersAnimFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorNumbers");
         var elevatorNumbersSpriteSheet = elevatorNumbersAnimFile!.CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false);
         _elevatorNumbersAnimSprite = elevatorNumbersSpriteSheet.CreateAnimatedSprite("Tag");
