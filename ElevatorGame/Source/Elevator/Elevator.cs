@@ -33,6 +33,11 @@ public class Elevator
     private float _maxSpeed = 0.16f;
     private float _targetFloorNumber;
 
+    private int _turns;
+    private int _dir;
+
+    private bool _stopping;
+
     public void LoadContent()
     {
         // Load the elevator interior sprite
@@ -75,12 +80,25 @@ public class Elevator
         if(InputManager.GetDown(Keys.Down))
             inputDir -= 1;
 
-        if(InputManager.GetReleased(Keys.Up) ^ InputManager.GetReleased(Keys.Down))
+        if(_stopping)
+            inputDir = 0;
+
+        if(inputDir == 0 && !_stopping)
         {
+            _stopping = true;
+
+            var lastFloor = _targetFloorNumber;
             _targetFloorNumber = MathF.Round(_floorNumber);
+
             if(Math.Abs(_velocity) > _maxSpeed * 0.5f)
             {
                 _targetFloorNumber += Math.Sign(_velocity);
+            }
+
+            if(_targetFloorNumber != lastFloor)
+            {
+                _turns++;
+                Console.WriteLine($"_turns: {_turns}");
             }
         }
 
@@ -91,7 +109,12 @@ public class Elevator
         else
         {
             _velocity = 0;
-            _floorNumber = MathUtil.Approach(_floorNumber, _targetFloorNumber, _friction);
+            _floorNumber = MathUtil.ExpDecay(_floorNumber, _targetFloorNumber, 8, (float)gameTime.ElapsedGameTime.TotalSeconds);
+            if(Math.Abs(_targetFloorNumber - _floorNumber) < 1/140f)
+            {
+                _floorNumber = _targetFloorNumber;
+                _stopping = false;
+            }
         }
 
         _floorNumber += _velocity;
