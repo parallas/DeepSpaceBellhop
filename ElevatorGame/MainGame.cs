@@ -20,6 +20,8 @@ public class MainGame : Game
     public static long Step { get; private set; }
     public static long Frame { get; private set; }
 
+    public static Texture2D PixelTexture { get; private set; }
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
@@ -60,6 +62,9 @@ public class MainGame : Game
     protected override void LoadContent()
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+        PixelTexture = new(GraphicsDevice, 1, 1);
+        PixelTexture.SetData([Color.White]);
 
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
         
@@ -103,6 +108,8 @@ public class MainGame : Game
 
             _isFullscreen = !_isFullscreen;
         }
+
+        _elevator.Update(gameTime);
 
         // TODO: Add your update logic here
 

@@ -2,8 +2,10 @@ using System;
 using System.Diagnostics;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite;
 using MonoGame.Aseprite.Utils;
 
@@ -23,6 +25,13 @@ public class Elevator
 
     private Vector2 _doorLeftOrigin;
     private Vector2 _doorRightOrigin;
+
+    private float _floorNumber;
+    private float _acceleration = 0.0005f;
+    private float _friction = 0.005f;
+    private float _velocity;
+    private float _maxSpeed = 0.16f;
+    private float _targetFloorNumber;
 
     public void LoadContent()
     {
@@ -60,14 +69,77 @@ public class Elevator
     
     public void Update(GameTime gameTime)
     {
-        
+        int inputDir = 0;
+        if(InputManager.GetDown(Keys.Up))
+            inputDir += 1;
+        if(InputManager.GetDown(Keys.Down))
+            inputDir -= 1;
+
+        if(InputManager.GetReleased(Keys.Up) ^ InputManager.GetReleased(Keys.Down))
+        {
+            _targetFloorNumber = MathF.Round(_floorNumber);
+            if(Math.Abs(_velocity) > _maxSpeed * 0.5f)
+            {
+                _targetFloorNumber += Math.Sign(_velocity);
+            }
+        }
+
+        if(inputDir != 0)
+        {
+            _velocity = MathUtil.Approach(_velocity, inputDir * _maxSpeed, _acceleration);
+        }
+        else
+        {
+            _velocity = 0;
+            _floorNumber = MathUtil.Approach(_floorNumber, _targetFloorNumber, _friction);
+        }
+
+        _floorNumber += _velocity;
+
+        if(_floorNumber < 0 || _floorNumber > 40)
+        {
+            _floorNumber = MathHelper.Clamp(_floorNumber, 0, 40);
+            _velocity = 0;
+        }
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + Vector2.UnitX * (MathF.Cos(MainGame.Step / 10f) * 10 - 10));
-        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin - Vector2.UnitX * (MathF.Cos(MainGame.Step / 10f) * 10 - 10));
+        int floorTop = ((int)(_floorNumber * 140) % 140) - 5;
+
+        spriteBatch.Draw(
+            MainGame.PixelTexture,
+            new Rectangle(
+                _elevatorDoorLeftSlice.Bounds.X,
+                0,
+                _elevatorDoorLeftSlice.Bounds.Width + 2 + _elevatorDoorRightSlice.Bounds.Width,
+                135
+            ),
+            Color.Black
+        );
+
+        DrawLight(spriteBatch, floorTop);
+
+        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin);
+        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin);
         _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
-        // _elevatorNumbersAnimSprite.Draw(MainGame.SpriteBatch, new(0, 0));
+
+        if (MathF.Round(_floorNumber) < 10)
+            _elevatorNumbersAnimSprite.SetFrame(10);
+        else
+            _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
+        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2());
+
+        _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
+        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2());
+    }
+
+    private static void DrawLight(SpriteBatch spriteBatch, int floorTop)
+    {
+        int lightTop = floorTop + 40;
+
+        // spriteBatch.Draw(MainGame.PixelTexture, new Vector2(119, floorTop), Color.White);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119, lightTop, 2, 100), Color.White);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119, lightTop - 140, 2, 100), Color.White);
     }
 }
