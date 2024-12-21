@@ -10,8 +10,8 @@ namespace ElevatorGame;
 
 public class Game1 : Game
 {
-    public static GraphicsDeviceManager Graphics;
-    public static SpriteBatch SpriteBatch;
+    public static GraphicsDeviceManager Graphics { get; set; }
+    public static SpriteBatch SpriteBatch { get; set; }
 
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
@@ -42,6 +42,8 @@ public class Game1 : Game
             Graphics.PreferredBackBufferWidth,
             Graphics.PreferredBackBufferHeight
         );
+
+        ContentLoader.Initialize(Content);
 
         base.Initialize();
     }
@@ -112,7 +114,7 @@ public class Game1 : Game
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
                 SpriteBatch.Draw(
-                    Content.Load<Texture2D>("graphics/ElevatorGameMockup"), Vector2.Zero, Color.White
+                    ContentLoader.Load<Texture2D>("graphics/ElevatorGameMockup"), Vector2.Zero, Color.White
                 );
             }
             SpriteBatch.End();

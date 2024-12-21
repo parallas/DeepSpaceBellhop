@@ -15,6 +15,11 @@
 				"TextureFormat": "Color"
 			}
 		},
+		"aseprite": {
+			"path": "graphics/*.aseprite",
+			"recursive": "True",
+			"action": "copy"
+		},
 		"fonts": {
 			"path": "fonts/*.spritefont",
 			"recursive": "True",
