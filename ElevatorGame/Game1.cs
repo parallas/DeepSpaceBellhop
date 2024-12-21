@@ -1,4 +1,7 @@
-﻿using Engine.Display;
+﻿using System;
+using System.Runtime.InteropServices;
+using Engine;
+using Engine.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -9,7 +12,10 @@ public class Game1 : Game
 {
     public static GraphicsDeviceManager Graphics;
     public static SpriteBatch SpriteBatch;
-    
+
+    private static Point _actualWindowSize;
+    private static bool _isFullscreen;
+
     private RenderTarget2D _renderTarget;
 
     public Game1()
@@ -23,6 +29,20 @@ public class Game1 : Game
     {
         // TODO: Add your initialization logic here
 
+        Window.AllowUserResizing = true;
+
+        Graphics.PreferredBackBufferWidth = 1920;
+        Graphics.PreferredBackBufferHeight = 1080;
+
+        Window.Position = new((GraphicsDevice.DisplayMode.Width - Graphics.PreferredBackBufferWidth) / 2, (GraphicsDevice.DisplayMode.Height - Graphics.PreferredBackBufferHeight) / 2);
+
+        Graphics.ApplyChanges();
+
+        _actualWindowSize = new(
+            Graphics.PreferredBackBufferWidth,
+            Graphics.PreferredBackBufferHeight
+        );
+
         base.Initialize();
     }
 
@@ -30,15 +50,53 @@ public class Game1 : Game
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-        Window.AllowUserResizing = true;
-
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
     }
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        InputManager.InputDisabled = !IsActive;
+
+        InputManager.RefreshKeyboardState();
+        InputManager.RefreshMouseState();
+        InputManager.RefreshGamePadState();
+
+        InputManager.UpdateTypingInput(gameTime);
+
+        if(InputManager.GetPressed(Buttons.Start) || InputManager.GetPressed(Keys.Escape))
             Exit();
+
+        if(InputManager.GetPressed(Keys.F11))
+        {
+            if(_isFullscreen)
+            {
+                Graphics.PreferredBackBufferWidth = _actualWindowSize.X;
+                Graphics.PreferredBackBufferHeight = _actualWindowSize.Y;
+                Window.Position = new((GraphicsDevice.DisplayMode.Width - Graphics.PreferredBackBufferWidth) / 2, (GraphicsDevice.DisplayMode.Height - Graphics.PreferredBackBufferHeight) / 2);
+                if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Graphics.IsFullScreen = false;
+                }
+                Window.IsBorderless = false;
+                Graphics.ApplyChanges();
+            }
+            else
+            {
+                _actualWindowSize.X = Graphics.PreferredBackBufferWidth;
+                _actualWindowSize.Y = Graphics.PreferredBackBufferHeight;
+
+                Graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+                Graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+                if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Graphics.IsFullScreen = true;
+                }
+                Window.IsBorderless = true;
+                Graphics.ApplyChanges();
+            }
+
+            _isFullscreen = !_isFullscreen;
+        }
 
         // TODO: Add your update logic here
 
