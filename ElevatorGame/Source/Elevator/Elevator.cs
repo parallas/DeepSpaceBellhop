@@ -30,8 +30,10 @@ public class Elevator
     private float _acceleration = 0.0005f;
     private float _friction = 0.005f;
     private float _velocity;
+    private float _lastMaxUnsignedVelocity;
     private float _maxSpeed = 0.16f;
     private float _targetFloorNumber;
+    private float _distToStopTarget;
 
     private int _turns;
     private int _dir;
@@ -74,23 +76,25 @@ public class Elevator
     
     public void Update(GameTime gameTime)
     {
-        int inputDir = 0;
-        if(InputManager.GetDown(Keys.Up))
-            inputDir += 1;
-        if(InputManager.GetDown(Keys.Down))
-            inputDir -= 1;
+        if (_dir == 0 && !_stopping)
+        {
+            int inputDir = 0;
+            if(InputManager.GetPressed(Keys.Up))
+                inputDir += 1;
+            if(InputManager.GetPressed(Keys.Down))
+                inputDir -= 1;
+            _dir = inputDir;
+        }
 
-        if(_stopping)
-            inputDir = 0;
-
-        if(inputDir == 0 && !_stopping)
+        if((_dir == 1 && InputManager.GetReleased(Keys.Up)) || (_dir == -1 && InputManager.GetReleased(Keys.Down)) && !_stopping)
         {
             _stopping = true;
 
             var lastFloor = _targetFloorNumber;
             _targetFloorNumber = MathF.Round(_floorNumber);
+            _distToStopTarget = Math.Abs(_targetFloorNumber - _floorNumber);
 
-            if(Math.Abs(_velocity) > _maxSpeed * 0.5f)
+            if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
             {
                 _targetFloorNumber += Math.Sign(_velocity);
             }
@@ -102,18 +106,25 @@ public class Elevator
             }
         }
 
-        if(inputDir != 0)
+        if(!_stopping)
         {
-            _velocity = MathUtil.Approach(_velocity, inputDir * _maxSpeed, _acceleration);
+            _velocity = MathUtil.Approach(_velocity, _dir * _maxSpeed, _acceleration);
+            _lastMaxUnsignedVelocity = Math.Max(_lastMaxUnsignedVelocity, Math.Abs(_velocity));
         }
         else
         {
             _velocity = 0;
-            _floorNumber = MathUtil.ExpDecay(_floorNumber, _targetFloorNumber, 8, (float)gameTime.ElapsedGameTime.TotalSeconds);
+            _floorNumber = MathUtil.ExpDecay(
+                _floorNumber, 
+                _targetFloorNumber, 
+                8,
+                (float)gameTime.ElapsedGameTime.TotalSeconds
+            );
             if(Math.Abs(_targetFloorNumber - _floorNumber) < 1/140f)
             {
                 _floorNumber = _targetFloorNumber;
                 _stopping = false;
+                _dir = 0;
             }
         }
 
