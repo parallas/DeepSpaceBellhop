@@ -26,13 +26,13 @@ public class Elevator
     private Vector2 _doorLeftOrigin;
     private Vector2 _doorRightOrigin;
 
-    private float _floorNumber;
+    private float _floorNumber = 1;
+    private int _targetFloorNumber = 1;
     private float _acceleration = 0.0005f;
     private float _friction = 0.005f;
     private float _velocity;
     private float _lastMaxUnsignedVelocity;
     private float _maxSpeed = 0.16f;
-    private int _targetFloorNumber;
     private float _distToStopTarget;
 
     private int _turns;
@@ -131,9 +131,9 @@ public class Elevator
 
         _floorNumber += _velocity;
 
-        if(_floorNumber < 0 || _floorNumber > 40)
+        if(_floorNumber < 1 || _floorNumber > 40)
         {
-            _floorNumber = MathHelper.Clamp(_floorNumber, 0, 40);
+            _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
             _velocity = 0;
         }
 
