@@ -30,6 +30,8 @@ public class Game1 : Game
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
+        Window.AllowUserResizing = true;
+
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
     }
 
@@ -51,6 +53,9 @@ public class Game1 : Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
+                SpriteBatch.Draw(
+                    Content.Load<Texture2D>("graphics/ElevatorGameMockup"), Vector2.Zero, Color.White
+                );
             }
             SpriteBatch.End();
         });
