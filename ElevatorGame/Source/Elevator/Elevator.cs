@@ -145,7 +145,7 @@ public class Elevator
         _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
             (float)gameTime.ElapsedGameTime.TotalSeconds);
         
-        MainGame.Camera.Position = new(0, _velocityParallax);
+        MainGame.Camera.Position = new(MainGame.Camera.Position.X, _velocityParallax);
     }
     
     public void Draw(SpriteBatch spriteBatch)
@@ -165,8 +165,8 @@ public class Elevator
 
         DrawLight(spriteBatch, floorTop);
 
-        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + MainGame.Camera.Position * 0.75f);
-        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.Position * 0.75f);
+        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + MainGame.Camera.Position * 0.1f);
+        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.Position * 0.1f);
         _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
 
         if ((int)MathF.Round(_floorNumber) < 10)
@@ -187,7 +187,11 @@ public class Elevator
         int lightTop = floorTop + 40;
 
         // spriteBatch.Draw(MainGame.PixelTexture, new Vector2(119, floorTop), Color.White);
-        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119 + 8, lightTop, 2, 100), Color.White);
-        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle(119 + 8, lightTop - 140, 2, 100), Color.White);
+        spriteBatch.Draw(MainGame.PixelTexture,
+            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.Position.X * 0.1f),
+                lightTop + (int)Math.Round(MainGame.Camera.Position.Y * 0.1f), 2, 100), Color.White);
+        spriteBatch.Draw(MainGame.PixelTexture,
+            new Rectangle(119 + 8 + (int)Math.Round(MainGame.Camera.Position.X * 0.1f),
+                lightTop + (int)Math.Round(MainGame.Camera.Position.Y * 0.1f) - 140, 2, 100), Color.White);
     }
 }
