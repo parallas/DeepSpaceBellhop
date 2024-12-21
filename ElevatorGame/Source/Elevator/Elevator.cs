@@ -169,13 +169,13 @@ public class Elevator
         _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + MainGame.Camera.Position * 0.75f);
         _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
 
-        if (MathF.Round(_floorNumber) < 10)
+        if ((int)MathF.Round(_floorNumber) < 10)
             _elevatorNumbersAnimSprite.SetFrame(10);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
         _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2());
 
-        if(MathF.Round(_floorNumber) == 1)
+        if((int)MathF.Round(_floorNumber) == 1)
             _elevatorNumbersAnimSprite.SetFrame(11);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
