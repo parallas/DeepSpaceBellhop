@@ -39,6 +39,7 @@ public class Elevator
     private int _dir;
 
     private bool _stopping;
+    private float _velocityParallax;
 
     public void LoadContent()
     {
@@ -135,11 +136,17 @@ public class Elevator
             _floorNumber = MathHelper.Clamp(_floorNumber, 0, 40);
             _velocity = 0;
         }
+
+        float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.5f, _maxSpeed, Math.Abs(_velocity)) * _dir;
+        _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
+            (float)gameTime.ElapsedGameTime.TotalSeconds);
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
         int floorTop = ((int)(_floorNumber * 140) % 140) - 5;
+
+        Vector2 speedOffset = new Vector2(0, _velocityParallax);
 
         spriteBatch.Draw(
             MainGame.PixelTexture,
@@ -154,21 +161,21 @@ public class Elevator
 
         DrawLight(spriteBatch, floorTop);
 
-        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin);
-        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin);
-        _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero);
+        _elevatorLeftDoorSprite.Draw(spriteBatch, _doorLeftOrigin + speedOffset * 0.75f);
+        _elevatorRightDoorSprite.Draw(spriteBatch, _doorRightOrigin + speedOffset * 0.75f);
+        _elevatorInteriorSprite.Draw(spriteBatch, Vector2.Zero + speedOffset);
 
         if (MathF.Round(_floorNumber) < 10)
             _elevatorNumbersAnimSprite.SetFrame(10);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2());
+        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberTensSlice.Bounds.Location.ToVector2() + speedOffset);
 
         if(MathF.Round(_floorNumber) == 1)
             _elevatorNumbersAnimSprite.SetFrame(11);
         else
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2());
+        _elevatorNumbersAnimSprite.Draw(spriteBatch, _elevatorNumberOnesSlice.Bounds.Location.ToVector2() + speedOffset);
     }
 
     private static void DrawLight(SpriteBatch spriteBatch, int floorTop)

@@ -152,6 +152,21 @@ public static class MathUtil
         return (int)Math.Floor(value);
     }
     
+    public static float InverseLerp(float a, float b, float t)
+    {
+        return (t - a)/(b - a);
+    }
+    
+    public static float InverseLerp01(float a, float b, float t)
+    {
+        return Clamp01((t - a)/(b - a));
+    }
+    
+    public static float Clamp01(float value)
+    {
+        return Math.Clamp(value, 0, 1);
+    }
+    
     /// <summary>
     /// Exponential decay function
     /// </summary>
