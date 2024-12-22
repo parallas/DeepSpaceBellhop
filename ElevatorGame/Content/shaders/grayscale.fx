@@ -46,7 +46,7 @@ float3 SRGBFromFCCYIQ(float3 yiq)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 col = tex2D(SpriteTextureSampler,input.TextureCoordinates) * input.Color.rgb;
+    float3 col = tex2D(SpriteTextureSampler,input.TextureCoordinates).rgb * input.Color.rgb;
     float3 yiq = FCCYIQFromSRGB(col.rgb);
     yiq.gb = 0;
     

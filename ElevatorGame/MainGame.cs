@@ -85,6 +85,8 @@ public class MainGame : Game
         PixelTexture.SetData([Color.White]);
 
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
+        _gameSceneRt = new RenderTarget2D(GraphicsDevice, 240, 135);
+        _uiRt = new RenderTarget2D(GraphicsDevice, 240, 135);
         
         _elevator = new();
         _elevator.LoadContent();
@@ -159,6 +161,7 @@ public class MainGame : Game
             _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));
             _elevator.Draw(SpriteBatch);
         }
+        SpriteBatch.End();
         
         GraphicsDevice.SetRenderTarget(_uiRt);
         GraphicsDevice.Clear(Color.Transparent);
@@ -172,14 +175,16 @@ public class MainGame : Game
         RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
         {
             _grayscaleIntensity.SetValue(GrayscaleCoeff);
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform, effect: _grayscaleEffect);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _grayscaleEffect);
             {
                 SpriteBatch.Draw(_gameSceneRt, Vector2.Zero, Color.White);
             }
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
+            SpriteBatch.End();
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
                 SpriteBatch.Draw(_uiRt, Vector2.Zero, Color.White);
             }
+            SpriteBatch.End();
         });
 
         base.Draw(gameTime);
