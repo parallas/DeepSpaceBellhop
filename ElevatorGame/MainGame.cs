@@ -2,13 +2,14 @@
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
-using ElevatorGame.Source.Elevator;
 using Engine;
 using Engine.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite;
+using Elevator = ElevatorGame.Source.Elevator;
+using Phone = ElevatorGame.Source.Phone;
 
 namespace ElevatorGame;
 
@@ -34,7 +35,8 @@ public class MainGame : Game
 
     private RenderTarget2D _renderTarget;
 
-    private Elevator _elevator;
+    private Elevator.Elevator _elevator;
+    private Phone.Phone _phone;
 
     private Sprite _yetiTestSprite;
 
@@ -77,8 +79,10 @@ public class MainGame : Game
 
         _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
         
-        _elevator = new Elevator();
+        _elevator = new();
         _elevator.LoadContent();
+
+        _phone = new();
 
         _yetiTestSprite =
             ContentLoader.Load<AsepriteFile>("graphics/concepting/YetiRoom")!.CreateSprite(GraphicsDevice, 0, true);
@@ -126,6 +130,7 @@ public class MainGame : Game
         Camera.Update();
 
         _elevator.Update(gameTime);
+        _phone.Update(gameTime);
 
         // TODO: Add your update logic here
 
@@ -142,8 +147,9 @@ public class MainGame : Game
             GraphicsDevice.Clear(Color.Black);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
-                _yetiTestSprite.Draw(SpriteBatch, Vector2.Zero);
+                _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));
                 _elevator.Draw(SpriteBatch);
+                _phone.Draw(SpriteBatch);
             }
             SpriteBatch.End();
         });
