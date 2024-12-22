@@ -14,21 +14,24 @@ namespace ElevatorGame.Source.Elevator;
 
 public class Elevator
 {
-    private const int ParallaxDoors = 25;
-    private const int ParallaxWalls = 15;
+    public static readonly int ParallaxDoors = 25;
+    public static readonly int ParallaxWalls = 15;
+    
+    public enum ElevatorStates
+    {
+        Stopped,
+        Closing,
+        Moving,
+        Opening,
+        Waiting,
+    }
+    public ElevatorStates State { get; private set; } = ElevatorStates.Stopped;
     
     private Sprite _elevatorInteriorSprite;
-    private Sprite _elevatorLeftDoorSprite;
-    private Sprite _elevatorRightDoorSprite;
     private AnimatedSprite _elevatorNumbersAnimSprite;
     
-    private AsepriteSliceKey _elevatorDoorLeftSlice;
-    private AsepriteSliceKey _elevatorDoorRightSlice;
     private AsepriteSliceKey _elevatorNumberTensSlice;
     private AsepriteSliceKey _elevatorNumberOnesSlice;
-
-    private Vector2 _doorLeftOrigin;
-    private Vector2 _doorRightOrigin;
 
     private float _floorNumber = 1;
     private int _targetFloorNumber = 1;
@@ -45,7 +48,7 @@ public class Elevator
 
     public bool CanMove { get; set; } = true;
 
-    private float _doorOpenedness;
+    private Doors _doors;
 
     public void LoadContent()
     {
@@ -54,31 +57,17 @@ public class Elevator
         _elevatorInteriorSprite = elevatorInteriorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         
         // Get the slices
-        _elevatorDoorLeftSlice = elevatorInteriorFile.GetSlice("DoorL").Keys[0];
-        _elevatorDoorRightSlice = elevatorInteriorFile.GetSlice("DoorR").Keys[0];
         _elevatorNumberTensSlice = elevatorInteriorFile.GetSlice("DigitTens").Keys[0];
         _elevatorNumberOnesSlice = elevatorInteriorFile.GetSlice("DigitOnes").Keys[0];
-        
-        // Set the target positions for the doors when closed (based on slices)
-        var leftDoorSliceBounds = _elevatorDoorLeftSlice.Bounds.ToXnaRectangle();
-        var leftDoorTopRight = new Vector2(leftDoorSliceBounds.Right - 1, leftDoorSliceBounds.Y);
-        _doorLeftOrigin = leftDoorTopRight;
-        var rightDoorSliceBounds = _elevatorDoorRightSlice.Bounds.ToXnaRectangle();
-        var rightDoorTopLeft = rightDoorSliceBounds.Location.ToVector2();
-        _doorRightOrigin = rightDoorTopLeft;
-        
-        // Load the door sprites, and set their properties
-        var elevatorDoorFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDoor");
-        _elevatorLeftDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
-        _elevatorRightDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
-        _elevatorLeftDoorSprite.Origin = new Vector2(_elevatorLeftDoorSprite.Width - 1, 0);
-        _elevatorRightDoorSprite.FlipHorizontally = true;
         
         // Load the animated numbers sprite
         var elevatorNumbersAnimFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorNumbers");
         var elevatorNumbersSpriteSheet = elevatorNumbersAnimFile!.CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false);
         _elevatorNumbersAnimSprite = elevatorNumbersSpriteSheet.CreateAnimatedSprite("Tag");
         _elevatorNumbersAnimSprite.Speed = 0;
+
+        // Initialize the doors
+        _doors = new Doors(this, elevatorInteriorFile);
     }
 
     public void Update(GameTime gameTime)
@@ -94,8 +83,7 @@ public class Elevator
 
             if(_dir != 0)
             {
-                MainGame.Coroutines.Stop("elevator_door_open");
-                MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), 0, out _);
+                _doors.Close();
             }
         }
 
@@ -138,8 +126,7 @@ public class Elevator
                 _stopping = false;
                 _dir = 0;
 
-                MainGame.Coroutines.Stop("elevator_door_close");
-                MainGame.Coroutines.TryRun("elevator_door_open", OpenDoors(), 0, out _);
+                _doors.Open();
             }
         }
 
@@ -176,10 +163,8 @@ public class Elevator
     public void Draw(SpriteBatch spriteBatch)
     {
         int floorTop = ((int)(_floorNumber * 140) % 140) - 5 + 8;
-
-        DrawLight(spriteBatch, floorTop);
-
-        DrawDoors(spriteBatch);
+        
+        _doors.Draw(spriteBatch, floorTop);
 
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
@@ -201,62 +186,5 @@ public class Elevator
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
         _elevatorNumbersAnimSprite.Draw(spriteBatch,
             MainGame.Camera.GetParallaxPosition(_elevatorNumberOnesSlice.GetLocation(), ParallaxWalls));
-    }
-
-    private void DrawDoors(SpriteBatch spriteBatch)
-    {
-        _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin + Vector2.UnitX * -_doorOpenedness, ParallaxDoors));
-        _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin + Vector2.UnitX * _doorOpenedness, ParallaxDoors));
-    }
-
-    private void DrawLight(SpriteBatch spriteBatch, int floorTop)
-    {
-        int lightTop = floorTop + 40;
-
-        Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop), ParallaxDoors);
-        Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 140), ParallaxDoors);
-        Vector2 blackBarPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 40), ParallaxDoors);
-        spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
-        spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
-        spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)blackBarPosition.X, (int)blackBarPosition.Y, 240, 40), Color.Black * (1 - (_doorOpenedness / 47f)));
-    }
-
-    private IEnumerator OpenDoors()
-    {
-        CanMove = false;
-        _doorOpenedness = 0;
-        while(_doorOpenedness < 46)
-        {
-            _doorOpenedness = MathUtil.ExpDecay(
-                _doorOpenedness,
-                47f,
-                8,
-                1/60f
-            );
-            yield return null;
-        }
-        _doorOpenedness = 47;
-        CanMove = true;
-    }
-
-    private IEnumerator CloseDoors()
-    {
-        CanMove = false;
-        _doorOpenedness = 47;
-        while(_doorOpenedness > 1)
-        {
-            _doorOpenedness = MathUtil.ExpDecay(
-                _doorOpenedness,
-                0,
-                10,
-                1/60f
-            );
-            yield return null;
-        }
-        _doorOpenedness = 0;
-        CanMove = true;
     }
 }
