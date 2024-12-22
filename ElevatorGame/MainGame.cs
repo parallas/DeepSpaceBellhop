@@ -34,6 +34,8 @@ public class MainGame : Game
 
     private Elevator _elevator;
 
+    private Sprite _yetiTestSprite;
+
     public MainGame()
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -75,6 +77,9 @@ public class MainGame : Game
         
         _elevator = new Elevator();
         _elevator.LoadContent();
+
+        _yetiTestSprite =
+            ContentLoader.Load<AsepriteFile>("graphics/concepting/YetiRoom")!.CreateSprite(GraphicsDevice, 0, true);
     }
 
     protected override void Update(GameTime gameTime)
@@ -133,6 +138,7 @@ public class MainGame : Game
             GraphicsDevice.Clear(Color.Black);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
+                _yetiTestSprite.Draw(SpriteBatch, Vector2.Zero);
                 _elevator.Draw(SpriteBatch);
             }
             SpriteBatch.End();
