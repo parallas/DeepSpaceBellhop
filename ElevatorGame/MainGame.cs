@@ -30,6 +30,8 @@ public class MainGame : Game
 
     public static CoroutineRunner Coroutines { get; set; } = new();
 
+    public static float GrayscaleCoeff { get; set; } = 1;
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 

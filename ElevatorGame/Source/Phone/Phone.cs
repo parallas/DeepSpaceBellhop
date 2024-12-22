@@ -36,6 +36,8 @@ public class Phone(Elevator.Elevator elevator)
         var camPos = MainGame.Camera.Position;
         camPos.X = _offset;
         MainGame.Camera.Position = camPos;
+
+        MainGame.GrayscaleCoeff = 1-(_offset / 32f);
     }
 
     public void Draw(SpriteBatch spriteBatch)
