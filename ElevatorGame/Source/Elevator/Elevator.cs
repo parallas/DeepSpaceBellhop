@@ -155,24 +155,17 @@ public class Elevator
     {
         int floorTop = ((int)(_floorNumber * 140) % 140) - 5 + 8;
 
-        spriteBatch.Draw(
-            MainGame.PixelTexture,
-            new Rectangle(
-                _elevatorDoorLeftSlice.Bounds.X,
-                0,
-                _elevatorDoorLeftSlice.Bounds.Width + 2 + _elevatorDoorRightSlice.Bounds.Width,
-                135 + 16
-            ),
-            Color.Black
-        );
-
         DrawLight(spriteBatch, floorTop);
 
-        _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin, ParallaxDoors));
-        _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin, ParallaxDoors));
+        DrawDoors(spriteBatch);
 
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
+        DrawNumbers(spriteBatch);
+    }
+
+    private void DrawNumbers(SpriteBatch spriteBatch)
+    {
         if ((int)MathF.Round(_floorNumber) < 10)
             _elevatorNumbersAnimSprite.SetFrame(10);
         else
@@ -188,15 +181,21 @@ public class Elevator
             MainGame.Camera.GetParallaxPosition(_elevatorNumberOnesSlice.GetLocation(), ParallaxWalls));
     }
 
+    private void DrawDoors(SpriteBatch spriteBatch)
+    {
+        _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin, ParallaxDoors));
+        _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin, ParallaxDoors));
+    }
+
     private static void DrawLight(SpriteBatch spriteBatch, int floorTop)
     {
         int lightTop = floorTop + 40;
         
-        Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(119 + 8, lightTop), ParallaxDoors);
-        Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(119 + 8, lightTop - 140), ParallaxDoors);
+        Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop), ParallaxDoors);
+        Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 140), ParallaxDoors);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 2, 100), Color.White);
+            new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 240, 100), Color.White);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 2, 100), Color.White);
+            new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 240, 100), Color.White);
     }
 }
