@@ -102,7 +102,7 @@ public class Elevator
                 break;
         }
 
-        float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.5f, _maxSpeed, Math.Abs(_velocity)) * _dir;
+        float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.6f, _maxSpeed, Math.Abs(_velocity)) * _dir;
         _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
             (float)gameTime.ElapsedGameTime.TotalSeconds);
         
@@ -125,18 +125,24 @@ public class Elevator
 
     private void UpdateStateStopped(GameTime gameTime)
     {
+        
         int inputDir = 0;
-        if(InputManager.GetPressed(Keys.Up) && (int)Math.Round(_floorNumber) != 40)
+        if(InputManager.GetPressed(Keys.Up))
             inputDir += 1;
-        if(InputManager.GetPressed(Keys.Down) && (int)Math.Round(_floorNumber) != 1)
+        if(InputManager.GetPressed(Keys.Down))
             inputDir -= 1;
+        
+        if (inputDir > 0 && (int)Math.Round(_floorNumber) >= 40 || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
+        {
+            MainGame.Camera.SetShake(2, 15);
+            return;
+        }
+        
         _dir = inputDir;
 
-        if(_dir != 0)
-        {
-            _doors.Close();
-            State = ElevatorStates.Closing;
-        }
+        if (_dir == 0) return;
+        _doors.Close();
+        State = ElevatorStates.Closing;
     }
 
     private void UpdateStateMoving(GameTime gameTime)
@@ -159,7 +165,7 @@ public class Elevator
             }
             else
             {
-                MainGame.Camera.SetShake(25 * _velocity, 60);
+                MainGame.Camera.SetShake(4, 60);
                 _velocity = 0;
                 
                 SetState(ElevatorStates.Other);
