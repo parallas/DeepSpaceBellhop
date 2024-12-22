@@ -130,7 +130,7 @@ public class MainGame : Game
 
         RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
                 _elevator.Draw(SpriteBatch);
