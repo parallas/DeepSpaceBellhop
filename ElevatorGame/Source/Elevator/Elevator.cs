@@ -212,13 +212,16 @@ public class Elevator
     private void DrawLight(SpriteBatch spriteBatch, int floorTop)
     {
         int lightTop = floorTop + 40;
-        
+
         Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop), ParallaxDoors);
         Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 140), ParallaxDoors);
+        Vector2 blackBarPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 40), ParallaxDoors);
         spriteBatch.Draw(MainGame.PixelTexture,
             new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
         spriteBatch.Draw(MainGame.PixelTexture,
             new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
+        spriteBatch.Draw(MainGame.PixelTexture,
+            new Rectangle((int)blackBarPosition.X, (int)blackBarPosition.Y, 240, 40), Color.Black * (1 - (_doorOpenedness / 47f)));
     }
 
     private IEnumerator OpenDoors()
