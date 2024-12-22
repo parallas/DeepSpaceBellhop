@@ -27,6 +27,8 @@ public class MainGame : Game
         RootOffset = Vector2.One * 8
     };
 
+    public static CoroutineRunner Coroutines { get; set; } = new();
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
@@ -113,6 +115,8 @@ public class MainGame : Game
 
             _isFullscreen = !_isFullscreen;
         }
+
+        Coroutines.Update();
 
         Camera.Update();
 
