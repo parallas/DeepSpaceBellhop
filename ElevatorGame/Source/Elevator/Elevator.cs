@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
@@ -35,13 +36,16 @@ public class Elevator
     private float _velocity;
     private float _lastMaxUnsignedVelocity;
     private float _maxSpeed = 0.16f;
-    private float _distToStopTarget;
 
     private int _turns;
     private int _dir;
 
     private bool _stopping;
     private float _velocityParallax;
+
+    public bool CanMove { get; set; } = true;
+
+    private float _doorOpenedness;
 
     public void LoadContent()
     {
@@ -79,14 +83,20 @@ public class Elevator
 
     public void Update(GameTime gameTime)
     {
-        if (_dir == 0 && !_stopping)
+        if (_dir == 0 && !_stopping && CanMove)
         {
             int inputDir = 0;
-            if(InputManager.GetPressed(Keys.Up))
+            if(InputManager.GetPressed(Keys.Up) && (int)Math.Round(_floorNumber) != 40)
                 inputDir += 1;
-            if(InputManager.GetPressed(Keys.Down))
+            if(InputManager.GetPressed(Keys.Down) && (int)Math.Round(_floorNumber) != 1)
                 inputDir -= 1;
             _dir = inputDir;
+
+            if(_dir != 0)
+            {
+                MainGame.Coroutines.Stop("elevator_door_open");
+                MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), 0, out _);
+            }
         }
 
         if((_dir == 1 && InputManager.GetReleased(Keys.Up)) || (_dir == -1 && InputManager.GetReleased(Keys.Down)) && !_stopping)
@@ -95,7 +105,6 @@ public class Elevator
 
             int lastFloor = _targetFloorNumber;
             _targetFloorNumber = (int)Math.Round(_floorNumber);
-            _distToStopTarget = Math.Abs(_targetFloorNumber - _floorNumber);
 
             if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
             {
@@ -128,6 +137,9 @@ public class Elevator
                 _floorNumber = _targetFloorNumber;
                 _stopping = false;
                 _dir = 0;
+
+                MainGame.Coroutines.Stop("elevator_door_close");
+                MainGame.Coroutines.TryRun("elevator_door_open", OpenDoors(), 0, out _);
             }
         }
 
@@ -142,6 +154,16 @@ public class Elevator
 
             _velocity = 0;
             _velocityParallax *= 0.25f;
+            _dir = 0;
+
+            if(_targetFloorNumber != (int)_floorNumber)
+            {
+                _turns++;
+                Console.WriteLine($"_turns: {_turns}");
+            }
+
+            _targetFloorNumber = (int)_floorNumber;
+            _stopping = true;
         }
 
         float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.5f, _maxSpeed, Math.Abs(_velocity)) * _dir;
@@ -183,19 +205,55 @@ public class Elevator
 
     private void DrawDoors(SpriteBatch spriteBatch)
     {
-        _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin, ParallaxDoors));
-        _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin, ParallaxDoors));
+        _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin + Vector2.UnitX * -_doorOpenedness, ParallaxDoors));
+        _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin + Vector2.UnitX * _doorOpenedness, ParallaxDoors));
     }
 
-    private static void DrawLight(SpriteBatch spriteBatch, int floorTop)
+    private void DrawLight(SpriteBatch spriteBatch, int floorTop)
     {
         int lightTop = floorTop + 40;
         
         Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop), ParallaxDoors);
         Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 140), ParallaxDoors);
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 240, 100), Color.White);
+            new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
         spriteBatch.Draw(MainGame.PixelTexture,
-            new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 240, 100), Color.White);
+            new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
+    }
+
+    private IEnumerator OpenDoors()
+    {
+        CanMove = false;
+        _doorOpenedness = 0;
+        while(_doorOpenedness < 46)
+        {
+            _doorOpenedness = MathUtil.ExpDecay(
+                _doorOpenedness,
+                47f,
+                8,
+                1/60f
+            );
+            yield return null;
+        }
+        _doorOpenedness = 47;
+        CanMove = true;
+    }
+
+    private IEnumerator CloseDoors()
+    {
+        CanMove = false;
+        _doorOpenedness = 47;
+        while(_doorOpenedness > 1)
+        {
+            _doorOpenedness = MathUtil.ExpDecay(
+                _doorOpenedness,
+                0,
+                10,
+                1/60f
+            );
+            yield return null;
+        }
+        _doorOpenedness = 0;
+        CanMove = true;
     }
 }
