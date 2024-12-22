@@ -144,7 +144,7 @@ public class MainGame : Game
 
         RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
                 _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));

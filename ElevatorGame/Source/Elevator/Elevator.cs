@@ -99,7 +99,6 @@ public class Elevator
                 SetState(ElevatorStates.Stopped);
                 break;
             case ElevatorStates.Other:
-                return;
                 break;
         }
 
@@ -116,6 +115,9 @@ public class Elevator
         
         _doors.Draw(spriteBatch, floorTop);
 
+        Vector2 fillPos = MainGame.Camera.GetParallaxPosition(new Vector2(240 + 16, -8), ParallaxWalls);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)fillPos.X, (int)fillPos.Y, 100, 135 + 16),
+            new Color(120, 105, 196, 255));
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
         DrawNumbers(spriteBatch);
@@ -140,33 +142,44 @@ public class Elevator
     private void UpdateStateMoving(GameTime gameTime)
     {
         _floorNumber += _velocity;
-        
+
+        bool didSoftCrash = false;
         if(_floorNumber < 1 || _floorNumber > 40)
         {
             _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
 
-            if(_velocity != 0)
-                MainGame.Camera.SetShake(10 * _velocity, (int)(90 * _velocity));
-
-            _velocity = 0;
             _velocityParallax *= 0.25f;
             _dir = 0;
 
             _targetFloorNumber = (int)_floorNumber;
-            
-            SetState(ElevatorStates.Other);
-            MainGame.Coroutines.TryRun("elevator_crash", CrashSequence(), 0, out _);
-            return;
+
+            if (Math.Abs(_velocity) < _maxSpeed * 0.5)
+            {
+                didSoftCrash = true;
+            }
+            else
+            {
+                MainGame.Camera.SetShake(25 * _velocity, 60);
+                _velocity = 0;
+                
+                SetState(ElevatorStates.Other);
+                MainGame.Coroutines.TryRun("elevator_crash", CrashSequence(), 0, out _);
+                return;
+            }
+            _velocity = 0;
         }
         
-        if((_dir == 1 && !InputManager.GetDown(Keys.Up)) || (_dir == -1 && !InputManager.GetDown(Keys.Down)))
+        if((_dir == 1 && !InputManager.GetDown(Keys.Up)) || (_dir == -1 && !InputManager.GetDown(Keys.Down)) || didSoftCrash)
         {
             int lastFloor = _targetFloorNumber;
             _targetFloorNumber = (int)Math.Round(_floorNumber);
 
             if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
             {
-                _targetFloorNumber += Math.Sign(_velocity);
+                int rolloverAmount = Math.Sign(_velocity);
+                if (rolloverAmount == 0)
+                    rolloverAmount = _dir;
+                _targetFloorNumber += rolloverAmount;
             }
 
             _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, 40);
