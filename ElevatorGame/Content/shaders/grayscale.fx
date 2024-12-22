@@ -8,6 +8,7 @@
 #endif
 
 Texture2D SpriteTexture;
+float GrayscaleIntensity;
 
 sampler2D SpriteTextureSampler = sampler_state
 {
@@ -45,11 +46,11 @@ float3 SRGBFromFCCYIQ(float3 yiq)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 col = tex2D(SpriteTextureSampler,input.TextureCoordinates);
+    float4 col = tex2D(SpriteTextureSampler,input.TextureCoordinates) * input.Color.rgb;
     float3 yiq = FCCYIQFromSRGB(col.rgb);
-    yiq.g = 0;
+    yiq.gb = 0;
     
-    return float4(lerp(SRGBFromFCCYIQ(yiq), col, input.Color.a), 1);
+    return float4(lerp(SRGBFromFCCYIQ(yiq), col, GrayscaleIntensity), input.Color.a);
 }
 
 technique SpriteDrawing

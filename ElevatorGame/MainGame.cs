@@ -35,6 +35,8 @@ public class MainGame : Game
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
+    private RenderTarget2D _gameSceneRt;
+    private RenderTarget2D _uiRt;
     private RenderTarget2D _renderTarget;
 
     private Elevator.Elevator _elevator;
@@ -42,6 +44,9 @@ public class MainGame : Game
 
     private Sprite _yetiTestSprite;
 
+    private Effect _grayscaleEffect;
+    private EffectParameter _grayscaleIntensity;
+    
     public MainGame()
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -88,6 +93,10 @@ public class MainGame : Game
 
         _yetiTestSprite =
             ContentLoader.Load<AsepriteFile>("graphics/concepting/YetiRoom")!.CreateSprite(GraphicsDevice, 0, true);
+        
+        _grayscaleEffect =
+            Content.Load<Effect>("shaders/grayscale")!;
+        _grayscaleIntensity = _grayscaleEffect.Parameters["GrayscaleIntensity"];
     }
 
     protected override void Update(GameTime gameTime)
@@ -143,19 +152,35 @@ public class MainGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
-
+        GraphicsDevice.SetRenderTarget(_gameSceneRt);
+        GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
+        {
+            _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));
+            _elevator.Draw(SpriteBatch);
+        }
+        
+        GraphicsDevice.SetRenderTarget(_uiRt);
+        GraphicsDevice.Clear(Color.Transparent);
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
+        {
+            _phone.Draw(SpriteBatch);
+        }
+        SpriteBatch.End();
+        GraphicsDevice.Reset();
+        
         RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
         {
-            GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
+            _grayscaleIntensity.SetValue(GrayscaleCoeff);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform, effect: _grayscaleEffect);
+            {
+                SpriteBatch.Draw(_gameSceneRt, Vector2.Zero, Color.White);
+            }
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
-                _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));
-                _elevator.Draw(SpriteBatch);
-                _phone.Draw(SpriteBatch);
+                SpriteBatch.Draw(_uiRt, Vector2.Zero, Color.White);
             }
-            SpriteBatch.End();
         });
-
 
         base.Draw(gameTime);
         
