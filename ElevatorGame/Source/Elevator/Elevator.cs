@@ -31,10 +31,6 @@ public class Elevator
     public void SetState(ElevatorStates state) => State = state;
     
     private Sprite _elevatorInteriorSprite;
-    private AnimatedSprite _elevatorNumbersAnimSprite;
-    
-    private AsepriteSliceKey _elevatorNumberTensSlice;
-    private AsepriteSliceKey _elevatorNumberOnesSlice;
 
     private float _floorNumber = 1;
     private int _targetFloorNumber = 1;
@@ -52,25 +48,19 @@ public class Elevator
     public bool CanMove { get; set; } = true;
 
     private Doors _doors;
+    private FloorNumberDisplay _floorNumbers;
 
     public void LoadContent()
     {
         // Load the elevator interior sprite
         var elevatorInteriorFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorInterior");
         _elevatorInteriorSprite = elevatorInteriorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
-        
-        // Get the slices
-        _elevatorNumberTensSlice = elevatorInteriorFile.GetSlice("DigitTens").Keys[0];
-        _elevatorNumberOnesSlice = elevatorInteriorFile.GetSlice("DigitOnes").Keys[0];
-        
-        // Load the animated numbers sprite
-        var elevatorNumbersAnimFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorNumbers");
-        var elevatorNumbersSpriteSheet = elevatorNumbersAnimFile!.CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false);
-        _elevatorNumbersAnimSprite = elevatorNumbersSpriteSheet.CreateAnimatedSprite("Tag");
-        _elevatorNumbersAnimSprite.Speed = 0;
 
         // Initialize the doors
         _doors = new Doors(this, elevatorInteriorFile);
+
+        _floorNumbers = new FloorNumberDisplay();
+        _floorNumbers.LoadContent(this, elevatorInteriorFile);
     }
 
     public void Update(GameTime gameTime)
@@ -120,7 +110,7 @@ public class Elevator
             new Color(120, 105, 196, 255));
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
-        DrawNumbers(spriteBatch);
+        _floorNumbers.Draw(spriteBatch, _floorNumber);
     }
 
     private void UpdateStateStopped(GameTime gameTime)
@@ -209,23 +199,6 @@ public class Elevator
             _doors.Open();
             State = ElevatorStates.Opening;
         }
-    }
-
-    private void DrawNumbers(SpriteBatch spriteBatch)
-    {
-        if ((int)MathF.Round(_floorNumber) < 10)
-            _elevatorNumbersAnimSprite.SetFrame(10);
-        else
-            _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) / 10 % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch,
-            MainGame.Camera.GetParallaxPosition(_elevatorNumberTensSlice.GetLocation(), ParallaxWalls));
-
-        if((int)MathF.Round(_floorNumber) == 1)
-            _elevatorNumbersAnimSprite.SetFrame(11);
-        else
-            _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
-        _elevatorNumbersAnimSprite.Draw(spriteBatch,
-            MainGame.Camera.GetParallaxPosition(_elevatorNumberOnesSlice.GetLocation(), ParallaxWalls));
     }
     
     private IEnumerator CrashSequence()
