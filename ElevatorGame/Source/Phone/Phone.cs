@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ElevatorGame.Source.Phone;
 
-public class Phone
+public class Phone(Elevator.Elevator elevator)
 {
     bool _isOpen;
     float _offset;
@@ -17,17 +17,19 @@ public class Phone
 
     public void Update(GameTime gameTime)
     {
-        if(CanOpen && ((!_isOpen && InputManager.GetPressed(Keys.Right)) || (_isOpen && InputManager.GetPressed(Keys.Left))))
+        if(CanOpen && ((!_isOpen && InputManager.GetPressed(Keys.Right) && elevator.State == Elevator.Elevator.ElevatorStates.Stopped) || (_isOpen && InputManager.GetPressed(Keys.Left))))
         {
             if((_isOpen = !_isOpen) == true)
             {
                 MainGame.Coroutines.Stop("phone_hide");
                 MainGame.Coroutines.TryRun("phone_show", Open(), 0, out _);
+                elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
             }
             else
             {
                 MainGame.Coroutines.Stop("phone_show");
                 MainGame.Coroutines.TryRun("phone_hide", Close(), 0, out _);
+                elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
             }
         }
 

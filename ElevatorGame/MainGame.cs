@@ -82,7 +82,7 @@ public class MainGame : Game
         _elevator = new();
         _elevator.LoadContent();
 
-        _phone = new();
+        _phone = new(_elevator);
 
         _yetiTestSprite =
             ContentLoader.Load<AsepriteFile>("graphics/concepting/YetiRoom")!.CreateSprite(GraphicsDevice, 0, true);
