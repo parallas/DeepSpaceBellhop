@@ -22,10 +22,13 @@ public class Elevator
         Stopped,
         Closing,
         Moving,
+        Stopping,
         Opening,
         Waiting,
+        Other,
     }
     public ElevatorStates State { get; private set; } = ElevatorStates.Stopped;
+    public void SetState(ElevatorStates state) => State = state;
     
     private Sprite _elevatorInteriorSprite;
     private AnimatedSprite _elevatorNumbersAnimSprite;
@@ -72,85 +75,32 @@ public class Elevator
 
     public void Update(GameTime gameTime)
     {
-        if (_dir == 0 && !_stopping && CanMove)
+        switch (State)
         {
-            int inputDir = 0;
-            if(InputManager.GetPressed(Keys.Up) && (int)Math.Round(_floorNumber) != 40)
-                inputDir += 1;
-            if(InputManager.GetPressed(Keys.Down) && (int)Math.Round(_floorNumber) != 1)
-                inputDir -= 1;
-            _dir = inputDir;
-
-            if(_dir != 0)
-            {
-                _doors.Close();
-            }
-        }
-
-        if((_dir == 1 && InputManager.GetReleased(Keys.Up)) || (_dir == -1 && InputManager.GetReleased(Keys.Down)) && !_stopping)
-        {
-            _stopping = true;
-
-            int lastFloor = _targetFloorNumber;
-            _targetFloorNumber = (int)Math.Round(_floorNumber);
-
-            if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
-            {
-                _targetFloorNumber += Math.Sign(_velocity);
-            }
-
-            if(_targetFloorNumber != lastFloor)
-            {
+            case ElevatorStates.Stopped:
+                UpdateStateStopped(gameTime);
+                break;
+            case ElevatorStates.Closing:
+                // UpdateStateClosing(gameTime);
+                break;
+            case ElevatorStates.Moving:
+                UpdateStateMoving(gameTime);
+                break;
+            case ElevatorStates.Stopping:
+                UpdateStateStopping(gameTime);
+                break;
+            case ElevatorStates.Opening:
+                // UpdateStateOpening(gameTime);
+                break;
+            case ElevatorStates.Waiting:
+                // UpdateStateWaiting(gameTime);
                 _turns++;
-                Console.WriteLine($"_turns: {_turns}");
-            }
-        }
-
-        if(!_stopping)
-        {
-            _velocity = MathUtil.Approach(_velocity, _dir * _maxSpeed, _acceleration);
-            _lastMaxUnsignedVelocity = Math.Max(_lastMaxUnsignedVelocity, Math.Abs(_velocity));
-        }
-        else
-        {
-            _velocity = 0;
-            _floorNumber = MathUtil.ExpDecay(
-                _floorNumber, 
-                _targetFloorNumber, 
-                8,
-                (float)gameTime.ElapsedGameTime.TotalSeconds
-            );
-            if(Math.Abs(_targetFloorNumber - _floorNumber) < 1/140f)
-            {
-                _floorNumber = _targetFloorNumber;
-                _stopping = false;
-                _dir = 0;
-
-                _doors.Open();
-            }
-        }
-
-        _floorNumber += _velocity;
-
-        if(_floorNumber < 1 || _floorNumber > 40)
-        {
-            _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
-
-            if(_velocity != 0)
-                MainGame.Camera.SetShake(10 * _velocity, (int)(90 * _velocity));
-
-            _velocity = 0;
-            _velocityParallax *= 0.25f;
-            _dir = 0;
-
-            if(_targetFloorNumber != (int)_floorNumber)
-            {
-                _turns++;
-                Console.WriteLine($"_turns: {_turns}");
-            }
-
-            _targetFloorNumber = (int)_floorNumber;
-            _stopping = true;
+                Console.WriteLine($"Turns: {_turns}");
+                SetState(ElevatorStates.Stopped);
+                break;
+            case ElevatorStates.Other:
+                return;
+                break;
         }
 
         float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.5f, _maxSpeed, Math.Abs(_velocity)) * _dir;
@@ -171,6 +121,83 @@ public class Elevator
         DrawNumbers(spriteBatch);
     }
 
+    private void UpdateStateStopped(GameTime gameTime)
+    {
+        int inputDir = 0;
+        if(InputManager.GetPressed(Keys.Up) && (int)Math.Round(_floorNumber) != 40)
+            inputDir += 1;
+        if(InputManager.GetPressed(Keys.Down) && (int)Math.Round(_floorNumber) != 1)
+            inputDir -= 1;
+        _dir = inputDir;
+
+        if(_dir != 0)
+        {
+            _doors.Close();
+            State = ElevatorStates.Closing;
+        }
+    }
+
+    private void UpdateStateMoving(GameTime gameTime)
+    {
+        _floorNumber += _velocity;
+        
+        if(_floorNumber < 1 || _floorNumber > 40)
+        {
+            _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
+
+            if(_velocity != 0)
+                MainGame.Camera.SetShake(10 * _velocity, (int)(90 * _velocity));
+
+            _velocity = 0;
+            _velocityParallax *= 0.25f;
+            _dir = 0;
+
+            _targetFloorNumber = (int)_floorNumber;
+            
+            SetState(ElevatorStates.Other);
+            MainGame.Coroutines.TryRun("elevator_crash", CrashSequence(), 0, out _);
+            return;
+        }
+        
+        if((_dir == 1 && !InputManager.GetDown(Keys.Up)) || (_dir == -1 && !InputManager.GetDown(Keys.Down)))
+        {
+            int lastFloor = _targetFloorNumber;
+            _targetFloorNumber = (int)Math.Round(_floorNumber);
+
+            if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
+            {
+                _targetFloorNumber += Math.Sign(_velocity);
+            }
+
+            _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, 40);
+            
+            State = ElevatorStates.Stopping;
+            return;
+        }
+        
+        _velocity = MathUtil.Approach(_velocity, _dir * _maxSpeed, _acceleration);
+        _lastMaxUnsignedVelocity = Math.Max(_lastMaxUnsignedVelocity, Math.Abs(_velocity));
+    }
+
+    private void UpdateStateStopping(GameTime gameTime)
+    {
+        _velocity = 0;
+        _floorNumber = MathUtil.ExpDecay(
+            _floorNumber, 
+            _targetFloorNumber, 
+            8,
+            (float)gameTime.ElapsedGameTime.TotalSeconds
+        );
+        if(Math.Abs(_targetFloorNumber - _floorNumber) < 1/140f)
+        {
+            _floorNumber = _targetFloorNumber;
+            _dir = 0;
+
+            _doors.Open();
+            State = ElevatorStates.Opening;
+        }
+    }
+
     private void DrawNumbers(SpriteBatch spriteBatch)
     {
         if ((int)MathF.Round(_floorNumber) < 10)
@@ -186,5 +213,11 @@ public class Elevator
             _elevatorNumbersAnimSprite.SetFrame((int)MathF.Round(_floorNumber) % 10);
         _elevatorNumbersAnimSprite.Draw(spriteBatch,
             MainGame.Camera.GetParallaxPosition(_elevatorNumberOnesSlice.GetLocation(), ParallaxWalls));
+    }
+    
+    private IEnumerator CrashSequence()
+    {
+        yield return 60;
+        SetState(Elevator.ElevatorStates.Stopping);
     }
 }

@@ -47,10 +47,10 @@ public class Doors
 
     public void Draw(SpriteBatch spriteBatch, int floorTop)
     {
+        DrawLight(spriteBatch, floorTop);
+        
         _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin + Vector2.UnitX * -_doorOpenedness, Elevator.ParallaxDoors));
         _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin + Vector2.UnitX * _doorOpenedness, Elevator.ParallaxDoors));
-        
-        DrawLight(spriteBatch, floorTop);
     }
     
     private void DrawLight(SpriteBatch spriteBatch, int floorTop)
@@ -93,6 +93,8 @@ public class Doors
             yield return null;
         }
         _doorOpenedness = 47;
+        
+        _elevator.SetState(Elevator.ElevatorStates.Waiting);
     }
 
     private IEnumerator CloseDoors()
@@ -108,5 +110,7 @@ public class Doors
             yield return null;
         }
         _doorOpenedness = 0;
+        
+        _elevator.SetState(Elevator.ElevatorStates.Moving);
     }
 }
