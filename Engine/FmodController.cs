@@ -39,10 +39,10 @@ public static class FmodController
 
     private static async Task LoadContentAsync()
     {
-        var native = _masterBus.Native;
-        while (native.getChannelGroup(out _channelGroup) != RESULT.OK) { await Task.Yield(); }
+        // var native = _masterBus.Native;
+        // while (native.getChannelGroup(out _channelGroup) != RESULT.OK) { await Task.Yield(); }
         
-        _masterBus.UnlockChannelGroup();
+        // _masterBus.UnlockChannelGroup();
     }
 
     public static void LoadContent(string banksPath, bool loadStrings, string[] banksToLoad, string[] bussesToLoad)
