@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
+using ElevatorGame.Source.Rooms;
 using Engine;
 using Engine.Display;
 using FMOD;
@@ -45,6 +46,10 @@ public class MainGame : Game
     private Dialog.Dialog _dialog;
 
     private Sprite _roomSprite;
+
+    
+    private RoomRenderer _roomRenderer;
+    
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
@@ -98,7 +103,7 @@ public class MainGame : Game
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
         
-        _elevator = new();
+        _elevator = new(OnChangeFloorNumber);
         _elevator.LoadContent();
 
         _phone = new(_elevator);
@@ -106,9 +111,16 @@ public class MainGame : Game
         _dialog = new();
         _dialog.LoadContent();
 
+
+        _dialog = new();
+        _dialog.LoadContent();
+
         _roomSprite =
             ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!
                 .CreateSprite(GraphicsDevice, 0, true);
+
+        _roomRenderer = new RoomRenderer();
+
         
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
@@ -224,6 +236,8 @@ public class MainGame : Game
         _ppWobbleInfluence.SetValue(0);
         _ppGameTime.SetValue(Frame / 60f);
         
+        _roomRenderer.PreRender(SpriteBatch);
+        
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
             GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
@@ -254,9 +268,14 @@ public class MainGame : Game
 
     private void DrawScene(GameTime gameTime)
     {
-        _roomSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(new(64, 32), 70));
+        _roomRenderer.Draw(SpriteBatch);
         _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 32), 50));
         _elevator.Draw(SpriteBatch);
         _dialog.Draw(SpriteBatch);
+    }
+    
+    private void OnChangeFloorNumber(int floorNumber)
+    {
+        _roomRenderer.Randomize();
     }
 }
