@@ -6,7 +6,41 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="FmodForFoxes" Version="3.2.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="libfmod.dylib">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfmodL.dylib">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfmodstudio.dylib">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfmodstudioL.dylib">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="fmod.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="fmodL.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="fmodstudio.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="fmodstudioL.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="FmodForFoxes.Desktop">
+        <HintPath>FmodForFoxes.Desktop.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

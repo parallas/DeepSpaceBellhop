@@ -10,6 +10,7 @@ TestResults
 
 # Ignore library files
 *.dll
+!Engine/FmodForFoxes.Desktop.dll
 
 # Ignore ImGui runtime info
 Beebo/imgui.ini
@@ -124,3 +125,5 @@ UpgradeLog*.XML
 .DS_Store
 .mgstats
 **.dylib
+FmodElevatorGame/**/.*
+!Engine/FmodForFoxes.Desktop.pdb
