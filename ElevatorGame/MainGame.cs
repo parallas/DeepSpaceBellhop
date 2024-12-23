@@ -39,10 +39,6 @@ public class MainGame : Game
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
-    private RenderTarget2D _gameSceneRt;
-    private RenderTarget2D _uiRt;
-    private RenderTarget2D _renderTarget;
-
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
 
