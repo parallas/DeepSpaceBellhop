@@ -13,7 +13,7 @@ using MonoGame.Aseprite.Utils;
 
 namespace ElevatorGame.Source.Elevator;
 
-public class Elevator
+public class Elevator(Action<int> onChangeFloorNumber)
 {
     public static readonly int ParallaxDoors = 25;
     public static readonly int ParallaxWalls = 15;
@@ -232,6 +232,7 @@ public class Elevator
 
             _doors.Open();
             State = ElevatorStates.Opening;
+            onChangeFloorNumber?.Invoke(_targetFloorNumber);
         }
     }
     

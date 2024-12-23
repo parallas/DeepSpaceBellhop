@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ClCompile Include="Content\shaders\postprocessing.fx" />
+    <ClCompile Include="Content\shaders\roomrender.fx" />
     <ClCompile Include="Content\shaders\voronoi.hlsl" />
   </ItemGroup>
 
