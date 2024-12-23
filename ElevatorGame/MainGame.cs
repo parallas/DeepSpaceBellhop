@@ -167,7 +167,7 @@ public class MainGame : Game
     {
         _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
         // _elevatorGameTime.SetValue(Frame / 60f);
-        _ppWobbleInfluence.SetValue(1f);
+        _ppWobbleInfluence.SetValue(0);
         _ppGameTime.SetValue(Frame / 60f);
         
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
@@ -200,7 +200,8 @@ public class MainGame : Game
 
     private void DrawScene(GameTime gameTime)
     {
-        _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));
+        _roomSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(new(64, 32), 70));
+        _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 32), 50));
         _elevator.Draw(SpriteBatch);
     }
 }
