@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
+using ElevatorGame.Source;
 using Engine;
 using Engine.Display;
 using Microsoft.Xna.Framework;
@@ -35,10 +36,6 @@ public class MainGame : Game
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
-    private RenderTarget2D _gameSceneRt;
-    private RenderTarget2D _uiRt;
-    private RenderTarget2D _renderTarget;
-
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
 
@@ -46,8 +43,12 @@ public class MainGame : Game
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
-    private Effect _grayscaleEffect;
-    private EffectParameter _grayscaleIntensity;
+    private Effect _elevatorEffects;
+    private Effect _postProcessingEffects;
+    private EffectParameter _elevatorGameTime;
+    private EffectParameter _elevatorGrayscaleIntensity;
+    private EffectParameter _ppGameTime;
+    private EffectParameter _ppWobbleInfluence;
     
     public MainGame()
     {
@@ -82,13 +83,10 @@ public class MainGame : Game
     protected override void LoadContent()
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
+        RenderPipeline.LoadContent(GraphicsDevice);
 
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
-
-        _renderTarget = new RenderTarget2D(GraphicsDevice, 240, 135);
-        _gameSceneRt = new RenderTarget2D(GraphicsDevice, 240, 135);
-        _uiRt = new RenderTarget2D(GraphicsDevice, 240, 135);
         
         _elevator = new();
         _elevator.LoadContent();
@@ -103,9 +101,15 @@ public class MainGame : Game
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
         _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
         
-        _grayscaleEffect =
-            Content.Load<Effect>("shaders/grayscale")!;
-        _grayscaleIntensity = _grayscaleEffect.Parameters["GrayscaleIntensity"];
+        _elevatorEffects =
+            Content.Load<Effect>("shaders/elevatoreffects")!;
+        _elevatorGrayscaleIntensity = _elevatorEffects.Parameters["GrayscaleIntensity"];
+        _elevatorGameTime = _elevatorEffects.Parameters["GameTime"];
+        
+        _postProcessingEffects =
+            Content.Load<Effect>("shaders/postprocessing")!;
+        _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
+        _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
     }
 
     protected override void Update(GameTime gameTime)
@@ -161,42 +165,43 @@ public class MainGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.SetRenderTarget(_gameSceneRt);
-        GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
-        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
-        {
-            _roomSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(new Vector2(64, 32), 50));
-            _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new Vector2(80, 32), 50));
-            _elevator.Draw(SpriteBatch);
-        }
-        SpriteBatch.End();
+        _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
+        // _elevatorGameTime.SetValue(Frame / 60f);
+        _ppWobbleInfluence.SetValue(0);
+        _ppGameTime.SetValue(Frame / 60f);
         
-        GraphicsDevice.SetRenderTarget(_uiRt);
-        GraphicsDevice.Clear(Color.Transparent);
-        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
+        RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
-            _phone.Draw(SpriteBatch);
-        }
-        SpriteBatch.End();
-        GraphicsDevice.Reset();
-        
-        RtScreen.DrawWithRtOnScreen(_renderTarget, Graphics, SpriteBatch, () =>
-        {
-            _grayscaleIntensity.SetValue(GrayscaleCoeff);
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _grayscaleEffect);
+            GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
-                SpriteBatch.Draw(_gameSceneRt, Vector2.Zero, Color.White);
-            }
-            SpriteBatch.End();
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            {
-                SpriteBatch.Draw(_uiRt, Vector2.Zero, Color.White);
+                DrawScene(gameTime);
             }
             SpriteBatch.End();
         });
+        
+        RenderPipeline.DrawUI(SpriteBatch, GraphicsDevice, () =>
+        {
+            GraphicsDevice.Clear(Color.Transparent);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
+            {
+                _phone.Draw(SpriteBatch);
+            }
+            SpriteBatch.End();
+        });
+        
+        RenderPipeline.DrawPostProcess(SpriteBatch, GraphicsDevice, _postProcessingEffects);
+        RenderPipeline.DrawFinish(SpriteBatch, Graphics);
 
         base.Draw(gameTime);
         
         Frame++;
+    }
+
+    private void DrawScene(GameTime gameTime)
+    {
+        _roomSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(new(64, 32), 70));
+        _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 32), 50));
+        _elevator.Draw(SpriteBatch);
     }
 }

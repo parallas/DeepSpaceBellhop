@@ -90,6 +90,11 @@
 				"Debug": "Auto"
 			}
 		},
+		"hlsl": {
+            "path": "shaders/*.hlsl",
+            "recursive": "True",
+            "action": "copy",
+        },
 		"localization": {
 			"path": "localization/*.json",
 			"action": "copy"

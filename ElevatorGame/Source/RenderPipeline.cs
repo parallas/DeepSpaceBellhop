@@ -1,4 +1,5 @@
 using System;
+using Engine.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,44 +7,76 @@ namespace ElevatorGame.Source;
 
 public static class RenderPipeline
 {
-    public static void DrawGame(RenderTarget2D renderTarget2D, GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Action[] drawActions)
+
+    private static RenderTarget2D _gameSceneRt;
+    private static RenderTarget2D _beforeUiRt;
+    private static RenderTarget2D _uiRt;
+    private static RenderTarget2D _gameWithUiRt;
+    private static RenderTarget2D _postProcessRt;
+    private static RenderTarget2D _renderTarget;
+    
+    public static void LoadContent(GraphicsDevice graphicsDevice)
     {
-        GraphicsDevice graphicsDevice = graphics.GraphicsDevice;
-
-        Rectangle bounds = graphicsDevice.PresentationParameters.Bounds;
-        int screenWidth = bounds.Width;
-        int screenHeight = bounds.Height;
-        int rtWidth = renderTarget2D.Width;
-        int rtHeight = renderTarget2D.Height;
+        _renderTarget = new RenderTarget2D(graphicsDevice, 240, 135);
+        _gameSceneRt = new RenderTarget2D(graphicsDevice, 240, 135);
+        _beforeUiRt = new RenderTarget2D(graphicsDevice, 240, 135);
+        _uiRt = new RenderTarget2D(graphicsDevice, 240, 135);
+        _gameWithUiRt = new RenderTarget2D(graphicsDevice, 240, 135);
+        _postProcessRt = new RenderTarget2D(graphicsDevice, 240, 135);
+    }
+    
+    public static void DrawBeforeUI(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Effect effect, Action drawAction)
+    {
+        graphicsDevice.SetRenderTarget(_gameSceneRt);
+        drawAction?.Invoke();
+        graphicsDevice.Reset();
         
-        graphicsDevice.SetRenderTarget(renderTarget2D);
-        foreach (Action drawAction in drawActions)
+        graphicsDevice.SetRenderTarget(_beforeUiRt);
+        graphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: effect);
         {
-            drawAction?.Invoke();
+            spriteBatch.Draw(_gameSceneRt, Vector2.Zero, Color.White);
         }
-
-        int nearestScale = (int)Math.Floor((decimal)screenHeight / rtHeight);
-        RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
-        graphicsDevice.SetRenderTarget(scaledRt);
+        spriteBatch.End();
+    }
+    
+    public static void DrawUI(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Action drawAction)
+    {
+        graphicsDevice.SetRenderTarget(_uiRt);
+        drawAction?.Invoke();
+        graphicsDevice.Reset();
+    }
+    
+    public static void DrawPostProcess(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Effect effect)
+    {
+        graphicsDevice.SetRenderTarget(_gameWithUiRt);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         {
-            spriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), Color.White);
+            spriteBatch.Draw(_beforeUiRt, Vector2.Zero, Color.White);
+            spriteBatch.Draw(_uiRt, Vector2.Zero, Color.White);
+        }
+        spriteBatch.End();
+        
+        graphicsDevice.SetRenderTarget(_postProcessRt);
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: effect);
+        {
+            spriteBatch.Draw(_gameWithUiRt, Vector2.Zero, Color.White);
         }
         spriteBatch.End();
         graphicsDevice.Reset();
+    }
 
-        float aspectRatio = (float)rtWidth / (float)rtHeight;
-        int newWidth = (int)(screenHeight * aspectRatio);
-        int newHeight = screenHeight;
+    public static void DrawFinish(SpriteBatch spriteBatch, GraphicsDeviceManager graphicsDeviceManager)
+    {
+        var graphicsDevice = graphicsDeviceManager.GraphicsDevice;
         
-        int xOffset = screenWidth / 2 - newWidth / 2;
-        int yOffset = screenHeight / 2 - newHeight / 2;
-        spriteBatch.Begin(samplerState: SamplerState.AnisotropicClamp);
+        RtScreen.DrawWithRtOnScreen(_renderTarget, graphicsDeviceManager, spriteBatch, null, Color.White, () =>
         {
-            spriteBatch.Draw(scaledRt, new Rectangle(xOffset, yOffset, newWidth, newHeight), Color.White);
-        }
-        spriteBatch.End();
-        
-        scaledRt.Dispose();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            {
+                spriteBatch.Draw(_postProcessRt, Vector2.Zero, Color.White);
+            }
+            spriteBatch.End();
+        });
     }
 }
