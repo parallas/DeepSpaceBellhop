@@ -2,6 +2,7 @@ using System.Collections;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Aseprite;
@@ -19,6 +20,9 @@ public class Doors
     private AsepriteSliceKey _elevatorDoorRightSlice;
     private Vector2 _doorLeftOrigin;
     private Vector2 _doorRightOrigin;
+
+    private EventInstance _audioDoorOpen;
+    private EventInstance _audioDoorClose;
     
     private float _doorOpenedness;
 
@@ -43,6 +47,15 @@ public class Doors
         _elevatorRightDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         _elevatorLeftDoorSprite.Origin = new Vector2(_elevatorLeftDoorSprite.Width - 1, 0);
         _elevatorRightDoorSprite.FlipHorizontally = true;
+        
+        _audioDoorOpen = StudioSystem.GetEvent("event:/SFX/Elevator/Doors/Open").CreateInstance();
+        _audioDoorClose = StudioSystem.GetEvent("event:/SFX/Elevator/Doors/Close").CreateInstance();
+    }
+
+    public void UnloadContent()
+    {
+        _audioDoorOpen.Dispose();
+        _audioDoorClose.Dispose();
     }
 
     public void Draw(SpriteBatch spriteBatch, int floorTop)
@@ -82,12 +95,13 @@ public class Doors
     
     private IEnumerator OpenDoors()
     {
+        _audioDoorOpen.Start();
         while(_doorOpenedness < 46)
         {
             _doorOpenedness = MathUtil.ExpDecay(
                 _doorOpenedness,
                 47f,
-                8,
+                4,
                 1/60f
             );
             yield return null;
@@ -99,6 +113,7 @@ public class Doors
 
     private IEnumerator CloseDoors()
     {
+        _audioDoorClose.Start();
         while(_doorOpenedness > 1)
         {
             _doorOpenedness = MathUtil.ExpDecay(

@@ -89,7 +89,7 @@ public class MainGame : Game
         
         // NOTE: You HAVE TO init fmod in the Initialize().
         // Otherwise, it may not work on some platforms.
-        FmodController.LoadContent("audio/banks/Desktop", true, ["Master"], ["Master"]);
+        FmodController.LoadContent("audio/banks/Desktop", true, ["Master", "SFX", "Music"], ["Master"]);
         
         RenderPipeline.LoadContent(GraphicsDevice);
         
@@ -123,6 +123,8 @@ public class MainGame : Game
     protected override void UnloadContent()
     {
         FmodManager.Unload();
+        
+        _elevator.UnloadContent();
     }
 
     protected override void Update(GameTime gameTime)

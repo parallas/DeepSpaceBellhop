@@ -4,6 +4,7 @@ using System.Diagnostics;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -49,6 +50,10 @@ public class Elevator
 
     private Doors _doors;
     private FloorNumberDisplay _floorNumbers;
+    
+    // FMOD
+    private EventInstance _audioElevatorMove;
+    private EventDescription _audioWhooshEventDescription;
 
     public void LoadContent()
     {
@@ -61,6 +66,17 @@ public class Elevator
 
         _floorNumbers = new FloorNumberDisplay();
         _floorNumbers.LoadContent(this, elevatorInteriorFile);
+        
+        
+        _audioElevatorMove = StudioSystem.GetEvent("event:/SFX/Elevator/Move").CreateInstance();
+        _audioElevatorMove.Start();
+        _audioWhooshEventDescription = StudioSystem.GetEvent("event:/SFX/Elevator/Whoosh");
+    }
+    
+    public void UnloadContent()
+    {
+        _audioElevatorMove.Dispose();
+        _doors.UnloadContent();
     }
 
     public void Update(GameTime gameTime)
@@ -92,6 +108,8 @@ public class Elevator
                 break;
         }
 
+        _audioElevatorMove.SetParameterValue("Velocity", Math.Abs(_velocity) / _maxSpeed);
+        
         float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.6f, _maxSpeed, Math.Abs(_velocity)) * _dir;
         _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
             (float)gameTime.ElapsedGameTime.TotalSeconds);
@@ -137,7 +155,12 @@ public class Elevator
 
     private void UpdateStateMoving(GameTime gameTime)
     {
+        int lastFloor = MathUtil.RoundToInt(_floorNumber);
         _floorNumber += _velocity;
+        if (MathUtil.RoundToInt(_floorNumber) != lastFloor)
+        {
+            PlayWhoosh();
+        }
 
         bool didSoftCrash = false;
         if(_floorNumber < 1 || _floorNumber > 40)
@@ -167,8 +190,12 @@ public class Elevator
         
         if((_dir == 1 && !InputManager.GetDown(Keys.Up)) || (_dir == -1 && !InputManager.GetDown(Keys.Down)) || didSoftCrash)
         {
-            int lastFloor = _targetFloorNumber;
             _targetFloorNumber = (int)Math.Round(_floorNumber);
+
+            if (Math.Abs(_velocity) < _acceleration)
+            {
+                _audioElevatorMove.SetParameterValue("Velocity", 0.9f);
+            }
 
             if(Math.Abs(_velocity) > _maxSpeed * 0.5f || Math.Sign(_targetFloorNumber - _floorNumber) != _dir)
             {
@@ -211,5 +238,13 @@ public class Elevator
     {
         yield return 60;
         SetState(Elevator.ElevatorStates.Stopping);
+    }
+    
+    private void PlayWhoosh()
+    {
+        var whooshInstance = _audioWhooshEventDescription.CreateInstance();
+        whooshInstance.Start();
+        whooshInstance.SetParameterValue("Velocity", Math.Abs(_velocity) / _maxSpeed);
+        whooshInstance.Dispose();
     }
 }
