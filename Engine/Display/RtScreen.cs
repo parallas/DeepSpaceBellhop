@@ -6,7 +6,7 @@ namespace Engine.Display;
 
 public static class RtScreen
 {
-    public static void DrawWithRtOnScreen(RenderTarget2D renderTarget2D, GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Action drawCode)
+    public static void DrawWithRtOnScreen(RenderTarget2D renderTarget2D, GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Effect postProcessingEffect, Color color, Action drawCode)
     {
         GraphicsDevice graphicsDevice = graphics.GraphicsDevice;
 
@@ -22,9 +22,9 @@ public static class RtScreen
         int nearestScale = (int)Math.Floor((decimal)screenHeight / rtHeight);
         RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
         graphicsDevice.SetRenderTarget(scaledRt);
-        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: postProcessingEffect);
         {
-            spriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), Color.White);
+            spriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), color);
         }
         spriteBatch.End();
         graphicsDevice.Reset();

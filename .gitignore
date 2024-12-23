@@ -126,5 +126,4 @@ UpgradeLog*.XML
 .mgstats
 **.dylib
 FmodElevatorGame/**/.*
-
 !Engine/FmodForFoxes.Desktop.pdb
