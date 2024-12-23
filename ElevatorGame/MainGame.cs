@@ -46,7 +46,6 @@ public class MainGame : Game
     private Dialog.Dialog _dialog;
 
     private Sprite _roomSprite;
-
     
     private RoomRenderer _roomRenderer;
     
@@ -107,10 +106,6 @@ public class MainGame : Game
         _elevator.LoadContent();
 
         _phone = new(_elevator);
-
-        _dialog = new();
-        _dialog.LoadContent();
-
 
         _dialog = new();
         _dialog.LoadContent();
