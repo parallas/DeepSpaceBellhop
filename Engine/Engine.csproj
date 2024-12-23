@@ -25,4 +25,10 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="FmodForFoxes.Desktop">
+        <HintPath>FmodForFoxes.Desktop.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

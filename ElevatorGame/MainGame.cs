@@ -4,6 +4,9 @@ using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
 using Engine;
 using Engine.Display;
+using FMOD;
+using FmodForFoxes;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -34,7 +37,7 @@ public class MainGame : Game
 
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
-
+    
     private RenderTarget2D _gameSceneRt;
     private RenderTarget2D _uiRt;
     private RenderTarget2D _renderTarget;
@@ -56,8 +59,6 @@ public class MainGame : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
-
         Window.AllowUserResizing = true;
 
         Graphics.PreferredBackBufferWidth = 1920;
@@ -73,6 +74,8 @@ public class MainGame : Game
         );
 
         ContentLoader.Initialize(Content);
+        
+        FmodController.Init();
 
         base.Initialize();
     }
@@ -80,7 +83,11 @@ public class MainGame : Game
     protected override void LoadContent()
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
-
+        
+        // NOTE: You HAVE TO init fmod in the Initialize().
+        // Otherwise, it may not work on some platforms.
+        FmodController.LoadContent("audio/banks/Desktop", true, ["Master"], ["Master"]);
+        
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
 
@@ -110,6 +117,15 @@ public class MainGame : Game
         InputManager.RefreshGamePadState();
 
         InputManager.UpdateTypingInput(gameTime);
+
+        if (InputManager.GetPressed(Keys.P))
+        {
+            var guid = Guid.Parse("d0e4a213-d503-4267-bff8-a624210d5868");
+            var audioInstance = StudioSystem.GetEvent("event:/SFX/Elevator/Bell/Double").CreateInstance();
+            audioInstance.Start();
+            audioInstance.Volume = 1f;
+            audioInstance.Dispose();
+        }
 
         if(InputManager.GetPressed(Buttons.Start) || InputManager.GetPressed(Keys.Escape))
             Exit();

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="Workspace" id="{76d9dc4e-a6a9-4d3e-a897-cb07f0f0afd7}">
+		<property name="builtBanksOutputDirectory">
+			<value>../ElevatorGame/Content/audio/banks</value>
+		</property>
+		<relationship name="masterEventFolder">
+			<destination>{45fd2f98-6272-4da6-b943-c580d369d6e3}</destination>
+		</relationship>
+		<relationship name="masterTagFolder">
+			<destination>{0f295163-cb82-40f4-be5b-69d8877e77ff}</destination>
+		</relationship>
+		<relationship name="masterEffectPresetFolder">
+			<destination>{4534a109-5ca7-4cea-ab0a-ba3b4d40189b}</destination>
+		</relationship>
+		<relationship name="masterParameterPresetFolder">
+			<destination>{3d67ea5d-6a73-48ad-8859-f06448a804c3}</destination>
+		</relationship>
+		<relationship name="masterBankFolder">
+			<destination>{7e3f6926-1762-49d7-b1c4-29be48201d3a}</destination>
+		</relationship>
+		<relationship name="masterSandboxFolder">
+			<destination>{f6609a44-9792-44d1-90d4-13e6af715f7e}</destination>
+		</relationship>
+		<relationship name="masterAssetFolder">
+			<destination>{8cc827c7-cb66-4dda-b72c-48429909c1e5}</destination>
+		</relationship>
+		<relationship name="mixer">
+			<destination>{84b5a1f2-820d-4aee-98a5-daabdf03855b}</destination>
+		</relationship>
+		<relationship name="profilerSessionFolder">
+			<destination>{e2469820-1f37-4324-91b9-2c753a7b8571}</destination>
+		</relationship>
+		<relationship name="platforms">
+			<destination>{3f657ffe-48c3-4d41-8be8-38d69a872cca}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -93,6 +93,18 @@
 		"localization": {
 			"path": "localization/*.json",
 			"action": "copy"
-		}
+		},
+		"music":
+        {
+            "path": "audio/*.mp3",
+            "recursive": "True",
+            "action": "copy"
+        },
+        "banks":
+        {
+            "path": "audio/banks/*.bank",
+            "recursive": "True",
+            "action": "copy"
+        },
 	}
 }
