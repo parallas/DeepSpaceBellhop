@@ -6,17 +6,15 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Engine.Input;
 
-public abstract class MappedInput(InputType inputType) : IParsable<MappedInput>
+public abstract class MappedInput : IParsable<MappedInput>
 {
-    public InputType InputType => inputType;
-
     public abstract bool IsDown { get; }
 
     public abstract bool Pressed { get; }
 
     public abstract bool Released { get; }
 
-    public class Keyboard(Keys key) : MappedInput(InputType.Keyboard)
+    public class Keyboard(Keys key) : MappedInput
     {
         public override bool IsDown => InputManager.GetDown(key);
 
@@ -30,7 +28,7 @@ public abstract class MappedInput(InputType inputType) : IParsable<MappedInput>
         }
     }
 
-    public class GamePad(Buttons button, PlayerIndex playerIndex) : MappedInput(InputType.GamePad)
+    public class GamePad(Buttons button, PlayerIndex playerIndex) : MappedInput
     {
         public override bool IsDown => InputManager.GetDown(button, playerIndex);
 
@@ -44,7 +42,7 @@ public abstract class MappedInput(InputType inputType) : IParsable<MappedInput>
         }
     }
 
-    public class Mouse(MouseButtons mouseButton) : MappedInput(InputType.Mouse)
+    public class Mouse(MouseButtons mouseButton) : MappedInput
     {
         public override bool IsDown => InputManager.GetDown(mouseButton);
 
