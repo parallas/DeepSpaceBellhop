@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite;
 using Elevator = ElevatorGame.Source.Elevator;
 using Phone = ElevatorGame.Source.Phone;
+using Dialog = ElevatorGame.Source.Dialog;
 
 namespace ElevatorGame;
 
@@ -42,6 +43,9 @@ public class MainGame : Game
 
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
+    private Dialog.Dialog _dialog;
+
+    private Sprite _roomSprite;
     
     private RoomRenderer _roomRenderer;
     
@@ -103,7 +107,15 @@ public class MainGame : Game
 
         _phone = new(_elevator);
 
+        _dialog = new();
+        _dialog.LoadContent();
+
+        _roomSprite =
+            ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!
+                .CreateSprite(GraphicsDevice, 0, true);
+
         _roomRenderer = new RoomRenderer();
+
         
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
@@ -181,6 +193,30 @@ public class MainGame : Game
         _elevator.Update(gameTime);
         _phone.Update(gameTime);
 
+        if(InputManager.GetPressed(Keys.D))
+        {
+            if(!Coroutines.IsRunning("dialog"))
+            {
+                Coroutines.Run("dialog", _dialog.Display(
+                    [
+                        new() {
+                            Content = "Hello everybody, my name is Markiplier and welcome to Five Nights at Freddy's, an indie horror game that you guys suggested,"
+                        },
+                        new() {
+                            Content = "en masse,"
+                        },
+                        new() {
+                            Content = "and I saw that Yamimash played it and he said it was really really good..."
+                        },
+                        new() {
+                            Content = "So I'm very eager to see what is up."
+                        }
+                    ],
+                    Dialog.Dialog.DisplayMethod.Alien
+                ), 0);
+            }
+        }
+
         // TODO: Add your update logic here
 
         base.Update(gameTime);
@@ -230,6 +266,7 @@ public class MainGame : Game
         _roomRenderer.Draw(SpriteBatch);
         _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 32), 50));
         _elevator.Draw(SpriteBatch);
+        _dialog.Draw(SpriteBatch);
     }
     
     private void OnChangeFloorNumber(int floorNumber)
