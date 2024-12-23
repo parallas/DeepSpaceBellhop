@@ -42,7 +42,9 @@ public class MainGame : Game
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
 
-    private Sprite _yetiTestSprite;
+    private Sprite _roomSprite;
+    private Sprite _yetiIdle;
+    private Sprite _yetiPeace;
 
     private Effect _grayscaleEffect;
     private EffectParameter _grayscaleIntensity;
@@ -93,8 +95,13 @@ public class MainGame : Game
 
         _phone = new(_elevator);
 
-        _yetiTestSprite =
-            ContentLoader.Load<AsepriteFile>("graphics/concepting/YetiRoom")!.CreateSprite(GraphicsDevice, 0, true);
+        _roomSprite =
+            ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!
+                .CreateSprite(GraphicsDevice, 0, true);
+        
+        var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
+        _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
+        _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
         
         _grayscaleEffect =
             Content.Load<Effect>("shaders/grayscale")!;
@@ -158,7 +165,8 @@ public class MainGame : Game
         GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
         SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
         {
-            _yetiTestSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 50));
+            _roomSprite.Draw(SpriteBatch, Camera.GetParallaxPosition(new Vector2(64, 32), 50));
+            _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new Vector2(80, 32), 50));
             _elevator.Draw(SpriteBatch);
         }
         SpriteBatch.End();
