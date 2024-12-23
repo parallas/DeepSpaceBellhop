@@ -107,6 +107,11 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/grayscale")!;
         _grayscaleIntensity = _grayscaleEffect.Parameters["GrayscaleIntensity"];
     }
+    
+    protected override void UnloadContent()
+    {
+        FmodManager.Unload();
+    }
 
     protected override void Update(GameTime gameTime)
     {
