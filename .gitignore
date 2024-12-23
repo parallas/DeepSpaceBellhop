@@ -123,3 +123,4 @@ UpgradeLog*.XML
 .idea/.idea.ElevatorGame/.idea
 .DS_Store
 .mgstats
+**.dylib

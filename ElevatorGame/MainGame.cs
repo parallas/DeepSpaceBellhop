@@ -39,7 +39,9 @@ public class MainGame : Game
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
 
-    private Sprite _yetiTestSprite;
+    private Sprite _roomSprite;
+    private Sprite _yetiIdle;
+    private Sprite _yetiPeace;
 
     private Effect _elevatorEffects;
     private Effect _postProcessingEffects;
@@ -91,8 +93,13 @@ public class MainGame : Game
 
         _phone = new(_elevator);
 
-        _yetiTestSprite =
-            ContentLoader.Load<AsepriteFile>("graphics/concepting/YetiRoom")!.CreateSprite(GraphicsDevice, 0, true);
+        _roomSprite =
+            ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!
+                .CreateSprite(GraphicsDevice, 0, true);
+        
+        var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
+        _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
+        _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
         
         _elevatorEffects =
             Content.Load<Effect>("shaders/elevatoreffects")!;
