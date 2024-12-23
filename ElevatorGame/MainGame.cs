@@ -110,6 +110,7 @@ public class MainGame : Game
 
     protected override void Update(GameTime gameTime)
     {
+        FmodManager.Update();
         InputManager.InputDisabled = !IsActive;
 
         InputManager.RefreshKeyboardState();
