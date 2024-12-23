@@ -17,6 +17,7 @@ public class Elevator
 {
     public static readonly int ParallaxDoors = 25;
     public static readonly int ParallaxWalls = 15;
+    public static readonly int MaxFloors = 99;
     
     public enum ElevatorStates
     {
@@ -140,7 +141,7 @@ public class Elevator
         if(InputManager.GetPressed(Keys.Down))
             inputDir -= 1;
         
-        if (inputDir > 0 && (int)Math.Round(_floorNumber) >= 40 || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
+        if (inputDir > 0 && (int)Math.Round(_floorNumber) >= MaxFloors || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
         {
             MainGame.Camera.SetShake(2, 15);
             return;
@@ -163,9 +164,9 @@ public class Elevator
         }
 
         bool didSoftCrash = false;
-        if(_floorNumber < 1 || _floorNumber > 40)
+        if(_floorNumber < 1 || _floorNumber > MaxFloors)
         {
-            _floorNumber = MathHelper.Clamp(_floorNumber, 1, 40);
+            _floorNumber = MathHelper.Clamp(_floorNumber, 1, MaxFloors);
 
             _velocityParallax *= 0.25f;
             _dir = 0;
@@ -205,7 +206,7 @@ public class Elevator
                 _targetFloorNumber += rolloverAmount;
             }
 
-            _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, 40);
+            _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, MaxFloors);
             
             State = ElevatorStates.Stopping;
             return;
