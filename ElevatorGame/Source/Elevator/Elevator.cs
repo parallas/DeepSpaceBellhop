@@ -13,11 +13,11 @@ using MonoGame.Aseprite.Utils;
 
 namespace ElevatorGame.Source.Elevator;
 
-public class Elevator(Action<int> onChangeFloorNumber)
+public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTurnSequence)
 {
-    public static readonly int ParallaxDoors = 25;
-    public static readonly int ParallaxWalls = 15;
-    public static readonly int MaxFloors = 99;
+    public const int ParallaxDoors = 35;
+    public const int ParallaxWalls = 25;
+    public static int MaxFloors = 40;
     
     public enum ElevatorStates
     {
@@ -100,10 +100,7 @@ public class Elevator(Action<int> onChangeFloorNumber)
                 // UpdateStateOpening(gameTime);
                 break;
             case ElevatorStates.Waiting:
-                // UpdateStateWaiting(gameTime);
-                _turns++;
-                Console.WriteLine($"Turns: {_turns}");
-                SetState(ElevatorStates.Stopped);
+                UpdateStateWaiting(gameTime);
                 break;
             case ElevatorStates.Other:
                 break;
@@ -230,10 +227,24 @@ public class Elevator(Action<int> onChangeFloorNumber)
             _floorNumber = _targetFloorNumber;
             _dir = 0;
 
-            _doors.Open();
-            State = ElevatorStates.Opening;
-            onChangeFloorNumber?.Invoke(_targetFloorNumber);
+            MainGame.Coroutines.TryRun("elevator_open", OpenSequence(), 0, out _);
         }
+    }
+
+    private IEnumerator OpenSequence()
+    {
+        onChangeFloorNumber?.Invoke(_targetFloorNumber);
+        State = ElevatorStates.Opening;
+        var openHandle = _doors.Open();
+        yield return openHandle.Wait();
+        State = ElevatorStates.Waiting;
+        yield return endOfTurnSequence();
+        State = ElevatorStates.Stopped;
+    }
+    
+    private void UpdateStateWaiting(GameTime gameTime)
+    {
+        
     }
     
     private IEnumerator CrashSequence()

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
+using ElevatorGame.Source.Characters;
 using ElevatorGame.Source.Rooms;
 using Engine;
 using Engine.Display;
@@ -35,6 +38,8 @@ public class MainGame : Game
     };
 
     public static CoroutineRunner Coroutines { get; set; } = new();
+    
+    public static int CurrentFloor { get; set; } = 1;
 
     public static float GrayscaleCoeff { get; set; } = 1;
 
@@ -50,12 +55,17 @@ public class MainGame : Game
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
+    private readonly List<CharacterActor> _waitList = [];
+    private readonly List<CharacterActor> _cabList = [];
+
     private Effect _elevatorEffects;
     private Effect _postProcessingEffects;
     private EffectParameter _elevatorGameTime;
     private EffectParameter _elevatorGrayscaleIntensity;
     private EffectParameter _ppGameTime;
     private EffectParameter _ppWobbleInfluence;
+    
+    public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
     
     public MainGame()
     {
@@ -100,7 +110,7 @@ public class MainGame : Game
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
         
-        _elevator = new(OnChangeFloorNumber);
+        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
         _elevator.LoadContent();
 
         _phone = new(_elevator);
@@ -123,6 +133,27 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
+
+        CharacterRegistry.Init();
+        foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
+        {
+            var newCharacter = new CharacterActor
+            {
+                Def = characterTableValue,
+                FloorNumberCurrent = Random.Shared.Next(2, Elevator.Elevator.MaxFloors + 1),
+                Patience = 5,
+                OffsetXTarget = Random.Shared.Next(-48, 49)
+            };
+            do
+            {
+                newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
+            } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
+
+            Console.WriteLine(
+                $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
+            newCharacter.LoadContent();
+            _waitList.Add(newCharacter);
+        }
     }
     
     protected override void UnloadContent()
@@ -210,7 +241,14 @@ public class MainGame : Game
             }
         }
 
-        // TODO: Add your update logic here
+        foreach (var characterActor in _waitList)
+        {
+            characterActor.Update(gameTime);
+        }
+        foreach (var characterActor in _cabList)
+        {
+            characterActor.Update(gameTime);
+        }
 
         base.Update(gameTime);
         
@@ -258,12 +296,68 @@ public class MainGame : Game
     {
         _roomRenderer.Draw(SpriteBatch);
         // _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
+
+        foreach (var characterActor in _waitList)
+        {
+            characterActor.Draw(SpriteBatch);
+        }
+        
         _elevator.Draw(SpriteBatch);
+        
+        foreach (var characterActor in _cabList)
+        {
+            characterActor.Draw(SpriteBatch);
+        }
+        
         _dialog.Draw(SpriteBatch);
     }
     
     private void OnChangeFloorNumber(int floorNumber)
     {
+        CurrentFloor = floorNumber;
         _roomRenderer.Randomize();
+    }
+
+    private IEnumerator EndOfTurnSequence()
+    {
+        // If anyone is going to this floor, they leave one at a time
+        // Subtract patience from remaining passengers
+        // Any passengers with patience <= 0 leave
+        // Any passengers getting on this floor get on
+
+        for (int index = 0; index < _cabList.Count; index++)
+        {
+            var characterActor = _cabList[index];
+            if (characterActor.FloorNumberTarget == CurrentFloor)
+            {
+                yield return characterActor.GetOffElevatorBegin();
+                _cabList.Remove(characterActor);
+                index--;
+                _waitList.Add(characterActor);
+                yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
+                    Dialog.Dialog.DisplayMethod.Human);
+
+                yield return characterActor.GetOffElevatorEnd();
+
+                _waitList.Remove(characterActor);
+            }
+        }
+
+        for (var index = _waitList.Count - 1; index >= 0; index--)
+        {
+            var characterActor = _waitList[index];
+            if (characterActor.FloorNumberCurrent == CurrentFloor)
+            {
+                yield return characterActor.GetInElevatorBegin();
+                _waitList.Remove(characterActor);
+                _cabList.Add(characterActor);
+                yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
+                    Dialog.Dialog.DisplayMethod.Human);
+                
+                yield return characterActor.GetInElevatorEnd();
+            }
+        }
+
+        yield return null;
     }
 }

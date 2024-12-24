@@ -194,4 +194,9 @@ public static class MathUtil
     {
         return (int) MathF.Sign(a);
     }
+
+    public static bool Approximately(float a, float b, float threshold)
+    {
+        return MathF.Abs(a - b) < threshold;
+    }
 }
