@@ -1,3 +1,4 @@
+using System;
 using AsepriteDotNet.Aseprite;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,7 +12,9 @@ public class CharacterActor
     public int FloorNumberCurrent { get; set; }
     public int FloorNumberTarget { get; set; }
     public int Patience { get; set; }
+    public int OffsetX { get; set; }
 
+    private int _seed;
     private AnimatedSprite _currentAnimation;
     private AnimatedSprite _animFront;
     private AnimatedSprite _animBack;
@@ -26,6 +29,8 @@ public class CharacterActor
 
         _currentAnimation = _animFront;
         _currentAnimation.Play();
+
+        _seed = Random.Shared.Next(500);
     }
     
     public void Update(GameTime gameTime)
@@ -41,11 +46,16 @@ public class CharacterActor
         
         _currentAnimation.Origin = new Vector2(_currentAnimation.Width * 0.5f, _currentAnimation.Height);
 
+        Vector2 pos = new Vector2(
+            MainGame.GameBounds.Center.X + OffsetX, 
+            MainGame.GameBounds.Bottom + 5 + -MathHelper.Max(MathF.Sin((MainGame.Frame + _seed) / 60f * 3), 0f)
+        );
+        
         _currentAnimation.Color = Color.Black;
         _currentAnimation.Draw(
             MainGame.SpriteBatch,
             MainGame.Camera.GetParallaxPosition(
-                new Vector2(MainGame.GameBounds.Center.X + 2, MainGame.GameBounds.Bottom + 2), 
+                pos + Vector2.One * 2, 
                 depth
             )
         );
@@ -54,7 +64,7 @@ public class CharacterActor
         _currentAnimation.Draw(
             MainGame.SpriteBatch,
             MainGame.Camera.GetParallaxPosition(
-                new Vector2(MainGame.GameBounds.Center.X, MainGame.GameBounds.Bottom), 
+                pos, 
                 depth
             )
         );

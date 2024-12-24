@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
@@ -53,14 +54,7 @@ public class MainGame : Game
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
-    private CharacterDef _testCharacterDef = new()
-    {
-        Name = "Rivulet",
-        SpritePath = "graphics/characters/GreenAxolotl",
-        EnterPhrases = [new("So, anyway, if you’re looking to date me, you need to meet my mother first.")],
-        ExitPhrases = [new("Sorry, it’s a requirement. Do you want to go see her now?")]
-    };
-    private CharacterActor _testCharacterActor;
+    private List<CharacterActor> _waitlist = [];
 
     private Effect _elevatorEffects;
     private Effect _postProcessingEffects;
@@ -138,14 +132,26 @@ public class MainGame : Game
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
 
-        _testCharacterActor = new CharacterActor
+        CharacterRegistry.Init();
+        foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
         {
-            Def = _testCharacterDef,
-            FloorNumberCurrent = 10,
-            FloorNumberTarget = 20,
-            Patience = 5
-        };
-        _testCharacterActor.LoadContent();
+            var newCharacter = new CharacterActor
+            {
+                Def = characterTableValue,
+                FloorNumberCurrent = Random.Shared.Next(2, Elevator.Elevator.MaxFloors + 1),
+                Patience = 5,
+                OffsetX = Random.Shared.Next(-48, 49)
+            };
+            do
+            {
+                newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
+            } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
+
+            Console.WriteLine(
+                $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
+            newCharacter.LoadContent();
+            _waitlist.Add(newCharacter);
+        }
     }
     
     protected override void UnloadContent()
@@ -233,7 +239,10 @@ public class MainGame : Game
             }
         }
 
-        _testCharacterActor.Update(gameTime);
+        foreach (var characterActor in _waitlist)
+        {
+            characterActor.Update(gameTime);
+        }
 
         base.Update(gameTime);
         
@@ -281,7 +290,12 @@ public class MainGame : Game
     {
         _roomRenderer.Draw(SpriteBatch);
         // _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
-        _testCharacterActor.Draw(SpriteBatch);
+
+        foreach (var characterActor in _waitlist)
+        {
+            characterActor.Draw(SpriteBatch);
+        }
+        
         _elevator.Draw(SpriteBatch);
         _dialog.Draw(SpriteBatch);
     }

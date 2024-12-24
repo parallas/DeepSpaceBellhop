@@ -24,7 +24,7 @@ public static class FmodController
     {
         _rootDir = rootDir;
         // FMOD Setup
-        FmodManager.Init(_nativeLibrary, FmodInitMode.CoreAndStudio, _rootDir, preInitAction: PreInit, enableLogging: true);
+        FmodManager.Init(_nativeLibrary, FmodInitMode.CoreAndStudio, _rootDir, preInitAction: PreInit, enableLogging: false);
     }
 
     private static void PreInit()
