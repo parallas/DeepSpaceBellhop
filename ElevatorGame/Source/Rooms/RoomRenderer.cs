@@ -82,7 +82,7 @@ public class RoomRenderer
         _effectColor1Param.SetValue(_randomColor1.ToVector3());
         _effectColor2Param.SetValue(_randomColor2.ToVector3());
         
-        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!;
+        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/RoomsGeneric")!;
         // _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/le room")!;
         int randomFrameIndex = Random.Shared.Next(_spriteFile.FrameCount);
         _roomSprites = _spriteFile.Layers.ToArray()
