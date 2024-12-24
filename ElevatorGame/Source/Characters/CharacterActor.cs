@@ -25,6 +25,7 @@ public class CharacterActor
     private AnimatedSprite _animFront;
     private AnimatedSprite _animBack;
     private bool _isInElevator;
+    private float _currentWalkSpeed;
     
     private void PlayAnimation(AnimatedSprite animation)
     {
@@ -46,13 +47,15 @@ public class CharacterActor
         PlayAnimation(_animFront);
 
         _seed = Random.Shared.Next(500);
+
+        _currentWalkSpeed = Def.WalkSpeed;
     }
     
     public void Update(GameTime gameTime)
     {
         _currentAnimation.Update(1f/60f);
 
-        _offsetX = MathUtil.ExpDecay(_offsetX, OffsetXTarget, 8, 1f / 60f);
+        _offsetX = MathUtil.ExpDecay(_offsetX, OffsetXTarget, _currentWalkSpeed, 1f / 60f);
         if (MathUtil.Approximately(_offsetX, OffsetXTarget, 1)) 
             _offsetX = OffsetXTarget;
         
@@ -120,5 +123,31 @@ public class CharacterActor
         _squashStretchOffset = -0.1f;
         
         PlayAnimation(_animBack);
+    }
+    
+    public IEnumerator GetOffElevatorBegin()
+    {
+        OffsetXTarget = 0;
+        while (MathUtil.RoundToInt(_offsetX) != 0) 
+        {
+            yield return null;
+        }
+        
+        _squashStretchOffset = -0.1f;
+        PlayAnimation(_animFront);
+    }
+    
+    public IEnumerator GetOffElevatorEnd()
+    {
+        _currentWalkSpeed = MathUtil.CeilToInt(Def.WalkSpeed * 0.5f);
+        _squashStretchOffset = -0.1f;
+        PlayAnimation(_animBack);
+        int newX = MathUtil.FloorToInt((Random.Shared.Next(2) - 0.5f) * 2 * 85);
+        OffsetXTarget = newX;
+        while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget) 
+        {
+            yield return null;
+        }
+        _isInElevator = false;
     }
 }

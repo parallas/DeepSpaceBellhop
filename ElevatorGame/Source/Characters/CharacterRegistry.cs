@@ -15,6 +15,7 @@ public static class CharacterRegistry
             {
                 Name = "Blueulet",
                 SpritePath = "graphics/characters/BlueAxolotl",
+                WalkSpeed = 10,
                 EnterPhrases = [new("So, anyway, if you’re looking to date me, you need to meet my mother first.")],
                 ExitPhrases = [new("Sorry, it’s a requirement. Do you want to go see her now?")]
             },
@@ -22,6 +23,7 @@ public static class CharacterRegistry
             {
                 Name = "Greenulet",
                 SpritePath = "graphics/characters/GreenAxolotl",
+                WalkSpeed = 6,
                 EnterPhrases = [new("Hi :3")],
                 ExitPhrases = [new("Bye :3 *skips out of elevator*")]
             },

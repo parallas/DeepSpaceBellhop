@@ -325,6 +325,24 @@ public class MainGame : Game
         // Any passengers with patience <= 0 leave
         // Any passengers getting on this floor get on
 
+        for (int index = 0; index < _cabList.Count; index++)
+        {
+            var characterActor = _cabList[index];
+            if (characterActor.FloorNumberTarget == CurrentFloor)
+            {
+                yield return characterActor.GetOffElevatorBegin();
+                _cabList.Remove(characterActor);
+                index--;
+                _waitList.Add(characterActor);
+                yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
+                    Dialog.Dialog.DisplayMethod.Human);
+
+                yield return characterActor.GetOffElevatorEnd();
+
+                _waitList.Remove(characterActor);
+            }
+        }
+
         for (var index = _waitList.Count - 1; index >= 0; index--)
         {
             var characterActor = _waitList[index];
