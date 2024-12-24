@@ -37,6 +37,8 @@ public class MainGame : Game
         RootOffset = Vector2.One * 8
     };
 
+    public static Vector2 CameraPosition { get; set; }
+
     public static CoroutineRunner Coroutines { get; set; } = new();
 
     public static int CurrentFloor { get; set; } = 1;
@@ -212,6 +214,15 @@ public class MainGame : Game
 
         Coroutines.Update();
 
+        Camera.Position =
+            CameraPosition + (
+                Vector2.Clamp(
+                    Vector2.Floor(InputManager.MousePosition.ToVector2() / RenderPipeline.PixelScale),
+                    Vector2.Zero,
+                    new(240, 135)
+                ) - new Vector2(240, 135)/2f
+            ) * (8/120f);
+
         Camera.Update();
 
         _elevator.Update(gameTime);
@@ -280,6 +291,8 @@ public class MainGame : Game
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
                 _phone.Draw(SpriteBatch);
+
+                SpriteBatch.Draw(PixelTexture, Camera.Position + Vector2.Floor(InputManager.MousePosition.ToVector2() / RenderPipeline.PixelScale) + Vector2.One * 8, Color.White);
             }
             SpriteBatch.End();
         });

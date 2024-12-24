@@ -119,7 +119,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
             (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-        MainGame.Camera.Position = new(MainGame.Camera.Position.X, _velocityParallax);
+        MainGame.CameraPosition = new(MainGame.CameraPosition.X, _velocityParallax);
     }
 
     public void Draw(SpriteBatch spriteBatch)
