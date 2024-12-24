@@ -17,7 +17,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 {
     public const int ParallaxDoors = 35;
     public const int ParallaxWalls = 25;
-    public static int MaxFloors = 40;
+    public static int MaxFloors = 3;
 
     public enum ElevatorStates
     {
@@ -42,6 +42,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     private float _maxSpeed = 0.16f;
 
     private int _turns;
+    private int _comboDirection = 1;
     private int _dir;
 
     private bool _stopping;
@@ -55,6 +56,8 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     // FMOD
     private EventInstance _audioElevatorMove;
     private EventDescription _audioWhooshEventDescription;
+    private EventInstance _audioBellUpEvent;
+    private EventInstance _audioBellDownEvent;
 
     public void LoadContent()
     {
@@ -71,12 +74,17 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         _audioElevatorMove = StudioSystem.GetEvent("event:/SFX/Elevator/Move").CreateInstance();
         _audioElevatorMove.Start();
         _audioWhooshEventDescription = StudioSystem.GetEvent("event:/SFX/Elevator/Whoosh");
+        
+        _audioBellUpEvent = StudioSystem.GetEvent("event:/SFX/Elevator/Bell/Up").CreateInstance();
+        _audioBellDownEvent = StudioSystem.GetEvent("event:/SFX/Elevator/Bell/Down").CreateInstance();
     }
 
     public void UnloadContent()
     {
         _audioElevatorMove.Dispose();
         _doors.UnloadContent();
+        _audioBellUpEvent.Dispose();
+        _audioBellDownEvent.Dispose();
     }
 
     public void Update(GameTime gameTime)
@@ -143,6 +151,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         }
 
         _dir = inputDir;
+        _comboDirection = _dir;
 
         if (_dir == 0) return;
         _doors.Close();
@@ -231,6 +240,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     private IEnumerator OpenSequence()
     {
+        PlayBell(_comboDirection);
         onChangeFloorNumber?.Invoke(_targetFloorNumber);
         State = ElevatorStates.Opening;
         var openHandle = _doors.Open();
@@ -257,5 +267,13 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         whooshInstance.Start();
         whooshInstance.SetParameterValue("Velocity", Math.Abs(_velocity) / _maxSpeed);
         whooshInstance.Dispose();
+    }
+    
+    private void PlayBell(int direction)
+    {
+        if (direction == 1)
+            _audioBellUpEvent.Start();
+        else
+            _audioBellDownEvent.Start();
     }
 }
