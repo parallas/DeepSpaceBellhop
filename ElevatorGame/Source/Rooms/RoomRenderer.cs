@@ -71,21 +71,23 @@ public class RoomRenderer
             colorIndex2 = Random.Shared.Next(_colorsC64.Length);
         }
 
-        _randomColor1 = ColorUtil.CreateFromHex(_colorsC64[colorIndex1]);
-        _randomColor2 = ColorUtil.CreateFromHex(_colorsC64[colorIndex2]);
-        
-        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/le room")!;
-        _roomSprites ??= _spriteFile.Layers.ToArray()
-            .Select(layer => _spriteFile.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, [layer.Name]))
-            .ToArray();
         _roomEffects ??= ContentLoader.Load<Effect>("shaders/roomrender");
-        
         Debug.Assert(_roomEffects != null, nameof(_roomEffects) + " != null");
         _effectColor1Param ??= _roomEffects.Parameters["Color1"];
         _effectColor2Param ??= _roomEffects.Parameters["Color2"];
         
+        _randomColor1 = ColorUtil.CreateFromHex(_colorsC64[colorIndex1]);
+        _randomColor2 = ColorUtil.CreateFromHex(_colorsC64[colorIndex2]);
+        
         _effectColor1Param.SetValue(_randomColor1.ToVector3());
         _effectColor2Param.SetValue(_randomColor2.ToVector3());
+        
+        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!;
+        // _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/le room")!;
+        int randomFrameIndex = Random.Shared.Next(_spriteFile.FrameCount);
+        _roomSprites = _spriteFile.Layers.ToArray()
+            .Select(layer => _spriteFile.CreateSprite(MainGame.Graphics.GraphicsDevice, randomFrameIndex, [layer.Name]))
+            .ToArray();
 
         _layerUserDatas = new RoomSpriteUserData[_roomSprites.Length];
         for (var index = 0; index < _roomSprites.Length; index++)
@@ -108,7 +110,7 @@ public class RoomRenderer
 
     public void PreRender(SpriteBatch spriteBatch)
     {
-        _roomRenderTarget ??= new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 128, 128);
+        _roomRenderTarget ??= new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 256, 128);
         
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_roomRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _roomEffects);
@@ -127,6 +129,6 @@ public class RoomRenderer
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_roomRenderTarget, MainGame.Camera.GetParallaxPosition(new Vector2(64, 32), 0), Color.White);
+        spriteBatch.Draw(_roomRenderTarget, MainGame.Camera.GetParallaxPosition(new Vector2(0, 32), 0), Color.White);
     }
 }
