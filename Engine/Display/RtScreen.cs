@@ -16,10 +16,16 @@ public static class RtScreen
         int rtWidth = renderTarget2D.Width;
         int rtHeight = renderTarget2D.Height;
         
+        float widthRatio = (float)screenWidth / rtWidth;
+        float heightRatio = (float)screenHeight / rtHeight;
+
+        int longestGameSize = MathHelper.Max(rtWidth, rtHeight);
+        int longestScreenSize = MathHelper.Max(screenWidth, screenHeight);
+        
         graphicsDevice.SetRenderTarget(renderTarget2D);
         drawCode?.Invoke();
-
-        int nearestScale = (int)Math.Floor((decimal)screenHeight / rtHeight);
+        
+        int nearestScale = (int)Math.Floor((decimal)MathHelper.Min(widthRatio, heightRatio));
         RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
         graphicsDevice.SetRenderTarget(scaledRt);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: postProcessingEffect);
@@ -29,9 +35,20 @@ public static class RtScreen
         spriteBatch.End();
         graphicsDevice.Reset();
 
+        float screenRatio = (float)screenWidth / screenHeight;
+        float gameRatio = (float)rtWidth / rtHeight;
+
+        // assume scale game up by its width
         float aspectRatio = (float)rtWidth / (float)rtHeight;
         int newWidth = (int)(screenHeight * aspectRatio);
         int newHeight = screenHeight;
+        if (screenRatio < gameRatio)
+        {
+            // scale game up by its height
+            aspectRatio = (float)rtHeight / (float)rtWidth;
+            newHeight = (int)(screenWidth * aspectRatio);
+            newWidth = screenWidth;
+        }
         
         int xOffset = screenWidth / 2 - newWidth / 2;
         int yOffset = screenHeight / 2 - newHeight / 2;
