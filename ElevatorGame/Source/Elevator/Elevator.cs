@@ -18,7 +18,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     public const int ParallaxDoors = 35;
     public const int ParallaxWalls = 25;
     public static int MaxFloors = 40;
-    
+
     public enum ElevatorStates
     {
         Stopped,
@@ -31,7 +31,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     }
     public ElevatorStates State { get; private set; } = ElevatorStates.Stopped;
     public void SetState(ElevatorStates state) => State = state;
-    
+
     private Sprite _elevatorInteriorSprite;
 
     private float _floorNumber = 1;
@@ -51,7 +51,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     private Doors _doors;
     private FloorNumberDisplay _floorNumbers;
-    
+
     // FMOD
     private EventInstance _audioElevatorMove;
     private EventDescription _audioWhooshEventDescription;
@@ -67,13 +67,12 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
         _floorNumbers = new FloorNumberDisplay();
         _floorNumbers.LoadContent(this, elevatorInteriorFile);
-        
-        
+
         _audioElevatorMove = StudioSystem.GetEvent("event:/SFX/Elevator/Move").CreateInstance();
         _audioElevatorMove.Start();
         _audioWhooshEventDescription = StudioSystem.GetEvent("event:/SFX/Elevator/Whoosh");
     }
-    
+
     public void UnloadContent()
     {
         _audioElevatorMove.Dispose();
@@ -107,18 +106,18 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         }
 
         _audioElevatorMove.SetParameterValue("Velocity", Math.Abs(_velocity) / _maxSpeed);
-        
+
         float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.6f, _maxSpeed, Math.Abs(_velocity)) * _dir;
         _velocityParallax = MathUtil.ExpDecay(_velocityParallax, targetParallax, 8,
             (float)gameTime.ElapsedGameTime.TotalSeconds);
-        
+
         MainGame.Camera.Position = new(MainGame.Camera.Position.X, _velocityParallax);
     }
-    
+
     public void Draw(SpriteBatch spriteBatch)
     {
         int floorTop = ((int)(_floorNumber * 140) % 140) - 5 + 8;
-        
+
         _doors.Draw(spriteBatch, floorTop);
 
         Vector2 fillPos = MainGame.Camera.GetParallaxPosition(new Vector2(240 + 16, -8), ParallaxWalls);
@@ -131,19 +130,18 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     private void UpdateStateStopped(GameTime gameTime)
     {
-        
         int inputDir = 0;
         if(InputManager.GetPressed(Keys.Up))
             inputDir += 1;
         if(InputManager.GetPressed(Keys.Down))
             inputDir -= 1;
-        
+
         if (inputDir > 0 && (int)Math.Round(_floorNumber) >= MaxFloors || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
         {
             MainGame.Camera.SetShake(2, 15);
             return;
         }
-        
+
         _dir = inputDir;
 
         if (_dir == 0) return;
@@ -178,14 +176,14 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
             {
                 MainGame.Camera.SetShake(4, 60);
                 _velocity = 0;
-                
+
                 SetState(ElevatorStates.Other);
                 MainGame.Coroutines.TryRun("elevator_crash", CrashSequence(), 0, out _);
                 return;
             }
             _velocity = 0;
         }
-        
+
         if((_dir == 1 && !InputManager.GetDown(Keys.Up)) || (_dir == -1 && !InputManager.GetDown(Keys.Down)) || didSoftCrash)
         {
             _targetFloorNumber = (int)Math.Round(_floorNumber);
@@ -204,11 +202,11 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
             }
 
             _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, MaxFloors);
-            
+
             State = ElevatorStates.Stopping;
             return;
         }
-        
+
         _velocity = MathUtil.Approach(_velocity, _dir * _maxSpeed, _acceleration);
         _lastMaxUnsignedVelocity = Math.Max(_lastMaxUnsignedVelocity, Math.Abs(_velocity));
     }
@@ -217,8 +215,8 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     {
         _velocity = 0;
         _floorNumber = MathUtil.ExpDecay(
-            _floorNumber, 
-            _targetFloorNumber, 
+            _floorNumber,
+            _targetFloorNumber,
             8,
             (float)gameTime.ElapsedGameTime.TotalSeconds
         );
@@ -241,18 +239,18 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         yield return endOfTurnSequence();
         State = ElevatorStates.Stopped;
     }
-    
+
     private void UpdateStateWaiting(GameTime gameTime)
     {
-        
+
     }
-    
+
     private IEnumerator CrashSequence()
     {
         yield return 60;
         SetState(Elevator.ElevatorStates.Stopping);
     }
-    
+
     private void PlayWhoosh()
     {
         var whooshInstance = _audioWhooshEventDescription.CreateInstance();

@@ -16,7 +16,7 @@ public class Camera
     public Vector2 Position { get; set; } = Vector2.Zero;
 
     public Vector2 RootOffset { get; set; } = Vector2.Zero;
-    
+
     public Vector2 VisualPosition { get; private set; }
 
     public float Zoom { get; set; } = 1;

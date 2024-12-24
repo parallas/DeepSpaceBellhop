@@ -14,7 +14,7 @@ public static class RenderPipeline
     private static RenderTarget2D _gameWithUiRt;
     private static RenderTarget2D _postProcessRt;
     private static RenderTarget2D _renderTarget;
-    
+
     public static void LoadContent(GraphicsDevice graphicsDevice)
     {
         _renderTarget = new RenderTarget2D(graphicsDevice, 240, 135);
@@ -24,13 +24,13 @@ public static class RenderPipeline
         _gameWithUiRt = new RenderTarget2D(graphicsDevice, 240, 135);
         _postProcessRt = new RenderTarget2D(graphicsDevice, 240, 135);
     }
-    
+
     public static void DrawBeforeUI(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Effect effect, Action drawAction)
     {
         graphicsDevice.SetRenderTarget(_gameSceneRt);
         drawAction?.Invoke();
         graphicsDevice.Reset();
-        
+
         graphicsDevice.SetRenderTarget(_beforeUiRt);
         graphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: effect);
@@ -39,14 +39,14 @@ public static class RenderPipeline
         }
         spriteBatch.End();
     }
-    
+
     public static void DrawUI(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Action drawAction)
     {
         graphicsDevice.SetRenderTarget(_uiRt);
         drawAction?.Invoke();
         graphicsDevice.Reset();
     }
-    
+
     public static void DrawPostProcess(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Effect effect)
     {
         graphicsDevice.SetRenderTarget(_gameWithUiRt);
@@ -56,7 +56,7 @@ public static class RenderPipeline
             spriteBatch.Draw(_uiRt, Vector2.Zero, Color.White);
         }
         spriteBatch.End();
-        
+
         graphicsDevice.SetRenderTarget(_postProcessRt);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: effect);
         {
@@ -69,7 +69,7 @@ public static class RenderPipeline
     public static void DrawFinish(SpriteBatch spriteBatch, GraphicsDeviceManager graphicsDeviceManager)
     {
         var graphicsDevice = graphicsDeviceManager.GraphicsDevice;
-        
+
         RtScreen.DrawWithRtOnScreen(_renderTarget, graphicsDeviceManager, spriteBatch, null, Color.White, () =>
         {
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);

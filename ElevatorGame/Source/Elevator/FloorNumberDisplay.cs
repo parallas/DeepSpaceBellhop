@@ -11,7 +11,7 @@ public class FloorNumberDisplay
     private AnimatedSprite _elevatorNumbersAnimSprite;
     private AsepriteSliceKey _elevatorNumberTensSlice;
     private AsepriteSliceKey _elevatorNumberOnesSlice;
-    
+
     public void LoadContent(Elevator elevator, AsepriteFile elevatorInteriorFile)
     {
         // Load the animated numbers sprite
@@ -19,7 +19,7 @@ public class FloorNumberDisplay
         var elevatorNumbersSpriteSheet = elevatorNumbersAnimFile!.CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false);
         _elevatorNumbersAnimSprite = elevatorNumbersSpriteSheet.CreateAnimatedSprite("Tag");
         _elevatorNumbersAnimSprite.Speed = 0;
-        
+
         _elevatorNumberTensSlice = elevatorInteriorFile.GetSlice("DigitTens").Keys[0];
         _elevatorNumberOnesSlice = elevatorInteriorFile.GetSlice("DigitOnes").Keys[0];
     }

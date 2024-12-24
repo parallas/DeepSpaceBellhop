@@ -26,7 +26,7 @@ public class MainGame : Game
 {
     public static GraphicsDeviceManager Graphics { get; set; }
     public static SpriteBatch SpriteBatch { get; set; }
-    
+
     public static long Step { get; private set; }
     public static long Frame { get; private set; }
 
@@ -38,7 +38,7 @@ public class MainGame : Game
     };
 
     public static CoroutineRunner Coroutines { get; set; } = new();
-    
+
     public static int CurrentFloor { get; set; } = 1;
 
     public static float GrayscaleCoeff { get; set; } = 1;
@@ -49,9 +49,9 @@ public class MainGame : Game
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
-    
+
     private RoomRenderer _roomRenderer;
-    
+
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
@@ -64,9 +64,9 @@ public class MainGame : Game
     private EffectParameter _elevatorGrayscaleIntensity;
     private EffectParameter _ppGameTime;
     private EffectParameter _ppWobbleInfluence;
-    
+
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
-    
+
     public MainGame()
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -91,7 +91,7 @@ public class MainGame : Game
         );
 
         ContentLoader.Initialize(Content);
-        
+
         FmodController.Init();
 
         base.Initialize();
@@ -100,16 +100,16 @@ public class MainGame : Game
     protected override void LoadContent()
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
-        
+
         // NOTE: You HAVE TO init fmod in the Initialize().
         // Otherwise, it may not work on some platforms.
         FmodController.LoadContent("audio/banks/Desktop", true, ["Master", "SFX", "Music"], ["Master"]);
-        
+
         RenderPipeline.LoadContent(GraphicsDevice);
-        
+
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
-        
+
         _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
         _elevator.LoadContent();
 
@@ -119,16 +119,16 @@ public class MainGame : Game
         _dialog.LoadContent();
 
         _roomRenderer = new RoomRenderer();
-        
+
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
         _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
-        
+
         _elevatorEffects =
             Content.Load<Effect>("shaders/elevatoreffects")!;
         _elevatorGrayscaleIntensity = _elevatorEffects.Parameters["GrayscaleIntensity"];
         _elevatorGameTime = _elevatorEffects.Parameters["GameTime"];
-        
+
         _postProcessingEffects =
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
@@ -155,11 +155,11 @@ public class MainGame : Game
             _waitList.Add(newCharacter);
         }
     }
-    
+
     protected override void UnloadContent()
     {
         FmodManager.Unload();
-        
+
         _elevator.UnloadContent();
     }
 
@@ -251,7 +251,7 @@ public class MainGame : Game
         }
 
         base.Update(gameTime);
-        
+
         Step++;
     }
 
@@ -261,9 +261,9 @@ public class MainGame : Game
         // _elevatorGameTime.SetValue(Frame / 60f);
         _ppWobbleInfluence.SetValue(0);
         _ppGameTime.SetValue(Frame / 60f);
-        
+
         _roomRenderer.PreRender(SpriteBatch);
-        
+
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
             GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
@@ -273,7 +273,7 @@ public class MainGame : Game
             }
             SpriteBatch.End();
         });
-        
+
         RenderPipeline.DrawUI(SpriteBatch, GraphicsDevice, () =>
         {
             GraphicsDevice.Clear(Color.Transparent);
@@ -283,12 +283,12 @@ public class MainGame : Game
             }
             SpriteBatch.End();
         });
-        
+
         RenderPipeline.DrawPostProcess(SpriteBatch, GraphicsDevice, _postProcessingEffects);
         RenderPipeline.DrawFinish(SpriteBatch, Graphics);
 
         base.Draw(gameTime);
-        
+
         Frame++;
     }
 
@@ -301,17 +301,17 @@ public class MainGame : Game
         {
             characterActor.Draw(SpriteBatch);
         }
-        
+
         _elevator.Draw(SpriteBatch);
-        
+
         foreach (var characterActor in _cabList)
         {
             characterActor.Draw(SpriteBatch);
         }
-        
+
         _dialog.Draw(SpriteBatch);
     }
-    
+
     private void OnChangeFloorNumber(int floorNumber)
     {
         CurrentFloor = floorNumber;
@@ -353,7 +353,7 @@ public class MainGame : Game
                 _cabList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
-                
+
                 yield return characterActor.GetInElevatorEnd();
             }
         }

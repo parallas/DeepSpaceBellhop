@@ -151,22 +151,22 @@ public static class MathUtil
     {
         return (int)Math.Floor(value);
     }
-    
+
     public static float InverseLerp(float a, float b, float t)
     {
         return (t - a)/(b - a);
     }
-    
+
     public static float InverseLerp01(float a, float b, float t)
     {
         return Clamp01((t - a)/(b - a));
     }
-    
+
     public static float Clamp01(float value)
     {
         return Math.Clamp(value, 0, 1);
     }
-    
+
     /// <summary>
     /// Exponential decay function
     /// </summary>
@@ -179,12 +179,12 @@ public static class MathUtil
     {
         return b+(a-b)*MathF.Exp(-decay*dt);
     }
-        
+
     public static Vector3 ExpDecay(Vector3 a, Vector3 b, float decay, float dt)
     {
         return b+(a-b)*MathF.Exp(-decay*dt);
     }
-        
+
     public static Quaternion ExpDecay(Quaternion a, Quaternion b, float decay, float dt)
     {
         return Quaternion.Slerp(a, b, 1 - MathF.Exp(-decay * dt));

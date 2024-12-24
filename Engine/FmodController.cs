@@ -41,7 +41,7 @@ public static class FmodController
     {
         // var native = _masterBus.Native;
         // while (native.getChannelGroup(out _channelGroup) != RESULT.OK) { await Task.Yield(); }
-        
+
         // _masterBus.UnlockChannelGroup();
     }
 
@@ -53,7 +53,7 @@ public static class FmodController
         {
             Console.WriteLine($"FmodController: Loading bank \"{Path.Combine(banksPath, bank)}.bank\"");
             _masterBank = StudioSystem.LoadBank($"{banksPath}/{bank}.bank");
-            
+
             var stringPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _rootDir, banksPath, $"{bank}.strings.bank");
             if (loadStrings && File.Exists(stringPath))
             {
@@ -61,12 +61,12 @@ public static class FmodController
                 _masterBank = StudioSystem.LoadBank($"{banksPath}/{bank}.strings.bank");
             }
         }
-        
+
         _masterBank.LoadSampleData();
-        
+
         // Loading busses must be after loading banks, for some reason
         _masterBus = StudioSystem.GetBus("bus:/Sounds");
-        
+
         // Loads FMOD DSPs which won't load until the update after FMOD is initialized
         LoadContentAsync();
     }

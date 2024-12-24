@@ -14,7 +14,7 @@ namespace ElevatorGame.Source.Elevator;
 public class Doors
 {
     private readonly Elevator _elevator;
-    
+
     private Sprite _elevatorLeftDoorSprite;
     private Sprite _elevatorRightDoorSprite;
     private AsepriteSliceKey _elevatorDoorLeftSlice;
@@ -24,16 +24,16 @@ public class Doors
 
     private EventInstance _audioDoorOpen;
     private EventInstance _audioDoorClose;
-    
+
     private float _doorOpenedness;
 
     public Doors(Elevator elevator, AsepriteFile elevatorInteriorFile)
     {
         _elevator = elevator;
-        
+
         _elevatorDoorLeftSlice = elevatorInteriorFile.GetSlice("DoorL").Keys[0];
         _elevatorDoorRightSlice = elevatorInteriorFile.GetSlice("DoorR").Keys[0];
-        
+
         // Set the target positions for the doors when closed (based on slices)
         var leftDoorSliceBounds = _elevatorDoorLeftSlice.Bounds.ToXnaRectangle();
         var leftDoorTopRight = new Vector2(leftDoorSliceBounds.Right - 1, leftDoorSliceBounds.Y);
@@ -41,14 +41,14 @@ public class Doors
         var rightDoorSliceBounds = _elevatorDoorRightSlice.Bounds.ToXnaRectangle();
         var rightDoorTopLeft = rightDoorSliceBounds.Location.ToVector2();
         _doorRightOrigin = rightDoorTopLeft;
-        
+
         // Load the door sprites, and set their properties
         var elevatorDoorFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDoor");
         _elevatorLeftDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         _elevatorRightDoorSprite = elevatorDoorFile!.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
         _elevatorLeftDoorSprite.Origin = new Vector2(_elevatorLeftDoorSprite.Width - 1, 0);
         _elevatorRightDoorSprite.FlipHorizontally = true;
-        
+
         _audioDoorOpen = StudioSystem.GetEvent("event:/SFX/Elevator/Doors/Open").CreateInstance();
         _audioDoorClose = StudioSystem.GetEvent("event:/SFX/Elevator/Doors/Close").CreateInstance();
     }
@@ -62,11 +62,11 @@ public class Doors
     public void Draw(SpriteBatch spriteBatch, int floorTop)
     {
         DrawLight(spriteBatch, floorTop);
-        
+
         _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin + Vector2.UnitX * -_doorOpenedness, Elevator.ParallaxDoors));
         _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin + Vector2.UnitX * _doorOpenedness, Elevator.ParallaxDoors));
     }
-    
+
     private void DrawLight(SpriteBatch spriteBatch, int floorTop)
     {
         int lightTop = floorTop + 40;
@@ -95,7 +95,7 @@ public class Doors
         MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), 0, out var handle);
         return handle;
     }
-    
+
     private IEnumerator OpenDoors()
     {
         _audioDoorOpen.Start();
@@ -126,7 +126,7 @@ public class Doors
             yield return null;
         }
         _doorOpenedness = 0;
-        
+
         _elevator.SetState(Elevator.ElevatorStates.Moving);
     }
 }

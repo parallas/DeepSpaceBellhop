@@ -16,7 +16,7 @@ public class RoomRenderer
     private RenderTarget2D _roomRenderTarget;
     private AsepriteFile _spriteFile;
     private Sprite[] _roomSprites;
-    
+
     private Effect _roomEffects;
 
     private uint[] _colorsC64 =
@@ -44,11 +44,11 @@ public class RoomRenderer
 
     private EffectParameter _effectColor1Param;
     private EffectParameter _effectColor2Param;
-    
+
     private struct RoomSpriteUserData
     {
         public int depth { get; set; } = 70;
-        
+
         public RoomSpriteUserData(int depth = 70)
         {
             this.depth = depth;
@@ -75,13 +75,13 @@ public class RoomRenderer
         Debug.Assert(_roomEffects != null, nameof(_roomEffects) + " != null");
         _effectColor1Param ??= _roomEffects.Parameters["Color1"];
         _effectColor2Param ??= _roomEffects.Parameters["Color2"];
-        
+
         _randomColor1 = ColorUtil.CreateFromHex(_colorsC64[colorIndex1]);
         _randomColor2 = ColorUtil.CreateFromHex(_colorsC64[colorIndex2]);
-        
+
         _effectColor1Param.SetValue(_randomColor1.ToVector3());
         _effectColor2Param.SetValue(_randomColor2.ToVector3());
-        
+
         _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/RoomsGeneric")!;
         // _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/le room")!;
         int randomFrameIndex = Random.Shared.Next(_spriteFile.FrameCount);
@@ -94,7 +94,7 @@ public class RoomRenderer
         {
             AsepriteUserData userData = _spriteFile.Layers[index].UserData;
             if (!userData.HasText) continue;
-            
+
             string userDataText = userData.Text;
             try
             {
@@ -111,7 +111,7 @@ public class RoomRenderer
     public void PreRender(SpriteBatch spriteBatch)
     {
         _roomRenderTarget ??= new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 256, 128);
-        
+
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_roomRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _roomEffects);
         {
@@ -120,13 +120,13 @@ public class RoomRenderer
                 var sprite = _roomSprites[index];
                 int parallaxOffset = 70;
                 parallaxOffset = _layerUserDatas[index].depth;
-                
+
                 sprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, parallaxOffset));
             }
         }
         spriteBatch.End();
     }
-    
+
     public void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.Draw(_roomRenderTarget, MainGame.Camera.GetParallaxPosition(new Vector2(0, 32), 0), Color.White);

@@ -6,7 +6,7 @@ public static class CharacterRegistry
 {
     private static CharacterDef[] CharacterDefs;
     public static Dictionary<string, CharacterDef> CharacterTable { get; } = new();
-    
+
     public static void Init()
     {
         CharacterDefs =
@@ -28,7 +28,7 @@ public static class CharacterRegistry
                 ExitPhrases = [new("Bye :3 *skips out of elevator*")]
             },
         ];
-        
+
         foreach (var characterDef in CharacterDefs)
         {
             CharacterTable.Add(characterDef.Name, characterDef);

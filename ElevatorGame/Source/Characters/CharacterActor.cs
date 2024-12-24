@@ -14,7 +14,7 @@ public class CharacterActor
     public int FloorNumberCurrent { get; set; }
     public int FloorNumberTarget { get; set; }
     public int Patience { get; set; }
-    
+
     public int OffsetXTarget { get; set; }
     private float _offsetX;
     private float _offsetY;
@@ -26,16 +26,16 @@ public class CharacterActor
     private AnimatedSprite _animBack;
     private bool _isInElevator;
     private float _currentWalkSpeed;
-    
+
     private void PlayAnimation(AnimatedSprite animation)
     {
         if (_currentAnimation == animation) return;
-        
+
         _currentAnimation?.Stop();
         _currentAnimation = animation;
         _currentAnimation.Play();
     }
-    
+
     public void LoadContent()
     {
         var spriteFile = ContentLoader.Load<AsepriteFile>(Def.SpritePath)!;
@@ -50,50 +50,50 @@ public class CharacterActor
 
         _currentWalkSpeed = Def.WalkSpeed;
     }
-    
+
     public void Update(GameTime gameTime)
     {
         _currentAnimation.Update(1f/60f);
 
         _offsetX = MathUtil.ExpDecay(_offsetX, OffsetXTarget, _currentWalkSpeed, 1f / 60f);
-        if (MathUtil.Approximately(_offsetX, OffsetXTarget, 1)) 
+        if (MathUtil.Approximately(_offsetX, OffsetXTarget, 1))
             _offsetX = OffsetXTarget;
-        
+
         _offsetY = MathUtil.ExpDecay(_offsetY, 0, 8, 1f / 60f);
         _squashStretchOffset = MathUtil.ExpDecay(_squashStretchOffset, 0, 8, 1f / 60f);
     }
-    
+
     public void Draw(SpriteBatch spriteBatch)
     {
         if (!_isInElevator && FloorNumberCurrent != MainGame.CurrentFloor) return;
-        
+
         var depth = _isInElevator ? 0 : Elevator.Elevator.ParallaxDoors + 10;
-        
+
         _currentAnimation.Origin = new Vector2(_currentAnimation.Width * 0.5f, _currentAnimation.Height);
 
         _currentAnimation.ScaleX = 1 - _squashStretchOffset;
         _currentAnimation.ScaleY = 1 + _squashStretchOffset;
-        
+
         Vector2 pos = new Vector2(
-            MainGame.GameBounds.Center.X + _offsetX, 
+            MainGame.GameBounds.Center.X + _offsetX,
             MainGame.GameBounds.Bottom + 5 + -MathHelper.Max(MathF.Sin((MainGame.Frame + _seed) / 60f * 3), 0f) + _offsetY
         );
         pos = Vector2.Round(pos);
-        
+
         _currentAnimation.Color = Color.Black;
         _currentAnimation.Draw(
             MainGame.SpriteBatch,
             MainGame.Camera.GetParallaxPosition(
-                pos + Vector2.One * 2, 
+                pos + Vector2.One * 2,
                 depth
             )
         );
-        
+
         _currentAnimation.Color = Color.White;
         _currentAnimation.Draw(
             MainGame.SpriteBatch,
             MainGame.Camera.GetParallaxPosition(
-                pos, 
+                pos,
                 depth
             )
         );
@@ -102,41 +102,41 @@ public class CharacterActor
     public IEnumerator GetInElevatorBegin()
     {
         OffsetXTarget = 0;
-        while (MathUtil.RoundToInt(_offsetX) != 0) 
+        while (MathUtil.RoundToInt(_offsetX) != 0)
         {
             yield return null;
         }
-        
+
         _isInElevator = true;
     }
-    
+
     public IEnumerator GetInElevatorEnd()
     {
         int newX = Random.Shared.Next(-60, 61);
         OffsetXTarget = newX;
-        while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget) 
+        while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget)
         {
             yield return null;
         }
 
         // _offsetY = 4;
         _squashStretchOffset = -0.1f;
-        
+
         PlayAnimation(_animBack);
     }
-    
+
     public IEnumerator GetOffElevatorBegin()
     {
         OffsetXTarget = 0;
-        while (MathUtil.RoundToInt(_offsetX) != 0) 
+        while (MathUtil.RoundToInt(_offsetX) != 0)
         {
             yield return null;
         }
-        
+
         _squashStretchOffset = -0.1f;
         PlayAnimation(_animFront);
     }
-    
+
     public IEnumerator GetOffElevatorEnd()
     {
         _currentWalkSpeed = MathUtil.CeilToInt(Def.WalkSpeed * 0.5f);
@@ -144,7 +144,7 @@ public class CharacterActor
         PlayAnimation(_animBack);
         int newX = MathUtil.FloorToInt((Random.Shared.Next(2) - 0.5f) * 2 * 85);
         OffsetXTarget = newX;
-        while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget) 
+        while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget)
         {
             yield return null;
         }

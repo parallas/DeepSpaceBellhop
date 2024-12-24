@@ -3,7 +3,7 @@ namespace ElevatorGame.Source.Dialog;
 public struct DialogDef(params string[] pagesText)
 {
     public string[] PagesText { get; set; } = pagesText;
-    
+
     public Dialog.Page[] Pages
     {
         get

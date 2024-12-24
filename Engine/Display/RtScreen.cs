@@ -15,16 +15,16 @@ public static class RtScreen
         int screenHeight = bounds.Height;
         int rtWidth = renderTarget2D.Width;
         int rtHeight = renderTarget2D.Height;
-        
+
         float widthRatio = (float)screenWidth / rtWidth;
         float heightRatio = (float)screenHeight / rtHeight;
 
         int longestGameSize = MathHelper.Max(rtWidth, rtHeight);
         int longestScreenSize = MathHelper.Max(screenWidth, screenHeight);
-        
+
         graphicsDevice.SetRenderTarget(renderTarget2D);
         drawCode?.Invoke();
-        
+
         int nearestScale = (int)Math.Floor((decimal)MathHelper.Min(widthRatio, heightRatio));
         RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
         graphicsDevice.SetRenderTarget(scaledRt);
@@ -49,7 +49,7 @@ public static class RtScreen
             newHeight = (int)(screenWidth * aspectRatio);
             newWidth = screenWidth;
         }
-        
+
         int xOffset = screenWidth / 2 - newWidth / 2;
         int yOffset = screenHeight / 2 - newHeight / 2;
         spriteBatch.Begin(samplerState: SamplerState.AnisotropicClamp);
@@ -57,7 +57,7 @@ public static class RtScreen
             spriteBatch.Draw(scaledRt, new Rectangle(xOffset, yOffset, newWidth, newHeight), Color.White);
         }
         spriteBatch.End();
-        
+
         scaledRt.Dispose();
     }
 }
