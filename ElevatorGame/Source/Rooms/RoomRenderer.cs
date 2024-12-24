@@ -74,7 +74,7 @@ public class RoomRenderer
         _randomColor1 = ColorUtil.CreateFromHex(_colorsC64[colorIndex1]);
         _randomColor2 = ColorUtil.CreateFromHex(_colorsC64[colorIndex2]);
         
-        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!;
+        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/le room")!;
         _roomSprites ??= _spriteFile.Layers.ToArray()
             .Select(layer => _spriteFile.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, [layer.Name]))
             .ToArray();
@@ -127,6 +127,6 @@ public class RoomRenderer
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_roomRenderTarget, new Vector2(64, 32), Color.White);
+        spriteBatch.Draw(_roomRenderTarget, MainGame.Camera.GetParallaxPosition(new Vector2(64, 32), 0), Color.White);
     }
 }

@@ -257,7 +257,7 @@ public class MainGame : Game
     private void DrawScene(GameTime gameTime)
     {
         _roomRenderer.Draw(SpriteBatch);
-        _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 32), 50));
+        _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
         _elevator.Draw(SpriteBatch);
         _dialog.Draw(SpriteBatch);
     }
