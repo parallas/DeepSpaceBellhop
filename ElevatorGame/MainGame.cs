@@ -44,8 +44,6 @@ public class MainGame : Game
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
-
-    private Sprite _roomSprite;
     
     private RoomRenderer _roomRenderer;
     
@@ -110,12 +108,7 @@ public class MainGame : Game
         _dialog = new();
         _dialog.LoadContent();
 
-        _roomSprite =
-            ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!
-                .CreateSprite(GraphicsDevice, 0, true);
-
         _roomRenderer = new RoomRenderer();
-
         
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);

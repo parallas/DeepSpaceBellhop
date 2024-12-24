@@ -26,9 +26,13 @@ struct VertexShaderOutput
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float2 uv = input.TextureCoordinates;
-    float4 col = tex2D(SpriteTextureSampler, uv).r * input.Color.r;
+    float4 col = tex2D(SpriteTextureSampler, uv).rgba;
+    float r = col.r * input.Color.r;
+    float3 remappedColor = lerp(Color1, Color2, r);
 
-    float4 finalColor = float4(lerp(Color1, Color2, col.r), input.Color.a);
+    clip(col.a * input.Color.a - 0.5);
+
+    float4 finalColor = float4(remappedColor.rgb, 1);
     
     return finalColor;
 }

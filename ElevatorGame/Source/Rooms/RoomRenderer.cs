@@ -1,6 +1,9 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.Json;
 using AsepriteDotNet.Aseprite;
+using AsepriteDotNet.Aseprite.Types;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,7 +14,8 @@ namespace ElevatorGame.Source.Rooms;
 public class RoomRenderer
 {
     private RenderTarget2D _roomRenderTarget;
-    private Sprite _roomSprite;
+    private AsepriteFile _spriteFile;
+    private Sprite[] _roomSprites;
     
     private Effect _roomEffects;
 
@@ -40,6 +44,17 @@ public class RoomRenderer
 
     private EffectParameter _effectColor1Param;
     private EffectParameter _effectColor2Param;
+    
+    private struct RoomSpriteUserData
+    {
+        public int depth { get; set; } = 70;
+        
+        public RoomSpriteUserData(int depth = 70)
+        {
+            this.depth = depth;
+        }
+    }
+    private RoomSpriteUserData[] _layerUserDatas;
 
     public RoomRenderer()
     {
@@ -58,14 +73,11 @@ public class RoomRenderer
 
         _randomColor1 = ColorUtil.CreateFromHex(_colorsC64[colorIndex1]);
         _randomColor2 = ColorUtil.CreateFromHex(_colorsC64[colorIndex2]);
-    }
-
-    public void PreRender(SpriteBatch spriteBatch)
-    {
-        _roomRenderTarget ??= new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 128, 128);
-        _roomSprite ??=
-            ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!.CreateSprite(
-                MainGame.Graphics.GraphicsDevice, 0, true);
+        
+        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/RoomTest")!;
+        _roomSprites ??= _spriteFile.Layers.ToArray()
+            .Select(layer => _spriteFile.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, [layer.Name]))
+            .ToArray();
         _roomEffects ??= ContentLoader.Load<Effect>("shaders/roomrender");
         
         Debug.Assert(_roomEffects != null, nameof(_roomEffects) + " != null");
@@ -74,11 +86,41 @@ public class RoomRenderer
         
         _effectColor1Param.SetValue(_randomColor1.ToVector3());
         _effectColor2Param.SetValue(_randomColor2.ToVector3());
+
+        _layerUserDatas = new RoomSpriteUserData[_roomSprites.Length];
+        for (var index = 0; index < _roomSprites.Length; index++)
+        {
+            AsepriteUserData userData = _spriteFile.Layers[index].UserData;
+            if (!userData.HasText) continue;
+            
+            string userDataText = userData.Text;
+            try
+            {
+                var userDataObject = JsonSerializer.Deserialize<RoomSpriteUserData>(userDataText);
+                _layerUserDatas[index] = userDataObject;
+            }
+            catch
+            {
+                Console.Error.WriteLine($"Failed to parse user data for layer {index}");
+            }
+        }
+    }
+
+    public void PreRender(SpriteBatch spriteBatch)
+    {
+        _roomRenderTarget ??= new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 128, 128);
         
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_roomRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _roomEffects);
         {
-            _roomSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, 70));
+            for (var index = 0; index < _roomSprites.Length; index++)
+            {
+                var sprite = _roomSprites[index];
+                int parallaxOffset = 70;
+                parallaxOffset = _layerUserDatas[index].depth;
+                
+                sprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, parallaxOffset));
+            }
         }
         spriteBatch.End();
     }
