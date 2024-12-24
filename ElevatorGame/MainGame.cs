@@ -54,7 +54,8 @@ public class MainGame : Game
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
-    private List<CharacterActor> _waitlist = [];
+    private readonly List<CharacterActor> _waitList = [];
+    private readonly List<CharacterActor> _cabList = [];
 
     private Effect _elevatorEffects;
     private Effect _postProcessingEffects;
@@ -150,7 +151,7 @@ public class MainGame : Game
             Console.WriteLine(
                 $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
             newCharacter.LoadContent();
-            _waitlist.Add(newCharacter);
+            _waitList.Add(newCharacter);
         }
     }
     
@@ -239,7 +240,7 @@ public class MainGame : Game
             }
         }
 
-        foreach (var characterActor in _waitlist)
+        foreach (var characterActor in _waitList)
         {
             characterActor.Update(gameTime);
         }
@@ -291,12 +292,18 @@ public class MainGame : Game
         _roomRenderer.Draw(SpriteBatch);
         // _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
 
-        foreach (var characterActor in _waitlist)
+        foreach (var characterActor in _waitList)
         {
             characterActor.Draw(SpriteBatch);
         }
         
         _elevator.Draw(SpriteBatch);
+        
+        foreach (var characterActor in _cabList)
+        {
+            characterActor.Draw(SpriteBatch);
+        }
+        
         _dialog.Draw(SpriteBatch);
     }
     
@@ -304,5 +311,14 @@ public class MainGame : Game
     {
         CurrentFloor = floorNumber;
         _roomRenderer.Randomize();
+        
+        foreach (var characterActor in _waitList)
+        {
+            if (characterActor.FloorNumberCurrent == CurrentFloor)
+            {
+                _cabList.Add(characterActor);
+                characterActor.GetInElevator();
+            }
+        }
     }
 }

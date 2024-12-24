@@ -69,4 +69,9 @@ public class CharacterActor
             )
         );
     }
+
+    public void GetInElevator()
+    {
+        _isInElevator = true;
+    }
 }
