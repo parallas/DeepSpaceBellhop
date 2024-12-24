@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
+using ElevatorGame.Source.Characters;
 using ElevatorGame.Source.Rooms;
 using Engine;
 using Engine.Display;
@@ -35,6 +36,8 @@ public class MainGame : Game
     };
 
     public static CoroutineRunner Coroutines { get; set; } = new();
+    
+    public static int CurrentFloor { get; set; } = 1;
 
     public static float GrayscaleCoeff { get; set; } = 1;
 
@@ -50,12 +53,23 @@ public class MainGame : Game
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
+    private CharacterDef _testCharacterDef = new()
+    {
+        Name = "Rivulet",
+        SpritePath = "graphics/characters/GreenAxolotl",
+        EnterPhrases = [new("So, anyway, if you’re looking to date me, you need to meet my mother first.")],
+        ExitPhrases = [new("Sorry, it’s a requirement. Do you want to go see her now?")]
+    };
+    private CharacterActor _testCharacterActor;
+
     private Effect _elevatorEffects;
     private Effect _postProcessingEffects;
     private EffectParameter _elevatorGameTime;
     private EffectParameter _elevatorGrayscaleIntensity;
     private EffectParameter _ppGameTime;
     private EffectParameter _ppWobbleInfluence;
+    
+    public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
     
     public MainGame()
     {
@@ -123,6 +137,15 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
+
+        _testCharacterActor = new CharacterActor
+        {
+            Def = _testCharacterDef,
+            FloorNumberCurrent = 10,
+            FloorNumberTarget = 20,
+            Patience = 5
+        };
+        _testCharacterActor.LoadContent();
     }
     
     protected override void UnloadContent()
@@ -210,7 +233,7 @@ public class MainGame : Game
             }
         }
 
-        // TODO: Add your update logic here
+        _testCharacterActor.Update(gameTime);
 
         base.Update(gameTime);
         
@@ -258,12 +281,14 @@ public class MainGame : Game
     {
         _roomRenderer.Draw(SpriteBatch);
         // _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
+        _testCharacterActor.Draw(SpriteBatch);
         _elevator.Draw(SpriteBatch);
         _dialog.Draw(SpriteBatch);
     }
     
     private void OnChangeFloorNumber(int floorNumber)
     {
+        CurrentFloor = floorNumber;
         _roomRenderer.Randomize();
     }
 }

@@ -15,9 +15,9 @@ namespace ElevatorGame.Source.Elevator;
 
 public class Elevator(Action<int> onChangeFloorNumber)
 {
-    public static readonly int ParallaxDoors = 25;
-    public static readonly int ParallaxWalls = 15;
-    public static readonly int MaxFloors = 99;
+    public const int ParallaxDoors = 35;
+    public const int ParallaxWalls = 25;
+    public static int MaxFloors = 99;
     
     public enum ElevatorStates
     {
