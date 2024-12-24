@@ -26,8 +26,9 @@ public class Dialog()
         public int CharInterval { get; set; } = 4;
     }
 
-    private const int Padding = 4;
-    private const int FastScrollSpeed = 2;
+    public const int Padding = 4;
+    public const int FastScrollSpeed = 2;
+    public const int LineHeight = 10;
 
     private SpriteFont _font;
     private AnimatedSprite _glyphSprite;
@@ -142,7 +143,7 @@ public class Dialog()
                 {
                     builder = new();
                     x = 0;
-                    y += 12;
+                    y += LineHeight;
                 }
 
                 builder.Append(word + " ");
@@ -151,7 +152,7 @@ public class Dialog()
                 spriteBatch.DrawStringSpacesFix(
                     _font,
                     builder.ToString(),
-                    new Vector2(Padding + 6, Padding + 4 + y),
+                    new Vector2(Padding + 6, Padding + 3 + y),
                     _awaitingConfirmation ? Color.Yellow : Color.White,
                     6
                 );
@@ -168,7 +169,7 @@ public class Dialog()
                 if(x + w > 240 - (Padding * 2))
                 {
                     x = 0;
-                    y += 12;
+                    y += LineHeight;
                 }
 
                 _glyphSprite.SetFrame(ind);
