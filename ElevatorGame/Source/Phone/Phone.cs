@@ -33,9 +33,9 @@ public class Phone(Elevator.Elevator elevator)
             }
         }
 
-        var camPos = MainGame.Camera.Position;
+        var camPos = MainGame.CameraPosition;
         camPos.X = _offset;
-        MainGame.Camera.Position = camPos;
+        MainGame.CameraPosition = camPos;
 
         MainGame.GrayscaleCoeff = 1-(_offset / 32f);
     }

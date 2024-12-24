@@ -7,7 +7,6 @@ namespace ElevatorGame.Source;
 
 public static class RenderPipeline
 {
-
     private static RenderTarget2D _gameSceneRt;
     private static RenderTarget2D _beforeUiRt;
     private static RenderTarget2D _uiRt;
@@ -15,8 +14,13 @@ public static class RenderPipeline
     private static RenderTarget2D _postProcessRt;
     private static RenderTarget2D _renderTarget;
 
+    private static GraphicsDevice _graphics;
+
+    public static float PixelScale => RtScreen.GetScale(_renderTarget, _graphics);
+
     public static void LoadContent(GraphicsDevice graphicsDevice)
     {
+        _graphics = graphicsDevice;
         _renderTarget = new RenderTarget2D(graphicsDevice, 240, 135);
         _gameSceneRt = new RenderTarget2D(graphicsDevice, 240, 135);
         _beforeUiRt = new RenderTarget2D(graphicsDevice, 240, 135);

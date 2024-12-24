@@ -60,4 +60,25 @@ public static class RtScreen
 
         scaledRt.Dispose();
     }
+
+    public static float GetScale(RenderTarget2D renderTarget2D, GraphicsDevice graphics)
+    {
+        Rectangle bounds = graphics.PresentationParameters.Bounds;
+        int screenWidth = bounds.Width;
+        int screenHeight = bounds.Height;
+        int rtWidth = renderTarget2D.Width;
+        int rtHeight = renderTarget2D.Height;
+
+        float screenRatio = (float)screenWidth / screenHeight;
+        float gameRatio = (float)rtWidth / rtHeight;
+
+        if (screenRatio < gameRatio)
+        {
+            // scale game up by its height
+            return screenHeight / rtHeight;
+        }
+
+        // assume scale game up by its width
+        return screenWidth / rtWidth;
+    }
 }
