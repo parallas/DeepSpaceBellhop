@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
@@ -109,7 +110,7 @@ public class MainGame : Game
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
         
-        _elevator = new(OnChangeFloorNumber);
+        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
         _elevator.LoadContent();
 
         _phone = new(_elevator);
@@ -141,7 +142,7 @@ public class MainGame : Game
                 Def = characterTableValue,
                 FloorNumberCurrent = Random.Shared.Next(2, Elevator.Elevator.MaxFloors + 1),
                 Patience = 5,
-                OffsetX = Random.Shared.Next(-48, 49)
+                OffsetXTarget = Random.Shared.Next(-48, 49)
             };
             do
             {
@@ -244,6 +245,10 @@ public class MainGame : Game
         {
             characterActor.Update(gameTime);
         }
+        foreach (var characterActor in _cabList)
+        {
+            characterActor.Update(gameTime);
+        }
 
         base.Update(gameTime);
         
@@ -311,14 +316,30 @@ public class MainGame : Game
     {
         CurrentFloor = floorNumber;
         _roomRenderer.Randomize();
-        
-        foreach (var characterActor in _waitList)
+    }
+
+    private IEnumerator EndOfTurnSequence()
+    {
+        // If anyone is going to this floor, they leave one at a time
+        // Subtract patience from remaining passengers
+        // Any passengers with patience <= 0 leave
+        // Any passengers getting on this floor get on
+
+        for (var index = _waitList.Count - 1; index >= 0; index--)
         {
+            var characterActor = _waitList[index];
             if (characterActor.FloorNumberCurrent == CurrentFloor)
             {
+                yield return characterActor.GetInElevatorBegin();
+                _waitList.Remove(characterActor);
                 _cabList.Add(characterActor);
-                characterActor.GetInElevator();
+                yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
+                    Dialog.Dialog.DisplayMethod.Human);
+                
+                yield return characterActor.GetInElevatorEnd();
             }
         }
+
+        yield return null;
     }
 }

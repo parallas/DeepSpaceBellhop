@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
@@ -81,16 +82,18 @@ public class Doors
             new Rectangle((int)blackBarPosition.X, (int)blackBarPosition.Y, 240, 40), Color.Black * (1 - (_doorOpenedness / 47f)));
     }
 
-    public void Open()
+    public CoroutineHandle Open()
     {
         MainGame.Coroutines.Stop("elevator_door_close");
-        MainGame.Coroutines.TryRun("elevator_door_open", OpenDoors(), 0, out _);
+        MainGame.Coroutines.TryRun("elevator_door_open", OpenDoors(), 0, out var handle);
+        return handle;
     }
 
-    public void Close()
+    public CoroutineHandle Close()
     {
         MainGame.Coroutines.Stop("elevator_door_open");
-        MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), 0, out _);
+        MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), 0, out var handle);
+        return handle;
     }
     
     private IEnumerator OpenDoors()
@@ -107,8 +110,6 @@ public class Doors
             yield return null;
         }
         _doorOpenedness = 47;
-        
-        _elevator.SetState(Elevator.ElevatorStates.Waiting);
     }
 
     private IEnumerator CloseDoors()
