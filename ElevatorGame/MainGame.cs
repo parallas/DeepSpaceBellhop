@@ -124,6 +124,7 @@ public class MainGame : Game
         _elevator.LoadContent();
 
         _phone = new(_elevator);
+        _phone.LoadContent();
 
         _dialog = new();
         _dialog.LoadContent();
@@ -300,6 +301,7 @@ public class MainGame : Game
         _ppGameTime.SetValue(Frame / 60f);
 
         _roomRenderer.PreRender(SpriteBatch);
+        _phone.PreRenderScreen(SpriteBatch);
 
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
@@ -311,7 +313,7 @@ public class MainGame : Game
             SpriteBatch.End();
         });
 
-        var mousePos = 
+        var mousePos =
             Vector2.Floor(
                 RtScreen.ToScreenSpace(
                     InputManager.MousePosition.ToVector2(),
