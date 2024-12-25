@@ -343,13 +343,12 @@ public class MainGame : Game
         // Any passengers with patience <= 0 leave
         // Any passengers getting on this floor get on
 
-        Coroutines.TryRun("phone_show", _phone.Open(false), out _);
-
         for (int index = 0; index < _cabList.Count; index++)
         {
             var characterActor = _cabList[index];
             if (characterActor.FloorNumberTarget == CurrentFloor)
             {
+                Coroutines.TryRun("phone_show", _phone.Open(false), out _);
                 yield return characterActor.GetOffElevatorBegin();
                 _cabList.Remove(characterActor);
                 index--;
@@ -368,6 +367,7 @@ public class MainGame : Game
             var characterActor = _waitList[index];
             if (characterActor.FloorNumberCurrent == CurrentFloor)
             {
+                Coroutines.TryRun("phone_show", _phone.Open(false), out _);
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
                 _phone.HighlightOrder(characterActor);
@@ -379,7 +379,8 @@ public class MainGame : Game
                 yield return characterActor.GetInElevatorEnd();
             }
         }
-        
+
+        Coroutines.Stop("phone_show");
         Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
 
         yield return null;
