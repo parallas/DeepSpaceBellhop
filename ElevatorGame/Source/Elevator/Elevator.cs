@@ -128,9 +128,16 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
         _doors.Draw(spriteBatch, floorTop);
 
-        Vector2 fillPos = MainGame.Camera.GetParallaxPosition(new Vector2(240 + 16, -8), ParallaxWalls);
-        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)fillPos.X, (int)fillPos.Y, 100, 135 + 16),
-            new Color(120, 105, 196, 255));
+        Vector2 fillPos = MainGame.Camera.GetParallaxPosition(new Vector2(0, 0), ParallaxWalls);
+        var elevatorColor = new Color(120, 105, 196, 255);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)fillPos.X - 100, (int)fillPos.Y, 100, 135 + 16),
+            elevatorColor);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)fillPos.X + 240 + 16, (int)fillPos.Y, 100, 135 + 16),
+            elevatorColor);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)fillPos.X, (int)fillPos.Y - 100, 240 + 16, 100),
+            elevatorColor);
+        spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)fillPos.X, (int)fillPos.Y + 135 + 16, 240 + 16, 100),
+            elevatorColor);
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
         _floorNumbers.Draw(spriteBatch, _floorNumber, _comboDirection);
