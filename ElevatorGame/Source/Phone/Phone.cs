@@ -210,6 +210,26 @@ public class Phone(Elevator.Elevator elevator)
         };
         _orders.Add(newOrder);
     }
+    
+    public void HighlightOrder(CharacterActor characterActor)
+    {
+        var order = _orders[_orders.FindIndex(order =>
+            order.FloorNumber == characterActor.FloorNumberCurrent &&
+            order.DestinationNumber == characterActor.FloorNumberTarget
+        )];
+
+        order.Highlighted = true;
+    }
+    
+    public void UnhighlightOrder(CharacterActor characterActor)
+    {
+        var order = _orders[_orders.FindIndex(order =>
+            order.FloorNumber == characterActor.FloorNumberCurrent &&
+            order.DestinationNumber == characterActor.FloorNumberTarget
+        )];
+
+        order.Highlighted = false;
+    }
 
     public void RemoveOrder(CharacterActor characterActor)
     {

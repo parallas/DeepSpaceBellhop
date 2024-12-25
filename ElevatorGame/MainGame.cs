@@ -370,6 +370,7 @@ public class MainGame : Game
             {
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
+                _phone.HighlightOrder(characterActor);
                 _phone.RemoveOrder(characterActor);
                 _cabList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
