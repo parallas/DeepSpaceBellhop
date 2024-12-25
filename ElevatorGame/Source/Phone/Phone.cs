@@ -15,6 +15,8 @@ namespace ElevatorGame.Source.Phone;
 
 public class Phone(Elevator.Elevator elevator)
 {
+    public const float MaxOffset = 32f;
+
     private bool _isOpen;
     private float _offset;
 
@@ -30,10 +32,14 @@ public class Phone(Elevator.Elevator elevator)
     private Rectangle _screenSliceKey;
     private Rectangle _dotSliceKey;
 
+    private Rectangle _mouseRegion = new(193, 75, 38, 200);
+
     // sprite origin: 202, 79
     // mouse region origin: 193, 75
 
     private Vector2 _phonePosition;
+    private Vector2 _dockedPhonePos;
+    private Vector2 _openPhonePos;
 
     public bool CanOpen { get; set; } = true;
     
@@ -77,29 +83,59 @@ public class Phone(Elevator.Elevator elevator)
 
     public void Update(GameTime gameTime)
     {
-        if(CanOpen && ((!_isOpen && Keybindings.Right.Pressed && elevator.State == Elevator.Elevator.ElevatorStates.Stopped) || (_isOpen && Keybindings.Left.Pressed)))
+        _dockedPhonePos = new Vector2(202, 77);
+        _openPhonePos = new Vector2(202 - 16 - _offset, 8);
+
+
+        if(MainGame.CurrentMenu == MainGame.Menus.None || MainGame.CurrentMenu == MainGame.Menus.Phone)
         {
-            if(!_isOpen)
+            bool rightPressed = !_isOpen && Keybindings.Right.Pressed && elevator.State == Elevator.Elevator.ElevatorStates.Stopped;
+            bool leftPressed = _isOpen && Keybindings.Left.Pressed;
+
+            bool mouseOver = new Rectangle(
+                _isOpen
+                    ? Vector2.Round(_openPhonePos).ToPoint() + new Point(24, 44)
+                    : Vector2.Round(_dockedPhonePos).ToPoint(),
+                _mouseRegion.Size
+            ).Contains(MainGame.Cursor.ViewPosition);
+
+            bool mouseEnter = mouseOver && InputManager.GetPressed(MouseButtons.LeftButton) && !_isOpen && elevator.State == Elevator.Elevator.ElevatorStates.Stopped;
+            bool mouseExit = !mouseOver && InputManager.GetPressed(MouseButtons.LeftButton) && _isOpen;
+
+            if(mouseOver)
             {
-                MainGame.Coroutines.Stop("phone_hide");
-                MainGame.Coroutines.TryRun("phone_show", Open(true), 0, out _);
-                elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
+                if(!_isOpen)
+                    MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.OpenPhone;
             }
-            else
+            else if(_isOpen)
             {
-                MainGame.Coroutines.Stop("phone_show");
-                MainGame.Coroutines.TryRun("phone_hide", Close(true), 0, out _);
-                elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
+                MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.Close;
+            }
+
+            if(CanOpen && ((rightPressed || leftPressed) ^ (mouseEnter || mouseExit)))
+            {
+                if(!_isOpen)
+                {
+                    MainGame.Coroutines.Stop("phone_hide");
+                    MainGame.Coroutines.TryRun("phone_show", Open(true), 0, out _);
+                    elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
+                    MainGame.CurrentMenu = MainGame.Menus.Phone;
+                }
+                else
+                {
+                    MainGame.Coroutines.Stop("phone_show");
+                    MainGame.Coroutines.TryRun("phone_hide", Close(true), 0, out _);
+                    elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
+                    MainGame.CurrentMenu = MainGame.Menus.None;
+                }
             }
         }
-        
-        Vector2 dockedPhonePos = new Vector2(202, 77);
-        Vector2 openPhonePos = new Vector2(202 - 16 - _offset, 8);
+
         float blend = _offset / 32f;
-        Vector2 blendedPhonePos = Vector2.Lerp(dockedPhonePos, openPhonePos, blend);
+        Vector2 blendedPhonePos = Vector2.Lerp(_dockedPhonePos, _openPhonePos, blend);
         Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, 25);
         _phonePosition = MathUtil.ExpDecay(_phonePosition, phonePos, 13f, 1f / 60f);
-        
+
         foreach (var order in _orders)
         {
             order.Update(gameTime);
@@ -133,7 +169,7 @@ public class Phone(Elevator.Elevator elevator)
         MainGame.Graphics.GraphicsDevice.Reset();
     }
 
-    public IEnumerator Open(bool shiftCam)
+    public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
     {
         if (_isOpen)
         {
@@ -144,11 +180,11 @@ public class Phone(Elevator.Elevator elevator)
         MainGame.Coroutines.Stop("phone_hide");
         CanOpen = false;
         _offset = 0;
-        while(_offset < 31)
+        while(_offset < MaxOffset - 1)
         {
             _offset = MathUtil.ExpDecay(
                 _offset,
-                32f,
+                MaxOffset,
                 8,
                 1/60f
             );
@@ -158,23 +194,24 @@ public class Phone(Elevator.Elevator elevator)
                 var camPos = MainGame.CameraPosition;
                 camPos.X = _offset;
                 MainGame.CameraPosition = camPos;
-                MainGame.GrayscaleCoeff = 1-(_offset / 32f);
+                MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
             }
             
             yield return null;
         }
-        _offset = 32;
+        _offset = MaxOffset;
         if (shiftCam)
         {
             var camPos = MainGame.CameraPosition;
             camPos.X = _offset;
             MainGame.CameraPosition = camPos;
-            MainGame.GrayscaleCoeff = 1-(_offset / 32f);
+            MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
         }
-        CanOpen = true;
+        if(changeCanOpen)
+            CanOpen = true;
     }
 
-    public IEnumerator Close(bool shiftCam)
+    public IEnumerator Close(bool shiftCam, bool changeCanOpen = true)
     {
         if (!_isOpen)
         {
@@ -184,7 +221,7 @@ public class Phone(Elevator.Elevator elevator)
         _isOpen = false;
         MainGame.Coroutines.Stop("phone_show");
         CanOpen = false;
-        _offset = 32;
+        _offset = MaxOffset;
         while(_offset > 1)
         {
             _offset = MathUtil.ExpDecay(
@@ -199,7 +236,7 @@ public class Phone(Elevator.Elevator elevator)
                 var camPos = MainGame.CameraPosition;
                 camPos.X = _offset;
                 MainGame.CameraPosition = camPos;
-                MainGame.GrayscaleCoeff = 1-(_offset / 32f);
+                MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
             }
             
             yield return null;
@@ -210,9 +247,10 @@ public class Phone(Elevator.Elevator elevator)
             var camPos = MainGame.CameraPosition;
             camPos.X = _offset;
             MainGame.CameraPosition = camPos;
-            MainGame.GrayscaleCoeff = 1-(_offset / 32f);
+            MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
         }
-        CanOpen = true;
+        if(changeCanOpen)
+            CanOpen = true;
     }
 
     public void AddOrder(CharacterActor characterActor)

@@ -16,10 +16,22 @@ public class Cursor
         Dialog,
         FastForward,
         Wait,
-        Interact
+        Interact,
+        OpenPhone,
+        Close
     }
 
     public CursorSprites CursorSprite { get; set; }
+
+    public CursorSprites CursorSpriteOverride { get; set; }
+
+    public Vector2 ViewPosition => RtScreen.ToScreenSpace(
+        InputManager.MousePosition.ToVector2(),
+        MainGame.RenderBufferSize,
+        MainGame.Graphics.GraphicsDevice
+    );
+
+    public Vector2 WorldPosition => ViewPosition + MainGame.ScreenPosition;
 
     private AsepriteFile _file;
     private AnimatedSprite _sprite;
@@ -32,11 +44,16 @@ public class Cursor
         _sprite.Origin = new(4);
     }
 
+    public void Update()
+    {
+        CursorSpriteOverride = CursorSprite;
+    }
+
     public void Draw(SpriteBatch spriteBatch)
     {
-        _sprite.SetFrame((int)CursorSprite);
+        _sprite.SetFrame((int)CursorSpriteOverride);
 
-        switch(CursorSprite)
+        switch(CursorSpriteOverride)
         {
             case CursorSprites.Default:
             {
@@ -63,14 +80,18 @@ public class Cursor
                 _sprite.SetFrame(InputManager.GetDown(MouseButtons.LeftButton) ? 4 : 3);
                 break;
             }
+            case CursorSprites.OpenPhone:
+            {
+                _sprite.SetFrame(6);
+                break;
+            }
+            case CursorSprites.Close:
+            {
+                _sprite.SetFrame(7);
+                break;
+            }
         }
 
-        var mousePos = RtScreen.ToScreenSpace(
-            InputManager.MousePosition.ToVector2(),
-            MainGame.RenderBufferSize,
-            MainGame.Graphics.GraphicsDevice
-        );
-
-        _sprite.Draw(spriteBatch, Vector2.Floor(mousePos));
+        _sprite.Draw(spriteBatch, Vector2.Floor(ViewPosition));
     }
 }

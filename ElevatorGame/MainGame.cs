@@ -51,10 +51,22 @@ public class MainGame : Game
 
     public static Cursor Cursor { get; private set; }
 
+    public enum Menus
+    {
+        None,
+        Phone,
+        Dialog,
+        Tickets,
+        DayTransition,
+        TurnTransition,
+    }
+
+    public static Menus CurrentMenu { get; set; }
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
-    private Elevator.Elevator _elevator;
+    private static Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
 
@@ -77,6 +89,8 @@ public class MainGame : Game
     private EffectParameter _ppWobbleInfluence;
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
+
+    private float _fadeoutProgress;
 
     public MainGame()
     {
@@ -204,6 +218,8 @@ public class MainGame : Game
 
         InputManager.UpdateTypingInput(gameTime);
 
+        Cursor.Update();
+
         if(Keybindings.Pause.Pressed)
             Exit();
 
@@ -252,6 +268,12 @@ public class MainGame : Game
 
         Camera.Update();
 
+        if(InputManager.GetPressed(Keys.Y))
+        {
+            Coroutines.Stop("main_day_advance");
+            Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+        }
+
         _elevator.Update(gameTime);
         _phone.Update(gameTime);
         _ticketManager.Update(gameTime);
@@ -290,14 +312,6 @@ public class MainGame : Game
             SpriteBatch.End();
         });
 
-        var mousePos =
-            Vector2.Floor(
-                RtScreen.ToScreenSpace(
-                    InputManager.MousePosition.ToVector2(),
-                    RenderBufferSize,
-                    GraphicsDevice
-                )
-            );
         RenderPipeline.DrawUI(SpriteBatch, GraphicsDevice, () =>
         {
             GraphicsDevice.Clear(Color.Transparent);
@@ -310,6 +324,8 @@ public class MainGame : Game
                 _dialog.Draw(SpriteBatch);
 
                 Cursor.Draw(SpriteBatch);
+
+                SpriteBatch.Draw(PixelTexture, GameBounds with { X = 0, Y = 0 }, Color.Black * _fadeoutProgress);
             }
             SpriteBatch.End();
         });
@@ -353,6 +369,8 @@ public class MainGame : Game
         // Any passengers with patience <= 0 leave
         // Any passengers getting on this floor get on
 
+        CurrentMenu = Menus.TurnTransition;
+
         for (int index = 0; index < _cabList.Count; index++)
         {
             var characterActor = _cabList[index];
@@ -377,7 +395,8 @@ public class MainGame : Game
             var characterActor = _waitList[index];
             if (characterActor.FloorNumberCurrent == CurrentFloor)
             {
-                Coroutines.TryRun("phone_show", _phone.Open(false), out _);
+                Coroutines.TryRun("phone_show", _phone.Open(false, false), out _);
+                _phone.CanOpen = false;
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
                 _phone.HighlightOrder(characterActor);
@@ -391,10 +410,46 @@ public class MainGame : Game
             }
         }
 
+        _phone.CanOpen = true;
         Coroutines.Stop("phone_show");
         Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
 
         yield return null;
+
+        CurrentMenu = Menus.None;
+    }
+
+    private IEnumerator AdvanceDay()
+    {
+        yield return FadeToBlack();
+
+        yield return 10;
+
+        // the rest of the cleanup process
+
+        yield return FadeFromBlack();
+    }
+
+    private IEnumerator FadeToBlack()
+    {
+        _fadeoutProgress = 0;
+        while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.03f))
+        {
+            _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 1, 5, 1f/60f);
+            yield return null;
+        }
+        _fadeoutProgress = 1;
+    }
+
+    private IEnumerator FadeFromBlack()
+    {
+        _fadeoutProgress = 1;
+        while(!MathUtil.Approximately(_fadeoutProgress, 0, 0.03f))
+        {
+            _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 0, 5, 1f/60f);
+            yield return null;
+        }
+        _fadeoutProgress = 0;
     }
     
     public static Vector2 GetCursorParallaxValue(Vector2 position,  float distance)

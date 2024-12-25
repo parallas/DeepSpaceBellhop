@@ -50,6 +50,8 @@ public class Dialog()
 
     public IEnumerator Display(Page[] pages, DisplayMethod displayMethod)
     {
+        var lastMenu = MainGame.CurrentMenu;
+        MainGame.CurrentMenu = MainGame.Menus.Dialog;
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
         switch (displayMethod)
         {
@@ -61,6 +63,7 @@ public class Dialog()
                 break;
         }
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Default;
+        MainGame.CurrentMenu = lastMenu;
     }
 
     private IEnumerator DisplayHuman(Page[] pages)
