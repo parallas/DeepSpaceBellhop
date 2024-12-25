@@ -1,15 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ElevatorGame.Source.Tickets;
 
-public class TicketManager
+public class TicketManager(Elevator.Elevator elevator)
 {
+    public const float MaxOffset = 32f;
+
     private readonly List<TicketActor> _tickets = [];
     private readonly List<TicketActor> _toRemove = [];
+
     private bool _isOpen;
+    private float _offset;
+    private float _targetOffset;
+
+    private CoroutineHandle _easeOffsetHandle;
 
     public void LoadContent()
     {
@@ -33,10 +41,42 @@ public class TicketManager
             }
             ticket.Update(gameTime);
         }
+
+        if(!_isOpen && Keybindings.Left.Pressed && MainGame.CurrentMenu == MainGame.Menus.None && elevator.State == Elevator.Elevator.ElevatorStates.Stopped)
+        {
+            MainGame.CurrentMenu = MainGame.Menus.Tickets;
+            elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
+            MainGame.Coroutines.Stop("ticket_hide");
+            MainGame.Coroutines.TryRun("ticket_show", Open(), out _);
+
+            _targetOffset = MaxOffset;
+            MainGame.Coroutines.Stop("ticket_ease_offset");
+            MainGame.Coroutines.TryRun("ticket_ease_offset", EaseOffset(), out _easeOffsetHandle);
+        }
+        else if(_isOpen && Keybindings.Right.Pressed && MainGame.CurrentMenu == MainGame.Menus.Tickets)
+        {
+            elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
+            MainGame.Coroutines.Stop("ticket_show");
+            MainGame.Coroutines.TryRun("ticket_hide", Close(), out _);
+
+            _targetOffset = 0;
+            MainGame.Coroutines.Stop("ticket_ease_offset");
+            MainGame.Coroutines.TryRun("ticket_ease_offset", EaseOffset(), out _easeOffsetHandle);
+        }
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
+        spriteBatch.Draw(
+            MainGame.PixelTexture, new Rectangle(
+                1,
+                MathUtil.RoundToInt(MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, _tickets.Count / 5) * 22 * (_offset / MaxOffset))),
+                5 * 16,
+                MathHelper.Max(1, _tickets.Count / 5) * 22
+            ),
+            Color.Black * 0.5f * (_offset / MaxOffset)
+        );
+
         for (int i = 0; i < _tickets.Count; i++)
         {
             var ticket = _tickets[i];
@@ -80,24 +120,60 @@ public class TicketManager
 
             ticketActor.TargetPosition =
                 new(2 + i * 3, MainGame.GameBounds.Height - 2);
-            yield return 16;
+            yield return 10;
         }
     }
 
     public IEnumerator Open()
     {
         _isOpen = true;
+
         for (int i = _tickets.Count - 1; i >= 0; i--)
         {
             var ticketActor = _tickets[i];
 
-            ticketActor.TargetPosition = new((5 - (i % 5)) * 16, ((i / 5) * 16) - (16 * 5));
-            yield return 10;
+            ticketActor.TargetPosition = new(((i % 5)) * 16 + 2, MainGame.GameBounds.Height - 4 - ((i / 5) * 22));
+            yield return 4;
         }
+
+        yield return _easeOffsetHandle?.Wait();
     }
 
-    public void Close()
+    public IEnumerator Close()
     {
+        for (int i = 0; i < _tickets.Count; i++)
+        {
+            var ticketActor = _tickets[i];
+
+            ticketActor.TargetPosition =
+                new(2 + i * 3, MainGame.GameBounds.Height - 2);
+            yield return 2;
+        }
+
+        yield return _easeOffsetHandle?.Wait();
+
+        MainGame.CurrentMenu = MainGame.Menus.None;
         _isOpen = false;
+    }
+
+    private IEnumerator EaseOffset()
+    {
+        while(!MathUtil.Approximately(_offset, _targetOffset, 1))
+        {
+            _offset = MathUtil.ExpDecay(
+                _offset,
+                _targetOffset,
+                8,
+                1/60f
+            );
+
+            var camPos = MainGame.CameraPosition;
+            camPos.X = -_offset;
+            MainGame.CameraPosition = camPos;
+            MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
+
+            yield return null;
+        }
+        _offset = _targetOffset;
     }
 }
