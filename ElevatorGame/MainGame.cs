@@ -195,15 +195,6 @@ public class MainGame : Game
 
         InputManager.UpdateTypingInput(gameTime);
 
-        if (InputManager.GetPressed(Keys.P))
-        {
-            var guid = Guid.Parse("d0e4a213-d503-4267-bff8-a624210d5868");
-            var audioInstance = StudioSystem.GetEvent("event:/SFX/Elevator/Bell/Double").CreateInstance();
-            audioInstance.Start();
-            audioInstance.Volume = 1f;
-            audioInstance.Dispose();
-        }
-
         if(Keybindings.Pause.Pressed)
             Exit();
 
@@ -254,30 +245,6 @@ public class MainGame : Game
 
         _elevator.Update(gameTime);
         _phone.Update(gameTime);
-
-        if(InputManager.GetPressed(Keys.D))
-        {
-            if(!Coroutines.IsRunning("dialog"))
-            {
-                Coroutines.Run("dialog", _dialog.Display(
-                    [
-                        new() {
-                            Content = "Hello everybody, my name is Markiplier and welcome to Five Nights at Freddy's, an indie horror game that you guys suggested,"
-                        },
-                        new() {
-                            Content = "en masse,"
-                        },
-                        new() {
-                            Content = "and I saw that Yamimash played it and he said it was really really good..."
-                        },
-                        new() {
-                            Content = "So I'm very eager to see what is up."
-                        }
-                    ],
-                    Dialog.Dialog.DisplayMethod.Alien
-                ), 0);
-            }
-        }
 
         foreach (var characterActor in _waitList)
         {
