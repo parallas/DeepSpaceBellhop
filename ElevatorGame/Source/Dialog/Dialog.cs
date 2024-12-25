@@ -27,7 +27,7 @@ public class Dialog()
     }
 
     public const int Padding = 2;
-    public const int FastScrollSpeed = 2;
+    public const int FastScrollSpeed = 1;
     public const int LineHeight = 10;
 
     private SpriteFont _font;
