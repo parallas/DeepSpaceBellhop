@@ -46,6 +46,8 @@ public class MainGame : Game
 
     public static float GrayscaleCoeff { get; set; } = 1;
 
+    public static Cursor Cursor { get; private set; }
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
@@ -75,13 +77,13 @@ public class MainGame : Game
     {
         Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
-        IsMouseVisible = true;
+        IsMouseVisible = false;
     }
 
     protected override void Initialize()
     {
         RenderPipeline.Init(RenderBufferSize);
-        
+
         Window.AllowUserResizing = true;
 
         Graphics.PreferredBackBufferWidth = 1920;
@@ -132,10 +134,13 @@ public class MainGame : Game
         _roomRenderer = new RoomRenderer();
         _roomRenderer.LoadContent();
         _roomRenderer.SetDefinition(_roomDefs[0]);
-        
+
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
         _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
+
+        Cursor = new();
+        Cursor.LoadContent();
 
         _elevatorEffects =
             Content.Load<Effect>("shaders/elevatoreffects")!;
@@ -225,7 +230,7 @@ public class MainGame : Game
 
         Coroutines.Update();
 
-        var mousePos = 
+        var mousePos =
             Vector2.Floor(
                 RtScreen.ToScreenSpace(
                     InputManager.MousePosition.ToVector2(),
@@ -319,7 +324,9 @@ public class MainGame : Game
             {
                 _phone.Draw(SpriteBatch);
 
-                SpriteBatch.Draw(PixelTexture, Camera.Position + mousePos + Vector2.One * 8, Color.White);
+                _dialog.Draw(SpriteBatch);
+
+                Cursor.Draw(SpriteBatch);
             }
             SpriteBatch.End();
         });
@@ -348,8 +355,6 @@ public class MainGame : Game
         {
             characterActor.Draw(SpriteBatch);
         }
-
-        _dialog.Draw(SpriteBatch);
     }
 
     private void OnChangeFloorNumber(int floorNumber)

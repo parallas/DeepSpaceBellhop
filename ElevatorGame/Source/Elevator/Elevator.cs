@@ -219,6 +219,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
             _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, MaxFloors);
 
+            MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
             State = ElevatorStates.Stopping;
             return;
         }
@@ -250,9 +251,11 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         PlayBell(_comboDirection);
         onChangeFloorNumber?.Invoke(_targetFloorNumber);
         State = ElevatorStates.Opening;
+        MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
         var openHandle = _doors.Open();
         yield return openHandle.Wait();
         State = ElevatorStates.Waiting;
+        MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Default;
         yield return endOfTurnSequence();
         State = ElevatorStates.Stopped;
     }
@@ -264,6 +267,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     private IEnumerator CrashSequence()
     {
+        MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
         yield return 60;
         SetState(Elevator.ElevatorStates.Stopping);
     }
