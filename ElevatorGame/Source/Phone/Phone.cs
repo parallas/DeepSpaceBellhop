@@ -267,6 +267,7 @@ public class Phone(Elevator.Elevator elevator)
         for (int i = 0; i < _orders.Count; i++)
         {
             _orders[i].TargetPosition = new Vector2(0, i * 6);
+            yield return 2;
         }
     }
 }
