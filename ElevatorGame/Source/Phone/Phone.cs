@@ -24,7 +24,8 @@ public class Phone(Elevator.Elevator elevator)
     private Sprite _phoneSprite;
     private AnimatedSprite _faceSpriteAnim;
     private AnimatedSprite _buttonsSpriteAnim;
-    
+    private AnimatedSprite _emoticonRowSpriteAnim;
+
     private RenderTarget2D _screenRenderTarget;
     
     private Rectangle _faceSliceKey;
@@ -40,6 +41,10 @@ public class Phone(Elevator.Elevator elevator)
     private Vector2 _phonePosition;
     private Vector2 _dockedPhonePos;
     private Vector2 _openPhonePos;
+    
+    private float _nudgeOffset = 0;
+    public float ScrollTarget { get; set; }
+    private float _scrollOffset;
 
     public bool CanOpen { get; set; } = true;
     
@@ -70,6 +75,14 @@ public class Phone(Elevator.Elevator elevator)
                 true
             )
             .CreateAnimatedSprite("Tag");
+
+        // Emoticon row
+        _emoticonRowSpriteAnim = ContentLoader.Load<AsepriteFile>("graphics/phone/EmoticonRow")!
+            .CreateSpriteSheet(
+                MainGame.Graphics.GraphicsDevice,
+                true
+            )
+            .CreateAnimatedSprite("Tag");
         
         _phonePosition = new Vector2(202, 77);
 
@@ -86,11 +99,30 @@ public class Phone(Elevator.Elevator elevator)
         _dockedPhonePos = new Vector2(202, 77);
         _openPhonePos = new Vector2(202 - _offset, 8);
 
+        _nudgeOffset = MathUtil.ExpDecay(_nudgeOffset, 0, 8f, 1f / 60f);
+        _scrollOffset = MathUtil.ExpDecay(_scrollOffset, ScrollTarget, 16f, 1f / 60f);
+
+        int bottomPaddingRows = 4;
+        var scrollTargetMax = MathHelper.Max(0, (_orders.Count - bottomPaddingRows) * 6);
+        if (ScrollTarget > scrollTargetMax)
+        {
+            PlayEmoticonReaction();
+        }
+        ScrollTarget = MathHelper.Clamp(ScrollTarget, 0, scrollTargetMax);
 
         if(MainGame.CurrentMenu == MainGame.Menus.None || MainGame.CurrentMenu == MainGame.Menus.Phone)
         {
             bool rightPressed = !_isOpen && Keybindings.Right.Pressed && elevator.State == Elevator.Elevator.ElevatorStates.Stopped;
             bool leftPressed = _isOpen && Keybindings.Left.Pressed;
+
+            if (_isOpen)
+            {
+                int scrollInput = (Keybindings.Down.Pressed ? 1 : 0) + (Keybindings.Up.Pressed ? -1 : 0) - InputManager.GetScrollDelta();
+                if (scrollInput != 0)
+                {
+                    Scroll(Math.Sign(scrollInput));
+                }
+            }
 
             bool mouseOver = new Rectangle(
                 _isOpen
@@ -144,7 +176,7 @@ public class Phone(Elevator.Elevator elevator)
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        Vector2 phonePos = Vector2.Round(_phonePosition);
+        Vector2 phonePos = Vector2.Round(_phonePosition + Vector2.UnitY * _nudgeOffset);
         _phoneSprite.Draw(spriteBatch, phonePos);
         _faceSpriteAnim.Draw(spriteBatch, phonePos + _faceSliceKey.Location.ToVector2());
         _buttonsSpriteAnim.Draw(spriteBatch, phonePos + _buttonsSliceKey.Location.ToVector2());
@@ -157,16 +189,40 @@ public class Phone(Elevator.Elevator elevator)
     public void PreRenderScreen(SpriteBatch spriteBatch)
     {
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_screenRenderTarget);
-        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp,
+            transformMatrix: Matrix.CreateTranslation(-Vector3.UnitY * (_scrollOffset - 3)));
         {
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             foreach (var order in _orders)
             {
                 order.Draw(spriteBatch);
             }
+            Color mainColor = ColorUtil.CreateFromHex(0x40318d);
+            _emoticonRowSpriteAnim.Color = mainColor;
+            _emoticonRowSpriteAnim.Draw(spriteBatch, new Vector2(1, 2 + _orders.Count * 6));
         }
         spriteBatch.End();
         MainGame.Graphics.GraphicsDevice.Reset();
+    }
+
+    private void PlayEmoticonReaction()
+    {
+        MainGame.Coroutines.Stop("phone_emoticon_reaction");
+        MainGame.Coroutines.TryRun("phone_emoticon_reaction", EmoticonReactionSequence(), 0, out _);
+    }
+
+    private IEnumerator EmoticonReactionSequence()
+    {
+        int randomChance = Random.Shared.Next(0, 100);
+        _emoticonRowSpriteAnim.SetFrame(1);
+        if (randomChance == 0)
+        {
+            _emoticonRowSpriteAnim.SetFrame(2);
+        }
+
+        yield return 60;
+
+        _emoticonRowSpriteAnim.SetFrame(0);
     }
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
@@ -267,10 +323,13 @@ public class Phone(Elevator.Elevator elevator)
     
     public void HighlightOrder(CharacterActor characterActor)
     {
-        var order = _orders[_orders.FindIndex(order =>
+        var index = _orders.FindIndex(order =>
             order.FloorNumber == characterActor.FloorNumberCurrent &&
             order.DestinationNumber == characterActor.FloorNumberTarget
-        )];
+        );
+        var order = _orders[index];
+
+        ScrollTo(index);
 
         order.Highlighted = true;
     }
@@ -307,5 +366,17 @@ public class Phone(Elevator.Elevator elevator)
             _orders[i].TargetPosition = new Vector2(0, i * 6);
             yield return 5;
         }
+    }
+
+    public void Scroll(int direction)
+    {
+        _nudgeOffset = direction;
+        ScrollTarget += direction * 6;
+        _scrollOffset += direction * 2;
+    }
+
+    public void ScrollTo(int index)
+    {
+        ScrollTarget = index * 6;
     }
 }
