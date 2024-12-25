@@ -84,7 +84,7 @@ public class Phone(Elevator.Elevator elevator)
     public void Update(GameTime gameTime)
     {
         _dockedPhonePos = new Vector2(202, 77);
-        _openPhonePos = new Vector2(202 - 16 - _offset, 8);
+        _openPhonePos = new Vector2(202 - _offset, 8);
 
 
         if(MainGame.CurrentMenu == MainGame.Menus.None || MainGame.CurrentMenu == MainGame.Menus.Phone)
@@ -94,7 +94,7 @@ public class Phone(Elevator.Elevator elevator)
 
             bool mouseOver = new Rectangle(
                 _isOpen
-                    ? Vector2.Round(_openPhonePos).ToPoint() + new Point(24, 44)
+                    ? Vector2.Round(_openPhonePos).ToPoint() + new Point(14, 44)
                     : Vector2.Round(_dockedPhonePos).ToPoint(),
                 _mouseRegion.Size
             ).Contains(MainGame.Cursor.ViewPosition);
