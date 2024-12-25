@@ -170,6 +170,8 @@ public class MainGame : Game
                 newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
             } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
 
+            _phone.AddOrder(newCharacter);
+            
             Console.WriteLine(
                 $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
             newCharacter.LoadContent();
@@ -341,6 +343,8 @@ public class MainGame : Game
         // Any passengers with patience <= 0 leave
         // Any passengers getting on this floor get on
 
+        Coroutines.TryRun("phone_show", _phone.Open(false), out _);
+
         for (int index = 0; index < _cabList.Count; index++)
         {
             var characterActor = _cabList[index];
@@ -366,6 +370,7 @@ public class MainGame : Game
             {
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
+                _phone.RemoveOrder(characterActor);
                 _cabList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
@@ -373,6 +378,8 @@ public class MainGame : Game
                 yield return characterActor.GetInElevatorEnd();
             }
         }
+        
+        Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
 
         yield return null;
     }

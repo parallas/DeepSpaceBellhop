@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
+using ElevatorGame.Source.Characters;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,10 +23,6 @@ public class Phone(Elevator.Elevator elevator)
     private AnimatedSprite _faceSpriteAnim;
     private AnimatedSprite _buttonsSpriteAnim;
     
-    private AnimatedSprite _digitsSpriteAnim4x5;
-    private Sprite _arrowSprite;
-    private AnimatedSprite _moodsSpriteAnim;
-    
     private RenderTarget2D _screenRenderTarget;
     
     private Rectangle _faceSliceKey;
@@ -39,6 +36,8 @@ public class Phone(Elevator.Elevator elevator)
     private Vector2 _phonePosition;
 
     public bool CanOpen { get; set; } = true;
+    
+    private List<PhoneOrder> _orders = new();
 
     public void LoadContent()
     {
@@ -66,27 +65,6 @@ public class Phone(Elevator.Elevator elevator)
             )
             .CreateAnimatedSprite("Tag");
         
-        // Digits
-        _digitsSpriteAnim4x5 = ContentLoader.Load<AsepriteFile>("graphics/Digits4x5")!
-            .CreateSpriteSheet(
-                MainGame.Graphics.GraphicsDevice,
-                true
-            )
-            .CreateAnimatedSprite("Tag");
-        _digitsSpriteAnim4x5.Color = ColorUtil.CreateFromHex(0x40318d);
-        
-        // Arrow
-        _arrowSprite = ContentLoader.Load<AsepriteFile>("graphics/phone/Arrow")!
-            .CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
-        
-        // Moods
-        _moodsSpriteAnim = ContentLoader.Load<AsepriteFile>("graphics/phone/Moods")!
-            .CreateSpriteSheet(
-                MainGame.Graphics.GraphicsDevice,
-                true
-            )
-            .CreateAnimatedSprite("Tag");
-        
         _phonePosition = new Vector2(202, 77);
 
         _screenRenderTarget = new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 28, 37);
@@ -104,20 +82,16 @@ public class Phone(Elevator.Elevator elevator)
             if((_isOpen = !_isOpen) == true)
             {
                 MainGame.Coroutines.Stop("phone_hide");
-                MainGame.Coroutines.TryRun("phone_show", Open(), 0, out _);
+                MainGame.Coroutines.TryRun("phone_show", Open(true), 0, out _);
                 elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
             }
             else
             {
                 MainGame.Coroutines.Stop("phone_show");
-                MainGame.Coroutines.TryRun("phone_hide", Close(), 0, out _);
+                MainGame.Coroutines.TryRun("phone_hide", Close(true), 0, out _);
                 elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
             }
         }
-
-        var camPos = MainGame.CameraPosition;
-        camPos.X = _offset;
-        MainGame.CameraPosition = camPos;
 
         MainGame.GrayscaleCoeff = 1-(_offset / 32f);
         
@@ -127,6 +101,11 @@ public class Phone(Elevator.Elevator elevator)
         Vector2 blendedPhonePos = Vector2.Lerp(dockedPhonePos, openPhonePos, blend);
         Vector2 phonePos = MainGame.Camera.GetParallaxPosition(blendedPhonePos, 25);
         _phonePosition = MathUtil.ExpDecay(_phonePosition, phonePos, 13f, 1f / 60f);
+        
+        foreach (var order in _orders)
+        {
+            order.Update(gameTime);
+        }
     }
 
     public void Draw(SpriteBatch spriteBatch)
@@ -147,26 +126,16 @@ public class Phone(Elevator.Elevator elevator)
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         {
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            DrawOrder(spriteBatch, 0);
-            DrawOrder(spriteBatch, 1);
-            DrawOrder(spriteBatch, 2);
-            DrawOrder(spriteBatch, 3);
+            foreach (var order in _orders)
+            {
+                order.Draw(spriteBatch);
+            }
         }
         spriteBatch.End();
         MainGame.Graphics.GraphicsDevice.Reset();
     }
-    
-    private void DrawOrder(SpriteBatch spriteBatch, int index)
-    {
-        Vector2 orderPos = Vector2.One + (Vector2.UnitY * index * 6);
-        
-        _digitsSpriteAnim4x5.Draw(spriteBatch, orderPos);
-        _digitsSpriteAnim4x5.Draw(spriteBatch, orderPos + Vector2.UnitX * 4);
-        _arrowSprite.Draw(spriteBatch, orderPos + new Vector2(10, 1));
-        _moodsSpriteAnim.Draw(spriteBatch, orderPos + Vector2.UnitX * 18);
-    }
 
-    private IEnumerator Open()
+    public IEnumerator Open(bool shiftCam)
     {
         CanOpen = false;
         _offset = 0;
@@ -178,13 +147,27 @@ public class Phone(Elevator.Elevator elevator)
                 8,
                 1/60f
             );
+            
+            if (shiftCam)
+            {
+                var camPos = MainGame.CameraPosition;
+                camPos.X = _offset;
+                MainGame.CameraPosition = camPos;
+            }
+            
             yield return null;
         }
         _offset = 32;
+        if (shiftCam)
+        {
+            var camPos = MainGame.CameraPosition;
+            camPos.X = _offset;
+            MainGame.CameraPosition = camPos;
+        }
         CanOpen = true;
     }
 
-    private IEnumerator Close()
+    public IEnumerator Close(bool shiftCam)
     {
         CanOpen = false;
         _offset = 32;
@@ -196,9 +179,48 @@ public class Phone(Elevator.Elevator elevator)
                 10,
                 1/60f
             );
+            
+            if (shiftCam)
+            {
+                var camPos = MainGame.CameraPosition;
+                camPos.X = _offset;
+                MainGame.CameraPosition = camPos;
+            }
+            
             yield return null;
         }
         _offset = 0;
+        if (shiftCam)
+        {
+            var camPos = MainGame.CameraPosition;
+            camPos.X = _offset;
+            MainGame.CameraPosition = camPos;
+        }
         CanOpen = true;
+    }
+
+    public void AddOrder(CharacterActor characterActor)
+    {
+        PhoneOrder newOrder = new PhoneOrder()
+        {
+            FloorNumber = characterActor.FloorNumberCurrent,
+            DestinationNumber = characterActor.FloorNumberTarget,
+            Mood = 0,
+            TargetPosition = new Vector2(0, _orders.Count * 6)
+        };
+        _orders.Add(newOrder);
+    }
+
+    public void RemoveOrder(CharacterActor characterActor)
+    {
+        _orders.RemoveAt(_orders.FindIndex(order =>
+            order.FloorNumber == characterActor.FloorNumberCurrent &&
+            order.DestinationNumber == characterActor.FloorNumberTarget
+        ));
+        
+        for (int i = 0; i < _orders.Count; i++)
+        {
+            _orders[i].TargetPosition = new Vector2(0, i * 6);
+        }
     }
 }
