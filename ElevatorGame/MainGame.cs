@@ -348,7 +348,6 @@ public class MainGame : Game
             var characterActor = _cabList[index];
             if (characterActor.FloorNumberTarget == CurrentFloor)
             {
-                Coroutines.TryRun("phone_show", _phone.Open(false), out _);
                 yield return characterActor.GetOffElevatorBegin();
                 _cabList.Remove(characterActor);
                 index--;
