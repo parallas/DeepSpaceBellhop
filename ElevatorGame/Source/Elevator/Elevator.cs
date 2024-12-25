@@ -133,7 +133,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
             new Color(120, 105, 196, 255));
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
-        _floorNumbers.Draw(spriteBatch, _floorNumber);
+        _floorNumbers.Draw(spriteBatch, _floorNumber, _comboDirection);
     }
 
     private void UpdateStateStopped(GameTime gameTime)
