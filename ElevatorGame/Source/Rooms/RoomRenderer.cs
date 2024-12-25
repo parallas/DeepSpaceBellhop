@@ -13,13 +13,15 @@ namespace ElevatorGame.Source.Rooms;
 
 public class RoomRenderer
 {
+    public RoomDef Def { get; set; }
+    
     private RenderTarget2D _roomRenderTarget;
     private AsepriteFile _spriteFile;
-    private Sprite[] _roomSprites;
+    private Sprite[] _layerSprites;
 
     private Effect _roomEffects;
 
-    private uint[] _colorsC64 =
+    public static readonly uint[] ColorsC64 =
     [
         0x000000,
         0xffffff,
@@ -56,41 +58,30 @@ public class RoomRenderer
     }
     private RoomSpriteUserData[] _layerUserDatas;
 
-    public RoomRenderer()
+    public void LoadContent()
     {
-        Randomize();
+        _roomEffects = ContentLoader.Load<Effect>("shaders/roomrender");
+        Debug.Assert(_roomEffects != null, nameof(_roomEffects) + " != null");
+        _effectColor1Param = _roomEffects.Parameters["Color1"];
+        _effectColor2Param = _roomEffects.Parameters["Color2"];
     }
 
-    public void Randomize()
+    public void SetDefinition(RoomDef def)
     {
-        int colorIndex1 = Random.Shared.Next(_colorsC64.Length);
-
-        int colorIndex2 = colorIndex1;
-        while (colorIndex2 == colorIndex1)
-        {
-            colorIndex2 = Random.Shared.Next(_colorsC64.Length);
-        }
-
-        _roomEffects ??= ContentLoader.Load<Effect>("shaders/roomrender");
-        Debug.Assert(_roomEffects != null, nameof(_roomEffects) + " != null");
-        _effectColor1Param ??= _roomEffects.Parameters["Color1"];
-        _effectColor2Param ??= _roomEffects.Parameters["Color2"];
-
-        _randomColor1 = ColorUtil.CreateFromHex(_colorsC64[colorIndex1]);
-        _randomColor2 = ColorUtil.CreateFromHex(_colorsC64[colorIndex2]);
-
+        Def = def;
+        
+        _randomColor1 = ColorUtil.CreateFromHex(ColorsC64[Def.ColorIndex1]);
+        _randomColor2 = ColorUtil.CreateFromHex(ColorsC64[Def.ColorIndex2]);
         _effectColor1Param.SetValue(_randomColor1.ToVector3());
         _effectColor2Param.SetValue(_randomColor2.ToVector3());
-
-        _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/RoomsGeneric")!;
-        // _spriteFile = ContentLoader.Load<AsepriteFile>("graphics/concepting/le room")!;
-        int randomFrameIndex = Random.Shared.Next(_spriteFile.FrameCount);
-        _roomSprites = _spriteFile.Layers.ToArray()
-            .Select(layer => _spriteFile.CreateSprite(MainGame.Graphics.GraphicsDevice, randomFrameIndex, [layer.Name]))
+        
+        _spriteFile = ContentLoader.Load<AsepriteFile>(Def.SpritePath)!;
+        _layerSprites = _spriteFile.Layers.ToArray()
+            .Select(layer => _spriteFile.CreateSprite(MainGame.Graphics.GraphicsDevice, def.FrameNumber, [layer.Name]))
             .ToArray();
 
-        _layerUserDatas = new RoomSpriteUserData[_roomSprites.Length];
-        for (var index = 0; index < _roomSprites.Length; index++)
+        _layerUserDatas = new RoomSpriteUserData[_layerSprites.Length];
+        for (var index = 0; index < _layerSprites.Length; index++)
         {
             AsepriteUserData userData = _spriteFile.Layers[index].UserData;
             if (!userData.HasText) continue;
@@ -115,9 +106,9 @@ public class RoomRenderer
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_roomRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _roomEffects);
         {
-            for (var index = 0; index < _roomSprites.Length; index++)
+            for (var index = 0; index < _layerSprites.Length; index++)
             {
-                var sprite = _roomSprites[index];
+                var sprite = _layerSprites[index];
                 int parallaxOffset = 70;
                 parallaxOffset = _layerUserDatas[index].depth;
 

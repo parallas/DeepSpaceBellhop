@@ -53,6 +53,7 @@ public class MainGame : Game
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
 
+    private List<RoomDef> _roomDefs = [];
     private RoomRenderer _roomRenderer;
 
     private Sprite _yetiIdle;
@@ -123,8 +124,15 @@ public class MainGame : Game
         _dialog = new();
         _dialog.LoadContent();
 
+        for (int i = 0; i < Elevator.Elevator.MaxFloors; i++)
+        {
+            var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
+            _roomDefs.Add(newRoomDef);
+        }
         _roomRenderer = new RoomRenderer();
-
+        _roomRenderer.LoadContent();
+        _roomRenderer.SetDefinition(_roomDefs[0]);
+        
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
         _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
@@ -347,7 +355,7 @@ public class MainGame : Game
     private void OnChangeFloorNumber(int floorNumber)
     {
         CurrentFloor = floorNumber;
-        _roomRenderer.Randomize();
+        _roomRenderer.SetDefinition(_roomDefs[floorNumber - 1]);
     }
 
     private IEnumerator EndOfTurnSequence()
