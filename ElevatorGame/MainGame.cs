@@ -230,6 +230,8 @@ public class MainGame : Game
             _isFullscreen = !_isFullscreen;
         }
 
+        Coroutines.Update();
+
         var mousePos =
             Vector2.Floor(
                 RtScreen.ToScreenSpace(
@@ -248,8 +250,6 @@ public class MainGame : Game
             ) * (8/120f);
 
         Camera.Update();
-
-        Coroutines.Update();
 
         _elevator.Update(gameTime);
         _phone.Update(gameTime);
@@ -322,7 +322,7 @@ public class MainGame : Game
         RenderPipeline.DrawUI(SpriteBatch, GraphicsDevice, () =>
         {
             GraphicsDevice.Clear(Color.Transparent);
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
                 _phone.Draw(SpriteBatch);
 

@@ -3,6 +3,7 @@ using Engine;
 using Engine.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source;
@@ -14,6 +15,7 @@ public class Cursor
         Default = 0,
         Dialog = 1,
         Wait = 2,
+        Interact = 3,
     }
 
     public CursorSprites CursorSprite { get; set; }
@@ -33,12 +35,36 @@ public class Cursor
     {
         _sprite.SetFrame((int)CursorSprite);
 
+        switch(CursorSprite)
+        {
+            case CursorSprites.Default:
+            {
+                _sprite.SetFrame(0);
+                break;
+            }
+            case CursorSprites.Dialog:
+            {
+                _sprite.SetFrame(1);
+                break;
+            }
+            case CursorSprites.Wait:
+            {
+                _sprite.SetFrame(2);
+                break;
+            }
+            case CursorSprites.Interact:
+            {
+                _sprite.SetFrame(InputManager.GetDown(MouseButtons.LeftButton) ? 4 : 3);
+                break;
+            }
+        }
+
         var mousePos = RtScreen.ToScreenSpace(
             InputManager.MousePosition.ToVector2(),
             MainGame.RenderBufferSize,
             MainGame.Graphics.GraphicsDevice
         );
 
-        _sprite.Draw(spriteBatch, Vector2.Round(MainGame.Camera.Position) + mousePos + Vector2.One * 8);
+        _sprite.Draw(spriteBatch, Vector2.Floor(mousePos));
     }
 }
