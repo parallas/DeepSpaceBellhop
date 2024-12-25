@@ -124,6 +124,7 @@ public class MainGame : Game
         _elevator.LoadContent();
 
         _phone = new(_elevator);
+        _phone.LoadContent();
 
         _dialog = new();
         _dialog.LoadContent();
@@ -169,6 +170,8 @@ public class MainGame : Game
                 newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
             } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
 
+            _phone.AddOrder(newCharacter);
+            
             Console.WriteLine(
                 $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
             newCharacter.LoadContent();
@@ -267,6 +270,7 @@ public class MainGame : Game
         _ppGameTime.SetValue(Frame / 60f);
 
         _roomRenderer.PreRender(SpriteBatch);
+        _phone.PreRenderScreen(SpriteBatch);
 
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
@@ -278,7 +282,7 @@ public class MainGame : Game
             SpriteBatch.End();
         });
 
-        var mousePos = 
+        var mousePos =
             Vector2.Floor(
                 RtScreen.ToScreenSpace(
                     InputManager.MousePosition.ToVector2(),
@@ -344,6 +348,7 @@ public class MainGame : Game
             var characterActor = _cabList[index];
             if (characterActor.FloorNumberTarget == CurrentFloor)
             {
+                Coroutines.TryRun("phone_show", _phone.Open(false), out _);
                 yield return characterActor.GetOffElevatorBegin();
                 _cabList.Remove(characterActor);
                 index--;
@@ -362,15 +367,21 @@ public class MainGame : Game
             var characterActor = _waitList[index];
             if (characterActor.FloorNumberCurrent == CurrentFloor)
             {
+                Coroutines.TryRun("phone_show", _phone.Open(false), out _);
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
+                _phone.HighlightOrder(characterActor);
                 _cabList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
+                yield return _phone.RemoveOrder(characterActor);
 
                 yield return characterActor.GetInElevatorEnd();
             }
         }
+
+        Coroutines.Stop("phone_show");
+        Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
 
         yield return null;
     }
