@@ -61,24 +61,36 @@ public static class RtScreen
         scaledRt.Dispose();
     }
 
-    public static float GetScale(RenderTarget2D renderTarget2D, GraphicsDevice graphics)
+    public static Vector2 ToScreenSpace(Vector2 position, Point renderBufferSize, GraphicsDevice graphics)
     {
+        // NEVER EVER TOUCH THIS CODE AGAIN! WE DON'T UNDERSTAND IT!
         Rectangle bounds = graphics.PresentationParameters.Bounds;
         int screenWidth = bounds.Width;
         int screenHeight = bounds.Height;
-        int rtWidth = renderTarget2D.Width;
-        int rtHeight = renderTarget2D.Height;
+        int rtWidth = renderBufferSize.X;
+        int rtHeight = renderBufferSize.Y;
 
         float screenRatio = (float)screenWidth / screenHeight;
         float gameRatio = (float)rtWidth / rtHeight;
-
+        float aspectRatio = (float)rtWidth / (float)rtHeight;
+        int newWidth = (int)(screenHeight * aspectRatio);
+        int newHeight = screenHeight;
+        
+        // assume scale game up by its width
+        float finalScale = (float)screenHeight / rtHeight;
         if (screenRatio < gameRatio)
         {
             // scale game up by its height
-            return screenHeight / rtHeight;
+            aspectRatio = (float)rtHeight / (float)rtWidth;
+            newHeight = (int)(screenWidth * aspectRatio);
+            newWidth = screenWidth;
+            
+            finalScale = (float)screenWidth / rtWidth;
+            float yOffset = ((float)screenHeight / 2 - (float)newHeight / 2) / finalScale;
+            return new Vector2(position.X / finalScale, position.Y / finalScale - yOffset);
         }
-
-        // assume scale game up by its width
-        return screenWidth / rtWidth;
+        
+        float xOffset = ((float)screenWidth / 2 - (float)newWidth / 2) / finalScale;
+        return new Vector2(position.X / finalScale - xOffset, position.Y / finalScale);
     }
 }

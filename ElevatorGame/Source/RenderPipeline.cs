@@ -7,6 +7,7 @@ namespace ElevatorGame.Source;
 
 public static class RenderPipeline
 {
+    public static Point RenderBufferSize { get; private set; }
     private static RenderTarget2D _gameSceneRt;
     private static RenderTarget2D _beforeUiRt;
     private static RenderTarget2D _uiRt;
@@ -16,17 +17,20 @@ public static class RenderPipeline
 
     private static GraphicsDevice _graphics;
 
-    public static float PixelScale => RtScreen.GetScale(_renderTarget, _graphics);
+    public static void Init(Point size)
+    {
+        RenderBufferSize = size;
+    }
 
     public static void LoadContent(GraphicsDevice graphicsDevice)
     {
         _graphics = graphicsDevice;
-        _renderTarget = new RenderTarget2D(graphicsDevice, 240, 135);
-        _gameSceneRt = new RenderTarget2D(graphicsDevice, 240, 135);
-        _beforeUiRt = new RenderTarget2D(graphicsDevice, 240, 135);
-        _uiRt = new RenderTarget2D(graphicsDevice, 240, 135);
-        _gameWithUiRt = new RenderTarget2D(graphicsDevice, 240, 135);
-        _postProcessRt = new RenderTarget2D(graphicsDevice, 240, 135);
+        _renderTarget = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
+        _gameSceneRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
+        _beforeUiRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
+        _uiRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
+        _gameWithUiRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
+        _postProcessRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
     }
 
     public static void DrawBeforeUI(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Effect effect, Action drawAction)

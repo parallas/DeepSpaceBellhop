@@ -26,6 +26,7 @@ public class MainGame : Game
 {
     public static GraphicsDeviceManager Graphics { get; set; }
     public static SpriteBatch SpriteBatch { get; set; }
+    public static readonly Point RenderBufferSize = new Point(240, 135);
 
     public static long Step { get; private set; }
     public static long Frame { get; private set; }
@@ -78,6 +79,8 @@ public class MainGame : Game
 
     protected override void Initialize()
     {
+        RenderPipeline.Init(RenderBufferSize);
+        
         Window.AllowUserResizing = true;
 
         Graphics.PreferredBackBufferWidth = 1920;
@@ -214,10 +217,18 @@ public class MainGame : Game
 
         Coroutines.Update();
 
+        var mousePos = 
+            Vector2.Floor(
+                RtScreen.ToScreenSpace(
+                    InputManager.MousePosition.ToVector2(),
+                    RenderBufferSize,
+                    GraphicsDevice
+                )
+            );
         Camera.Position =
             CameraPosition + (
                 Vector2.Clamp(
-                    Vector2.Floor(InputManager.MousePosition.ToVector2() / RenderPipeline.PixelScale),
+                    mousePos,
                     Vector2.Zero,
                     new(240, 135)
                 ) - new Vector2(240, 135)/2f
@@ -285,6 +296,14 @@ public class MainGame : Game
             SpriteBatch.End();
         });
 
+        var mousePos = 
+            Vector2.Floor(
+                RtScreen.ToScreenSpace(
+                    InputManager.MousePosition.ToVector2(),
+                    RenderBufferSize,
+                    GraphicsDevice
+                )
+            );
         RenderPipeline.DrawUI(SpriteBatch, GraphicsDevice, () =>
         {
             GraphicsDevice.Clear(Color.Transparent);
@@ -292,7 +311,7 @@ public class MainGame : Game
             {
                 _phone.Draw(SpriteBatch);
 
-                SpriteBatch.Draw(PixelTexture, Camera.Position + Vector2.Floor(InputManager.MousePosition.ToVector2() / RenderPipeline.PixelScale) + Vector2.One * 8, Color.White);
+                SpriteBatch.Draw(PixelTexture, Camera.Position + mousePos + Vector2.One * 8, Color.White);
             }
             SpriteBatch.End();
         });
