@@ -17,7 +17,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 {
     public const int ParallaxDoors = 35;
     public const int ParallaxWalls = 25;
-    public static int MaxFloors = 99;
+    public static int MaxFloors = 2;
 
     public enum ElevatorStates
     {

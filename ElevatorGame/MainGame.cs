@@ -79,6 +79,7 @@ public class MainGame : Game
     private Sprite _yetiPeace;
 
     private readonly List<CharacterActor> _waitList = [];
+    private readonly List<CharacterActor> _movingList = [];
     private readonly List<CharacterActor> _cabList = [];
 
     private Effect _elevatorEffects;
@@ -305,6 +306,10 @@ public class MainGame : Game
             }
             characterActor.Update(gameTime);
         }
+        foreach (var characterActor in _movingList)
+        {
+            characterActor.Update(gameTime);
+        }
 
         base.Update(gameTime);
 
@@ -374,6 +379,12 @@ public class MainGame : Game
             var characterActor = _cabList[i];
             characterActor.Draw(SpriteBatch, i);
         }
+
+        for (var i = 0; i < _movingList.Count; i++)
+        {
+            var characterActor = _movingList[i];
+            characterActor.Draw(SpriteBatch, i);
+        }
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -397,15 +408,15 @@ public class MainGame : Game
             if (characterActor.FloorNumberTarget == CurrentFloor)
             {
                 _cabList.Remove(characterActor);
-                _cabList.Add(characterActor);
+                index--;
+                _movingList.Add(characterActor);
                 yield return characterActor.GetOffElevatorBegin();
                 Coroutines.Stop("ticket_remove");
                 Coroutines.TryRun("ticket_remove", _ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
                 yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
 
-                _cabList.Remove(characterActor);
-                index--;
+                _movingList.Remove(characterActor);
                 _waitList.Add(characterActor);
                 yield return characterActor.GetOffElevatorEnd();
 
@@ -423,14 +434,16 @@ public class MainGame : Game
                 // _cabList.ForEach(actor => actor.MoveOutOfTheWay());
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
+                _movingList.Add(characterActor);
                 _phone.HighlightOrder(characterActor);
                 _ticketManager.AddTicket(characterActor.FloorNumberTarget);
-                _cabList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
                 yield return _phone.RemoveOrder(characterActor);
 
                 yield return characterActor.GetInElevatorEnd();
+                _movingList.Remove(characterActor);
+                _cabList.Add(characterActor);
             }
         }
 
