@@ -9,8 +9,7 @@ namespace ElevatorGame.Source.Tickets;
 
 public class TicketActor
 {
-    public Vector2 Position => _position;
-    private Vector2 _position;
+    public Vector2 Position { get; set; }
     
     public Vector2 TargetPosition { get; set; }
     
@@ -34,17 +33,17 @@ public class TicketActor
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
             .CreateAnimatedSprite("Tag");
 
-        _position = TargetPosition;
+        Position = TargetPosition;
     }
 
     public void Update(GameTime gameTime)
     {
-        _position = MathUtil.ExpDecay(_position, TargetPosition, 13, 1f / 60f);
+        Position = MathUtil.ExpDecay(Position, TargetPosition, 13, 1f / 60f);
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        Vector2 renderedTicketPos = _position - Vector2.UnitY * (_ticketsSpriteAnim.Height - 1);
+        Vector2 renderedTicketPos = Position - Vector2.UnitY * (_ticketsSpriteAnim.Height - 1);
         renderedTicketPos = MainGame.GetCursorParallaxValue(renderedTicketPos, 25);
         if (_isUpsideDown)
         {

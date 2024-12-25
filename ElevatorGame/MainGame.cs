@@ -384,7 +384,8 @@ public class MainGame : Game
                 _cabList.Remove(characterActor);
                 index--;
                 _waitList.Add(characterActor);
-                yield return _ticketManager.RemoveTicket(characterActor.FloorNumberTarget);
+                Coroutines.Stop("ticket_remove");
+                Coroutines.TryRun("ticket_remove", _ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
                 yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
 

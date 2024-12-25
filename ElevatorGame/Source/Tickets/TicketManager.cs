@@ -8,6 +8,7 @@ namespace ElevatorGame.Source.Tickets;
 public class TicketManager
 {
     private readonly List<TicketActor> _tickets = [];
+    private readonly List<TicketActor> _toRemove = [];
     private bool _isOpen;
 
     public void LoadContent()
@@ -21,7 +22,7 @@ public class TicketManager
         {
             var ticket = _tickets[i];
 
-            if (!_isOpen)
+            if (!_isOpen && !_toRemove.Contains(ticket))
             {
                 // if (i < _tickets.Count - 3) continue;
                 
@@ -53,14 +54,25 @@ public class TicketManager
             TargetPosition = new Vector2(MainGame.GameBounds.Center.X, MainGame.GameBounds.Bottom - 32)
         };
         newTicket.LoadContent();
-        
+
         _tickets.Add(newTicket);
     }
 
     public IEnumerator RemoveTicket(int floorNumber)
     {
         var ticket = _tickets.Find(t => t.FloorNumber == floorNumber);
+
+        _toRemove.Add(ticket);
+
+        ticket.TargetPosition = new(ticket.TargetPosition.X, MainGame.GameBounds.Height + 20);
+        while(ticket.Position.Y < MainGame.GameBounds.Height + 20 - 1)
+        {
+            yield return null;
+        }
+        yield return 10;
+
         _tickets.Remove(ticket);
+        _toRemove.Remove(ticket);
 
         for (int i = 0; i < _tickets.Count; i++)
         {
@@ -68,7 +80,7 @@ public class TicketManager
 
             ticketActor.TargetPosition =
                 new(2 + i * 3, MainGame.GameBounds.Height - 2);
-            yield return 10;
+            yield return 16;
         }
     }
 
