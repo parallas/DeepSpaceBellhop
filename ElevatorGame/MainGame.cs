@@ -354,9 +354,10 @@ public class MainGame : Game
 
         _elevator.Draw(SpriteBatch);
 
-        foreach (var characterActor in _cabList)
+        for (var i = 0; i < _cabList.Count; i++)
         {
-            characterActor.Draw(SpriteBatch);
+            var characterActor = _cabList[i];
+            characterActor.Draw(SpriteBatch, i);
         }
     }
 
@@ -401,6 +402,7 @@ public class MainGame : Game
             {
                 Coroutines.TryRun("phone_show", _phone.Open(false, false), out _);
                 _phone.CanOpen = false;
+                _cabList.ForEach(actor => actor.MoveOutOfTheWay());
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
                 _phone.HighlightOrder(characterActor);
