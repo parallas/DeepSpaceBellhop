@@ -143,7 +143,7 @@ public class MainGame : Game
         _phone = new(_elevator);
         _phone.LoadContent();
 
-        _ticketManager = new TicketManager();
+        _ticketManager = new TicketManager(_elevator);
         _ticketManager.LoadContent();
 
         _dialog = new();
@@ -279,8 +279,8 @@ public class MainGame : Game
         }
 
         _elevator.Update(gameTime);
-        _phone.Update(gameTime);
         _ticketManager.Update(gameTime);
+        _phone.Update(gameTime);
 
         foreach (var characterActor in _waitList)
         {
