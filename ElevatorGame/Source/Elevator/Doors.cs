@@ -74,12 +74,15 @@ public class Doors
         Vector2 barOnePosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop), Elevator.ParallaxDoors);
         Vector2 barTwoPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 140), Elevator.ParallaxDoors);
         Vector2 blackBarPosition = MainGame.Camera.GetParallaxPosition(new(0, lightTop - 40), Elevator.ParallaxDoors);
+        Vector2 blackBarPosition2 = MainGame.Camera.GetParallaxPosition(new(0, lightTop + 100), Elevator.ParallaxDoors);
         spriteBatch.Draw(MainGame.PixelTexture,
             new Rectangle((int)barOnePosition.X, (int)barOnePosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
         spriteBatch.Draw(MainGame.PixelTexture,
             new Rectangle((int)barTwoPosition.X, (int)barTwoPosition.Y, 240, 100), Color.White * (1 - (_doorOpenedness / 47f)));
         spriteBatch.Draw(MainGame.PixelTexture,
             new Rectangle((int)blackBarPosition.X, (int)blackBarPosition.Y, 240, 40), Color.Black * (1 - (_doorOpenedness / 47f)));
+        spriteBatch.Draw(MainGame.PixelTexture,
+            new Rectangle((int)blackBarPosition2.X, (int)blackBarPosition2.Y, 240, 40), Color.White * (1 - (_doorOpenedness / 47f)));
     }
 
     public CoroutineHandle Open()
