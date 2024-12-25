@@ -121,6 +121,7 @@ public class Phone(Elevator.Elevator elevator)
                 if (scrollInput != 0)
                 {
                     Scroll(Math.Sign(scrollInput));
+                    PlayButtonPress(scrollInput);
                 }
             }
 
@@ -198,8 +199,11 @@ public class Phone(Elevator.Elevator elevator)
                 order.Draw(spriteBatch);
             }
             Color mainColor = ColorUtil.CreateFromHex(0x40318d);
-            _emoticonRowSpriteAnim.Color = mainColor;
-            _emoticonRowSpriteAnim.Draw(spriteBatch, new Vector2(1, 2 + _orders.Count * 6));
+            if(_orders.Count >= 6)
+            {
+                _emoticonRowSpriteAnim.Color = mainColor;
+                _emoticonRowSpriteAnim.Draw(spriteBatch, new Vector2(1, 8 + _orders[^1].Position.Y));
+            }
         }
         spriteBatch.End();
         MainGame.Graphics.GraphicsDevice.Reset();
@@ -223,6 +227,25 @@ public class Phone(Elevator.Elevator elevator)
         yield return 60;
 
         _emoticonRowSpriteAnim.SetFrame(0);
+    }
+
+    private void PlayButtonPress(int dir)
+    {
+        MainGame.Coroutines.Stop("phone_button_press");
+        MainGame.Coroutines.TryRun("phone_button_press", ButtonPressSequence(dir), 0, out _);
+    }
+
+    private IEnumerator ButtonPressSequence(int dir)
+    {
+        _buttonsSpriteAnim.SetFrame(dir switch {
+            1 => 2,
+            -1 => 1,
+            _ => 0
+        });
+
+        yield return 15;
+
+        _buttonsSpriteAnim.SetFrame(0);
     }
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
