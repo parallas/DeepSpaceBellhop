@@ -382,9 +382,9 @@ public class MainGame : Game
             {
                 yield return characterActor.GetOffElevatorBegin();
                 _cabList.Remove(characterActor);
-                yield return _ticketManager.RemoveTicket(characterActor.FloorNumberTarget);
                 index--;
                 _waitList.Add(characterActor);
+                yield return _ticketManager.RemoveTicket(characterActor.FloorNumberTarget);
                 yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
 
