@@ -146,9 +146,9 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     private void UpdateStateStopped(GameTime gameTime)
     {
         int inputDir = 0;
-        if(InputManager.GetPressed(Keys.Up))
+        if(Keybindings.Up.Pressed)
             inputDir += 1;
-        if(InputManager.GetPressed(Keys.Down))
+        if(Keybindings.Down.Pressed)
             inputDir -= 1;
 
         if (inputDir > 0 && (int)Math.Round(_floorNumber) >= MaxFloors || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
@@ -200,7 +200,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
             _velocity = 0;
         }
 
-        if((_dir == 1 && !InputManager.GetDown(Keys.Up)) || (_dir == -1 && !InputManager.GetDown(Keys.Down)) || didSoftCrash)
+        if((_dir == 1 && !Keybindings.Up.IsDown) || (_dir == -1 && !Keybindings.Down.IsDown) || didSoftCrash)
         {
             _targetFloorNumber = (int)Math.Round(_floorNumber);
 
