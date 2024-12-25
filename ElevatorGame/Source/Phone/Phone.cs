@@ -13,6 +13,9 @@ public class Phone(Elevator.Elevator elevator)
     bool _isOpen;
     float _offset;
 
+    // sprite origin: 202, 79
+    // mouse region origin: 193, 75
+
     public bool CanOpen { get; set; } = true;
 
     public void Update(GameTime gameTime)
