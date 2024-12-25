@@ -231,13 +231,23 @@ public class Phone(Elevator.Elevator elevator)
         order.Highlighted = false;
     }
 
-    public void RemoveOrder(CharacterActor characterActor)
+    public IEnumerator RemoveOrder(CharacterActor characterActor)
     {
-        _orders.RemoveAt(_orders.FindIndex(order =>
+        var order = _orders.Find(order =>
             order.FloorNumber == characterActor.FloorNumberCurrent &&
             order.DestinationNumber == characterActor.FloorNumberTarget
-        ));
-        
+        );
+
+        yield return 20; // plinky HERE
+
+        order.TargetPosition = new(30, order.TargetPosition.Y);
+        while(order.Position.X <= 28)
+        {
+            yield return null;
+        }
+
+        _orders.Remove(order);
+
         for (int i = 0; i < _orders.Count; i++)
         {
             _orders[i].TargetPosition = new Vector2(0, i * 6);

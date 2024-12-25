@@ -14,6 +14,7 @@ public class PhoneOrder
     public int Mood { get; set; }
     public Vector2 TargetPosition { get; set; }
     public bool Highlighted { get; set; }
+    public Vector2 Position => _position;
     
     private Vector2 _position;
     
