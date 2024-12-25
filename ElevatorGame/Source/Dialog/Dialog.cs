@@ -80,14 +80,18 @@ public class Dialog()
 
                 // Console.WriteLine($"dialog buffer: {string.Join("", _charBuffer)}");
 
-                MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
-
                 if(ch != ' ')
                 {
                     if(CheckConfirmDown())
+                    {
+                        MainGame.Cursor.CursorSprite = Cursor.CursorSprites.FastForward;
                         yield return FastScrollSpeed;
+                    }
                     else
+                    {
+                        MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
                         yield return page.CharInterval;
+                    }
                 }
             }
 
@@ -115,12 +119,16 @@ public class Dialog()
             {
                 _glyphBuffer.Add(Random.Shared.Next(_glyphSprite.FrameCount));
 
-                MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
-
                 if(CheckConfirmDown())
+                {
+                    MainGame.Cursor.CursorSprite = Cursor.CursorSprites.FastForward;
                     yield return FastScrollSpeed;
+                }
                 else
+                {
+                    MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
                     yield return page.CharInterval;
+                }
             }
 
             _awaitingConfirmation = true;

@@ -12,10 +12,11 @@ public class Cursor
 {
     public enum CursorSprites
     {
-        Default = 0,
-        Dialog = 1,
-        Wait = 2,
-        Interact = 3,
+        Default,
+        Dialog,
+        FastForward,
+        Wait,
+        Interact
     }
 
     public CursorSprites CursorSprite { get; set; }
@@ -45,6 +46,11 @@ public class Cursor
             case CursorSprites.Dialog:
             {
                 _sprite.SetFrame(1);
+                break;
+            }
+            case CursorSprites.FastForward:
+            {
+                _sprite.SetFrame(5);
                 break;
             }
             case CursorSprites.Wait:
