@@ -26,7 +26,7 @@ public class Dialog()
         public int CharInterval { get; set; } = 4;
     }
 
-    public const int Padding = 4;
+    public const int Padding = 2;
     public const int FastScrollSpeed = 2;
     public const int LineHeight = 10;
 
@@ -160,7 +160,7 @@ public class Dialog()
                 spriteBatch.DrawStringSpacesFix(
                     _font,
                     builder.ToString(),
-                    new Vector2(Padding + 6, Padding + 3 + y),
+                    new Vector2(Padding, Padding + y - 2),
                     _awaitingConfirmation ? Color.Yellow : Color.White,
                     6
                 );
@@ -186,7 +186,7 @@ public class Dialog()
                 else
                     _glyphSprite.Color = Color.White;
 
-                _glyphSprite.Draw(spriteBatch, new(Padding + x + 4, Padding + y + 2));
+                _glyphSprite.Draw(spriteBatch, new(Padding + x, Padding + y - 4));
 
                 x += w;
             }
