@@ -63,9 +63,6 @@ public class Dialog()
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Default;
     }
 
-    private static bool CheckConfirmDown() => InputManager.GetDown(Keys.Enter) || InputManager.GetDown(Keys.Space) || InputManager.GetDown(MouseButtons.LeftButton);
-    private static bool CheckConfirmPressed() => InputManager.GetPressed(Keys.Enter) || InputManager.GetPressed(Keys.Space) || InputManager.GetPressed(MouseButtons.LeftButton);
-
     private IEnumerator DisplayHuman(Page[] pages)
     {
         _charBuffer.Clear();
@@ -82,7 +79,7 @@ public class Dialog()
 
                 if(ch != ' ')
                 {
-                    if(CheckConfirmDown())
+                    if(Keybindings.Confirm.IsDown)
                     {
                         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.FastForward;
                         yield return FastScrollSpeed;
@@ -97,7 +94,7 @@ public class Dialog()
 
             _awaitingConfirmation = true;
             MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Dialog;
-            while (!CheckConfirmPressed())
+            while (!Keybindings.Confirm.Pressed)
             {
                 yield return null;
             }
@@ -119,7 +116,7 @@ public class Dialog()
             {
                 _glyphBuffer.Add(Random.Shared.Next(_glyphSprite.FrameCount));
 
-                if(CheckConfirmDown())
+                if(Keybindings.Confirm.IsDown)
                 {
                     MainGame.Cursor.CursorSprite = Cursor.CursorSprites.FastForward;
                     yield return FastScrollSpeed;
@@ -133,7 +130,7 @@ public class Dialog()
 
             _awaitingConfirmation = true;
             MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Dialog;
-            while (!CheckConfirmPressed())
+            while (!Keybindings.Confirm.Pressed)
             {
                 yield return null;
             }

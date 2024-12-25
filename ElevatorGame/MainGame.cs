@@ -203,7 +203,7 @@ public class MainGame : Game
             audioInstance.Dispose();
         }
 
-        if(InputManager.GetPressed(Buttons.Start) || InputManager.GetPressed(Keys.Escape))
+        if(Keybindings.Pause.Pressed)
             Exit();
 
         if(InputManager.GetPressed(Keys.F11) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
