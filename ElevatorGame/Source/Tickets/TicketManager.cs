@@ -67,11 +67,16 @@ public class TicketManager(Elevator.Elevator elevator)
 
     public void Draw(SpriteBatch spriteBatch)
     {
+        Vector2 drawerPosition = MainGame.GetCursorParallaxValue(new(
+            1,
+            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, _tickets.Count / 5) * 22 * (_offset / MaxOffset))
+        ), 30);
+
         spriteBatch.Draw(
             MainGame.PixelTexture, new Rectangle(
-                1,
-                MathUtil.RoundToInt(MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, _tickets.Count / 5) * 22 * (_offset / MaxOffset))),
-                5 * 16,
+                MathUtil.RoundToInt(drawerPosition.X),
+                MathUtil.RoundToInt(drawerPosition.Y),
+                5 * 16 + 1,
                 MathHelper.Max(1, _tickets.Count / 5) * 22
             ),
             Color.Black * 0.5f * (_offset / MaxOffset)
