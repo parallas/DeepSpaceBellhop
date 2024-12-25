@@ -40,6 +40,8 @@ public class MainGame : Game
 
     public static Vector2 CameraPosition { get; set; }
 
+    public static Vector2 ScreenPosition => Vector2.Round(Camera.Position) + Vector2.One * 8;
+
     public static CoroutineRunner Coroutines { get; set; } = new();
 
     public static int CurrentFloor { get; set; } = 1;
@@ -228,8 +230,6 @@ public class MainGame : Game
             _isFullscreen = !_isFullscreen;
         }
 
-        Coroutines.Update();
-
         var mousePos =
             Vector2.Floor(
                 RtScreen.ToScreenSpace(
@@ -248,6 +248,8 @@ public class MainGame : Game
             ) * (8/120f);
 
         Camera.Update();
+
+        Coroutines.Update();
 
         _elevator.Update(gameTime);
         _phone.Update(gameTime);
