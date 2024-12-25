@@ -176,27 +176,31 @@ public class MainGame : Game
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
         
         CharacterRegistry.Init();
-        foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
+        for (int i = 0; i < 5; i++)
         {
-            var newCharacter = new CharacterActor
+            foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
             {
-                Def = characterTableValue,
-                FloorNumberCurrent = Random.Shared.Next(2, Elevator.Elevator.MaxFloors + 1),
-                Patience = 5,
-                OffsetXTarget = Random.Shared.Next(-48, 49)
-            };
-            do
-            {
-                newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
-            } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
+                var newCharacter = new CharacterActor
+                {
+                    Def = characterTableValue,
+                    FloorNumberCurrent = Random.Shared.Next(2, Elevator.Elevator.MaxFloors + 1),
+                    Patience = 5,
+                    OffsetXTarget = Random.Shared.Next(-48, 49)
+                };
+                do
+                {
+                    newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
+                } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
 
-            _phone.AddOrder(newCharacter);
-            
-            Console.WriteLine(
-                $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
-            newCharacter.LoadContent();
-            _waitList.Add(newCharacter);
+                _phone.AddOrder(newCharacter);
+
+                Console.WriteLine(
+                    $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
+                newCharacter.LoadContent();
+                _waitList.Add(newCharacter);
+            }
         }
+
     }
 
     protected override void UnloadContent()
