@@ -288,6 +288,21 @@ public class MainGame : Game
         }
         foreach (var characterActor in _cabList)
         {
+            if (_cabList.Count <= 10)
+            {
+                var hitPerson = _cabList.Find((actor =>
+                    actor != characterActor &&
+                    MathUtil.Approximately(actor.OffsetXTarget, characterActor.OffsetXTarget,
+                        MathHelper.Lerp(32, 16, _cabList.Count / 10f))));
+                if (hitPerson is not null)
+                {
+                    var dir = Math.Sign(characterActor.OffsetXTarget - hitPerson.OffsetXTarget);
+                    if (dir == 0) dir = 1;
+                    var target = characterActor.OffsetXTarget + dir;
+                    characterActor.OffsetXTarget = Math.Clamp(target, -CharacterActor.StandingRoomSize,
+                        CharacterActor.StandingRoomSize);
+                }
+            }
             characterActor.Update(gameTime);
         }
 
@@ -381,15 +396,17 @@ public class MainGame : Game
             var characterActor = _cabList[index];
             if (characterActor.FloorNumberTarget == CurrentFloor)
             {
-                yield return characterActor.GetOffElevatorBegin();
                 _cabList.Remove(characterActor);
-                index--;
-                _waitList.Add(characterActor);
+                _cabList.Add(characterActor);
+                yield return characterActor.GetOffElevatorBegin();
                 Coroutines.Stop("ticket_remove");
                 Coroutines.TryRun("ticket_remove", _ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
                 yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
 
+                _cabList.Remove(characterActor);
+                index--;
+                _waitList.Add(characterActor);
                 yield return characterActor.GetOffElevatorEnd();
 
                 _waitList.Remove(characterActor);
@@ -403,7 +420,7 @@ public class MainGame : Game
             {
                 Coroutines.TryRun("phone_show", _phone.Open(false, false), out _);
                 _phone.CanOpen = false;
-                _cabList.ForEach(actor => actor.MoveOutOfTheWay());
+                // _cabList.ForEach(actor => actor.MoveOutOfTheWay());
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
                 _phone.HighlightOrder(characterActor);

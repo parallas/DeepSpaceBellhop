@@ -27,7 +27,10 @@ public class CharacterActor
     private bool _isInElevator;
     private float _currentWalkSpeed;
 
-    private const int StandingRoomSize = 85;
+    private int _targetDepth;
+    private float _renderDepth;
+
+    public const int StandingRoomSize = 85;
 
     private void PlayAnimation(AnimatedSprite animation)
     {
@@ -69,8 +72,9 @@ public class CharacterActor
     {
         if (!_isInElevator && FloorNumberCurrent != MainGame.CurrentFloor) return;
 
-        var depthInterpolated = MathUtil.InverseLerp01(0, 8, index);
-        var depth = _isInElevator ? (depthInterpolated * Elevator.Elevator.ParallaxWalls - 1) : Elevator.Elevator.ParallaxDoors + 10;
+        var depthInterpolated = MathUtil.InverseLerp01(8, 0, index);
+        _targetDepth = MathUtil.FloorToInt(_isInElevator ? (depthInterpolated * Elevator.Elevator.ParallaxWalls - 1) : Elevator.Elevator.ParallaxDoors + 10);
+        _renderDepth = MathUtil.ExpDecay(_renderDepth, _targetDepth, 13f, 1f / 60f);
 
         _currentAnimation.Origin = new Vector2(_currentAnimation.Width * 0.5f, _currentAnimation.Height);
 
@@ -88,7 +92,7 @@ public class CharacterActor
             MainGame.SpriteBatch,
             MainGame.Camera.GetParallaxPosition(
                 pos + Vector2.One * 2,
-                depth
+                _renderDepth
             )
         );
 
@@ -97,7 +101,7 @@ public class CharacterActor
             MainGame.SpriteBatch,
             MainGame.Camera.GetParallaxPosition(
                 pos,
-                depth
+                _renderDepth
             )
         );
     }
@@ -114,11 +118,13 @@ public class CharacterActor
 
     public IEnumerator GetInElevatorBegin()
     {
-        OffsetXTarget = 0;
-        while (MathUtil.RoundToInt(_offsetX) != 0)
+        int entranceRange = 0;
+        OffsetXTarget = Math.Clamp(OffsetXTarget, -entranceRange, entranceRange);
+        while (!MathUtil.Approximately(_offsetX, 0, entranceRange + 1))
         {
             yield return null;
         }
+        _offsetX = OffsetXTarget;
 
         _isInElevator = true;
     }
