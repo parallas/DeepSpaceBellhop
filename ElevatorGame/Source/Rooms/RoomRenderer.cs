@@ -28,17 +28,56 @@ public class RoomRenderer
         0x883932,
         0x67b6bd,
         0x8b3f96,
+        
         0x55a049,
         0x40318d,
         0xbfce72,
         0x8b5429,
         0x574200,
+        
         0xb86962,
         0x505050,
         0x787878,
         0x94e089,
         0x7869c4,
+        
         0x9f9f9f
+    ];
+
+    public static readonly uint[] ColorsC64Dark =
+    [
+        0x000000,
+        0x883932,
+        0x8b3f96,
+        0x55a049,
+        0x40318d,
+        0x8b5429,
+        // 0x574200,
+    ];
+    
+    public static readonly uint[] ColorsC64Light =
+    [
+        0xffffff,
+        0x67b6bd,
+        0xbfce72,
+        0xb86962,
+        0x94e089,
+        0x7869c4,
+    ];
+
+    public static readonly (uint, uint)[] BannedColorCombos =
+    [
+        (0x67b6bd, 0x94e089),
+        (0x67b6bd, 0x55a049),
+        (0x55a049, 0x7869c4),
+        (0x67b6bd, 0x7869c4),
+        (0x94e089, 0xbfce72),
+        (0x8b3f96, 0x7869c4),
+        (0x8b5429, 0x7869c4),
+        (0xb86962, 0x55a049),
+        (0x883932, 0x7869c4),
+        (0x8b3f96, 0xb86962),
+        (0x8b5429, 0xb86962),
     ];
 
     private Color _randomColor1;
@@ -70,8 +109,8 @@ public class RoomRenderer
     {
         Def = def;
         
-        _randomColor1 = ColorUtil.CreateFromHex(ColorsC64[Def.ColorIndex1]);
-        _randomColor2 = ColorUtil.CreateFromHex(ColorsC64[Def.ColorIndex2]);
+        _randomColor1 = ColorUtil.CreateFromHex(ColorsC64Dark[Def.ColorIndex1]);
+        _randomColor2 = ColorUtil.CreateFromHex(ColorsC64Light[Def.ColorIndex2]);
         _effectColor1Param.SetValue(_randomColor1.ToVector3());
         _effectColor2Param.SetValue(_randomColor2.ToVector3());
         

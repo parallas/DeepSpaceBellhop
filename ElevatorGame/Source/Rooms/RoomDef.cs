@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
@@ -15,13 +16,19 @@ public struct RoomDef
 
     public static RoomDef MakeRandom(string filePath)
     {
-        int colorIndex1 = Random.Shared.Next(RoomRenderer.ColorsC64.Length);
-
-        int colorIndex2 = colorIndex1;
-        while (colorIndex2 == colorIndex1)
+        int colorIndex1 = 0;
+        int colorIndex2 = 0;
+        do
         {
-            colorIndex2 = Random.Shared.Next(RoomRenderer.ColorsC64.Length);
-        }
+            colorIndex1 = Random.Shared.Next(RoomRenderer.ColorsC64Dark.Length);
+            colorIndex2 = Random.Shared.Next(RoomRenderer.ColorsC64Light.Length);
+        } while (RoomRenderer.BannedColorCombos.Any(tuple => 
+                     (RoomRenderer.ColorsC64Dark[colorIndex1] == tuple.Item1 && 
+                      RoomRenderer.ColorsC64Light[colorIndex2] == tuple.Item2) || 
+                     (RoomRenderer.ColorsC64Dark[colorIndex1] == tuple.Item2 && 
+                      RoomRenderer.ColorsC64Light[colorIndex2] == tuple.Item1)
+                )
+        );
         
         var spriteFile = ContentLoader.Load<AsepriteFile>(filePath)!;
         int randomFrameIndex = Random.Shared.Next(spriteFile.FrameCount);

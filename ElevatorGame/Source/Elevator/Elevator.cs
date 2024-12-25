@@ -42,7 +42,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     private float _maxSpeed = 0.16f;
 
     private int _turns;
-    private int _comboDirection = 1;
+    private int _comboDirection = 0;
     private int _dir;
 
     private bool _stopping;
@@ -158,9 +158,9 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         }
 
         _dir = inputDir;
-        _comboDirection = _dir;
 
         if (_dir == 0) return;
+        _comboDirection = _dir;
         _doors.Close();
         State = ElevatorStates.Closing;
     }
