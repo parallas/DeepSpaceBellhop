@@ -34,6 +34,8 @@ public class TicketActor
             .CreateAnimatedSprite("Tag");
 
         Position = TargetPosition;
+
+        _isUpsideDown = Random.Shared.Next(10) == 0;
     }
 
     public void Update(GameTime gameTime)
@@ -58,7 +60,7 @@ public class TicketActor
         _ticketsSpriteAnim.Color = Color.White;
         _ticketsSpriteAnim.Draw(spriteBatch, renderedTicketPos);
 
-        Vector2 digitsStartPos = renderedTicketPos + new Vector2(4, 9);
+        Vector2 digitsStartPos = renderedTicketPos + new Vector2(4 - (_isUpsideDown ? 1 : 0), 9);
         _digitsSpriteAnim5x7.Color = Color.Black;
         if (!_isUpsideDown)
         {

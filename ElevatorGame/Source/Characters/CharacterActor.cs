@@ -83,7 +83,7 @@ public class CharacterActor
 
         Vector2 pos = new Vector2(
             MainGame.GameBounds.Center.X + _offsetX,
-            MainGame.GameBounds.Bottom + 5 + -MathHelper.Max(MathF.Sin((MainGame.Frame + _seed) / 60f * 3), 0f) + _offsetY
+            MainGame.GameBounds.Bottom + 8 + -MathHelper.Max(MathF.Sin((MainGame.Frame + _seed) / 60f * 3), 0f) + _offsetY
         );
         pos = Vector2.Round(pos);
 
