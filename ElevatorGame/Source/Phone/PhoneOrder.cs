@@ -64,7 +64,7 @@ public class PhoneOrder
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        Vector2 orderPos = Vector2.One + _position;
+        Vector2 orderPos = Vector2.Round(Vector2.One + _position);
 
         if (_currentColor == _bgColor)
         {
