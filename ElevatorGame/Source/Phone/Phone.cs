@@ -97,7 +97,7 @@ public class Phone(Elevator.Elevator elevator)
         Vector2 openPhonePos = new Vector2(202 - 16 - _offset, 8);
         float blend = _offset / 32f;
         Vector2 blendedPhonePos = Vector2.Lerp(dockedPhonePos, openPhonePos, blend);
-        Vector2 phonePos = MainGame.Camera.GetParallaxPosition(blendedPhonePos, 25);
+        Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, 25);
         _phonePosition = MathUtil.ExpDecay(_phonePosition, phonePos, 13f, 1f / 60f);
         
         foreach (var order in _orders)

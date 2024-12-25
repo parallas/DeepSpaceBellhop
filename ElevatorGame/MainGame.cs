@@ -7,6 +7,7 @@ using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
 using ElevatorGame.Source.Characters;
 using ElevatorGame.Source.Rooms;
+using ElevatorGame.Source.Tickets;
 using Engine;
 using Engine.Display;
 using FMOD;
@@ -56,6 +57,8 @@ public class MainGame : Game
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
+
+    private TicketManager _ticketManager;
 
     private List<RoomDef> _roomDefs = [];
     private RoomRenderer _roomRenderer;
@@ -126,6 +129,9 @@ public class MainGame : Game
         _phone = new(_elevator);
         _phone.LoadContent();
 
+        _ticketManager = new TicketManager();
+        _ticketManager.LoadContent();
+
         _dialog = new();
         _dialog.LoadContent();
 
@@ -154,7 +160,7 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
-
+        
         CharacterRegistry.Init();
         foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
         {
@@ -184,6 +190,7 @@ public class MainGame : Game
         FmodManager.Unload();
 
         _elevator.UnloadContent();
+        _phone.UnloadContent();
     }
 
     protected override void Update(GameTime gameTime)
@@ -247,6 +254,7 @@ public class MainGame : Game
 
         _elevator.Update(gameTime);
         _phone.Update(gameTime);
+        _ticketManager.Update(gameTime);
 
         foreach (var characterActor in _waitList)
         {
@@ -296,6 +304,8 @@ public class MainGame : Game
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
                 _phone.Draw(SpriteBatch);
+
+                _ticketManager.Draw(SpriteBatch);
 
                 _dialog.Draw(SpriteBatch);
 
@@ -350,6 +360,7 @@ public class MainGame : Game
             {
                 yield return characterActor.GetOffElevatorBegin();
                 _cabList.Remove(characterActor);
+                _ticketManager.RemoveTicket(characterActor.FloorNumberTarget);
                 index--;
                 _waitList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
@@ -370,6 +381,7 @@ public class MainGame : Game
                 yield return characterActor.GetInElevatorBegin();
                 _waitList.Remove(characterActor);
                 _phone.HighlightOrder(characterActor);
+                _ticketManager.AddTicket(characterActor.FloorNumberTarget);
                 _cabList.Add(characterActor);
                 yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
                     Dialog.Dialog.DisplayMethod.Human);
@@ -383,5 +395,26 @@ public class MainGame : Game
         Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
 
         yield return null;
+    }
+    
+    public static Vector2 GetCursorParallaxValue(Vector2 position,  float distance)
+    {
+        var mousePos =
+            Vector2.Floor(
+                RtScreen.ToScreenSpace(
+                    InputManager.MousePosition.ToVector2(),
+                    RenderBufferSize,
+                    Graphics.GraphicsDevice
+                ) 
+            );
+
+        Vector2 checkPos = (
+            Vector2.Clamp(
+                mousePos,
+                Vector2.Zero,
+                new(240, 135)
+            ) - new Vector2(240, 135) / 2f
+        ) * (8 / 120f);
+        return position + Vector2.Round(checkPos * MathUtil.InverseLerp01(0, 100, distance));
     }
 }
