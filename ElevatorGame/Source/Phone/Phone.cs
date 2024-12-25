@@ -99,7 +99,7 @@ public class Phone(Elevator.Elevator elevator)
 
     public void Update(GameTime gameTime)
     {
-        if(CanOpen && ((!_isOpen && InputManager.GetPressed(Keys.Right) && elevator.State == Elevator.Elevator.ElevatorStates.Stopped) || (_isOpen && InputManager.GetPressed(Keys.Left))))
+        if(CanOpen && ((!_isOpen && Keybindings.Right.Pressed && elevator.State == Elevator.Elevator.ElevatorStates.Stopped) || (_isOpen && Keybindings.Left.Pressed)))
         {
             if((_isOpen = !_isOpen) == true)
             {
