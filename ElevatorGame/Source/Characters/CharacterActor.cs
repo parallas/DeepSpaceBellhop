@@ -27,6 +27,8 @@ public class CharacterActor
     private bool _isInElevator;
     private float _currentWalkSpeed;
 
+    private const int StandingRoomSize = 85;
+
     private void PlayAnimation(AnimatedSprite animation)
     {
         if (_currentAnimation == animation) return;
@@ -63,11 +65,12 @@ public class CharacterActor
         _squashStretchOffset = MathUtil.ExpDecay(_squashStretchOffset, 0, 8, 1f / 60f);
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, int index = 0)
     {
         if (!_isInElevator && FloorNumberCurrent != MainGame.CurrentFloor) return;
 
-        var depth = _isInElevator ? 0 : Elevator.Elevator.ParallaxDoors + 10;
+        var depthInterpolated = MathUtil.InverseLerp01(0, 8, index);
+        var depth = _isInElevator ? (depthInterpolated * Elevator.Elevator.ParallaxWalls - 1) : Elevator.Elevator.ParallaxDoors + 10;
 
         _currentAnimation.Origin = new Vector2(_currentAnimation.Width * 0.5f, _currentAnimation.Height);
 
@@ -99,6 +102,16 @@ public class CharacterActor
         );
     }
 
+    public void MoveOutOfTheWay()
+    {
+        int newTarget = OffsetXTarget;
+        while (MathUtil.Approximately(newTarget, 0, 24))
+        {
+            newTarget = Random.Shared.Next(-StandingRoomSize, StandingRoomSize + 1);
+        }
+        OffsetXTarget = newTarget;
+    }
+
     public IEnumerator GetInElevatorBegin()
     {
         OffsetXTarget = 0;
@@ -112,7 +125,7 @@ public class CharacterActor
 
     public IEnumerator GetInElevatorEnd()
     {
-        int newX = Random.Shared.Next(-60, 61);
+        int newX = Random.Shared.Next(-StandingRoomSize, StandingRoomSize + 1);
         OffsetXTarget = newX;
         while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget)
         {
