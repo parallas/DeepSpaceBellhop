@@ -195,7 +195,7 @@ public class Phone(Elevator.Elevator elevator)
     {
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_screenRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp,
-            transformMatrix: Matrix.CreateTranslation(-Vector3.UnitY * (_scrollOffset - 3)));
+            transformMatrix: Matrix.CreateTranslation(Vector3.Round(-Vector3.UnitY * (_scrollOffset - 3))));
         {
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             foreach (var order in _orders)
