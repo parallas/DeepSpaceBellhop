@@ -47,6 +47,21 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Kloob",
                 WalkSpeed = 2,
             },
+            new()
+            {
+                Name = "Robot",
+                SpritePath = "graphics/characters/Robot",
+                WalkSpeed = 6,
+                EnterPhrases = [
+                    new("var Greeting = \"HELLO HUMAN\", Destination = $floorNumDest;"),
+                    new("InvalidCastException: [$floorNumDest] is not a string (Dialog.cs:74);"),
+                ],
+                ExitPhrases = [
+                    new("[GRATITUDE];"),
+                    new("The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).")
+                ],
+                AngryPhrases = [new("Unhandled Exception in thread 'Main': Timed out;")],
+            },
         ];
 
         foreach (var characterDef in _characterDefs)
