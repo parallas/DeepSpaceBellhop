@@ -100,7 +100,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         for (int index = 0; index < _cabList.Count; index++)
         {
             var characterActor = _cabList[index];
-            if (characterActor.FloorNumberTarget != MainGame.CurrentFloor) continue;
+            if (characterActor.FloorNumberTarget != MainGame.CurrentFloor && characterActor.Patience > 0) continue;
 
             _cabList.Remove(characterActor);
             index--;
@@ -109,9 +109,14 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             MainGame.Coroutines.Stop("ticket_remove");
             MainGame.Coroutines.TryRun("ticket_remove", ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
 
+            // Use angry phrases if patience is <= 0
+            var phrases =
+                characterActor.Patience > 0
+                    ? characterActor.Def.ExitPhrases
+                    : characterActor.Def.AngryPhrases;
             Dialog.Dialog.Page[] rawPages;
             Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
-            if (characterActor.Def.ExitPhrases.Length == 0)
+            if (phrases.Length == 0)
             {
                 int randomCharCout = Random.Shared.Next(3, 30);
                 string randomString = new string(Enumerable.Range(0, randomCharCout)
@@ -121,7 +126,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             }
             else
             {
-                rawPages = characterActor.Def.ExitPhrases[Random.Shared.Next(characterActor.Def.ExitPhrases.Length)]
+                rawPages = phrases[Random.Shared.Next(phrases.Length)]
                     .Pages;
             }
             var parsesPages = ParsePages(rawPages, characterActor);
@@ -184,7 +189,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         {
             Def = characterDef,
             FloorNumberCurrent = Random.Shared.Next(minFloor, Elevator.Elevator.MaxFloors + 1),
-            Patience = 5,
+            Patience = Random.Shared.Next(5, 9),
             OffsetXTarget = Random.Shared.Next(-48, 49)
         };
         SpawnCharacter(newCharacter);
