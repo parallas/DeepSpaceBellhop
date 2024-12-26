@@ -9,4 +9,5 @@ public struct CharacterDef()
     public int WalkSpeed { get; set; } = 8;
     public DialogDef[] EnterPhrases { get; set; }
     public DialogDef[] ExitPhrases { get; set; }
+    public DialogDef[] AngryPhrases { get; set; }
 }
