@@ -92,6 +92,12 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     public IEnumerator EndOfTurnSequence()
     {
         yield return LeaveAtFloorSequence();
+
+        foreach (var characterActor in _cabList)
+        {
+            characterActor.Patience--;
+        }
+
         yield return GetOnAtFloorSequence();
     }
 
@@ -100,20 +106,22 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         for (int index = 0; index < _cabList.Count; index++)
         {
             var characterActor = _cabList[index];
-            if (characterActor.FloorNumberTarget != MainGame.CurrentFloor && characterActor.Patience > 0) continue;
+            var isPatienceOut = characterActor.Patience <= 0;
+            var doTurn = characterActor.FloorNumberTarget == MainGame.CurrentFloor || isPatienceOut;
+            if (!doTurn) continue;
 
             _cabList.Remove(characterActor);
             index--;
             _movingList.Add(characterActor);
-            yield return characterActor.GetOffElevatorBegin();
+            yield return characterActor.GetOffElevatorBegin(isPatienceOut);
             MainGame.Coroutines.Stop("ticket_remove");
             MainGame.Coroutines.TryRun("ticket_remove", ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
 
             // Use angry phrases if patience is <= 0
             var phrases =
-                characterActor.Patience > 0
-                    ? characterActor.Def.ExitPhrases
-                    : characterActor.Def.AngryPhrases;
+                isPatienceOut
+                    ? characterActor.Def.AngryPhrases
+                    : characterActor.Def.ExitPhrases;
             Dialog.Dialog.Page[] rawPages;
             Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
             if (phrases.Length == 0)
@@ -134,6 +142,9 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
             _movingList.Remove(characterActor);
             _waitList.Add(characterActor);
+
+            // TODO: Subtract "health" from player if isPatienceOut
+
             yield return characterActor.GetOffElevatorEnd();
 
             _waitList.Remove(characterActor);

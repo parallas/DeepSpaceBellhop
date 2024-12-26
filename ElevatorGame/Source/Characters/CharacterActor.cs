@@ -24,6 +24,7 @@ public class CharacterActor
     private AnimatedSprite _currentAnimation;
     private AnimatedSprite _animFront;
     private AnimatedSprite _animBack;
+    private AnimatedSprite _animAngry;
     private bool _isInElevator;
     private float _currentWalkSpeed;
 
@@ -48,6 +49,7 @@ public class CharacterActor
             spriteFile.CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false, spacing: 8, innerPadding: 8);
         _animFront = spriteSheet.CreateAnimatedSprite("Front");
         _animBack = spriteSheet.CreateAnimatedSprite("Back");
+        _animAngry = spriteSheet.CreateAnimatedSprite("Angry");
 
         PlayAnimation(_animFront);
 
@@ -144,7 +146,7 @@ public class CharacterActor
         PlayAnimation(_animBack);
     }
 
-    public IEnumerator GetOffElevatorBegin()
+    public IEnumerator GetOffElevatorBegin(bool isAngry)
     {
         OffsetXTarget = 0;
         while (MathUtil.RoundToInt(_offsetX) != 0)
@@ -153,7 +155,7 @@ public class CharacterActor
         }
 
         _squashStretchOffset = -0.1f;
-        PlayAnimation(_animFront);
+        PlayAnimation(isAngry ? _animAngry : _animFront);
     }
 
     public IEnumerator GetOffElevatorEnd()
