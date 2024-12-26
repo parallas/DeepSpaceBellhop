@@ -108,6 +108,10 @@ public class Phone(Elevator.Elevator elevator)
         {
             PlayEmoticonReaction();
         }
+        if (ScrollTarget < 0)
+        {
+            PlayFaceReaction();
+        }
         ScrollTarget = MathHelper.Clamp(ScrollTarget, 0, scrollTargetMax);
 
         if(MainGame.CurrentMenu == MainGame.Menus.None || MainGame.CurrentMenu == MainGame.Menus.Phone)
@@ -209,10 +213,30 @@ public class Phone(Elevator.Elevator elevator)
         MainGame.Graphics.GraphicsDevice.Reset();
     }
 
+    public void SetFace(int faceIndex)
+    {
+        _faceSpriteAnim.SetFrame(faceIndex);
+    }
+
+    private void PlayFaceReaction()
+    {
+        MainGame.Coroutines.Stop("phone_face_reaction");
+        MainGame.Coroutines.TryRun("phone_face_reaction", FaceReactionSequence(), 0, out _);
+    }
+
     private void PlayEmoticonReaction()
     {
         MainGame.Coroutines.Stop("phone_emoticon_reaction");
         MainGame.Coroutines.TryRun("phone_emoticon_reaction", EmoticonReactionSequence(), 0, out _);
+    }
+
+    private IEnumerator FaceReactionSequence()
+    {
+        _faceSpriteAnim.SetFrame(1);
+
+        yield return 60;
+
+        _faceSpriteAnim.SetFrame(0);
     }
 
     private IEnumerator EmoticonReactionSequence()
@@ -297,6 +321,7 @@ public class Phone(Elevator.Elevator elevator)
             MainGame.Coroutines.Stop("phone_hide");
             yield return null;
         };
+        SetFace(0); // Reset
         _isOpen = false;
         MainGame.Coroutines.Stop("phone_show");
         CanOpen = false;
@@ -346,6 +371,8 @@ public class Phone(Elevator.Elevator elevator)
     
     public void HighlightOrder(CharacterActor characterActor)
     {
+        SetFace(4); // Lucky Cat
+
         var index = _orders.FindIndex(order =>
             order.FloorNumber == characterActor.FloorNumberCurrent &&
             order.DestinationNumber == characterActor.FloorNumberTarget
