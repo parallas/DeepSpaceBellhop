@@ -31,7 +31,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         }
         foreach (var characterActor in _cabList)
         {
-            var checkList = _cabList.Union(_movingList).ToList();
+            var checkList = _cabList;
             var hitPerson = checkList.Find(actor =>
                 actor != characterActor &&
                 MathUtil.Approximately(actor.OffsetXTarget, characterActor.OffsetXTarget,
@@ -108,10 +108,24 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             yield return characterActor.GetOffElevatorBegin();
             MainGame.Coroutines.Stop("ticket_remove");
             MainGame.Coroutines.TryRun("ticket_remove", ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
-            var rawPages = characterActor.Def.ExitPhrases[Random.Shared.Next(characterActor.Def.ExitPhrases.Length)]
-                .Pages;
+
+            Dialog.Dialog.Page[] rawPages;
+            Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
+            if (characterActor.Def.ExitPhrases.Length == 0)
+            {
+                int randomCharCout = Random.Shared.Next(3, 30);
+                string randomString = new string(Enumerable.Range(0, randomCharCout)
+                    .Select(_ => (char)Random.Shared.Next('a', 'z' + 1)).ToArray());
+                rawPages = [new Dialog.Dialog.Page() { Content = randomString }];
+                displayMethod = Dialog.Dialog.DisplayMethod.Alien;
+            }
+            else
+            {
+                rawPages = characterActor.Def.ExitPhrases[Random.Shared.Next(characterActor.Def.ExitPhrases.Length)]
+                    .Pages;
+            }
             var parsesPages = ParsePages(rawPages, characterActor);
-            yield return dialog.Display(parsesPages, Dialog.Dialog.DisplayMethod.Human);
+            yield return dialog.Display(parsesPages, displayMethod);
 
             _movingList.Remove(characterActor);
             _waitList.Add(characterActor);
@@ -138,10 +152,24 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             _movingList.Add(characterActor);
             phone.HighlightOrder(characterActor);
             ticketManager.AddTicket(characterActor.FloorNumberTarget);
-            var rawPages = characterActor.Def.EnterPhrases[Random.Shared.Next(characterActor.Def.EnterPhrases.Length)]
-                .Pages;
+
+            Dialog.Dialog.Page[] rawPages;
+            Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
+            if (characterActor.Def.EnterPhrases.Length == 0)
+            {
+                int randomCharCout = Random.Shared.Next(3, 30);
+                string randomString = new string(Enumerable.Range(0, randomCharCout)
+                    .Select(_ => (char)Random.Shared.Next('a', 'z' + 1)).ToArray());
+                rawPages = [new Dialog.Dialog.Page() { Content = randomString }];
+                displayMethod = Dialog.Dialog.DisplayMethod.Alien;
+            }
+            else
+            {
+                rawPages = characterActor.Def.EnterPhrases[Random.Shared.Next(characterActor.Def.EnterPhrases.Length)]
+                    .Pages;
+            }
             var parsesPages = ParsePages(rawPages, characterActor);
-            yield return dialog.Display(parsesPages, Dialog.Dialog.DisplayMethod.Human);
+            yield return dialog.Display(parsesPages, displayMethod);
             yield return phone.RemoveOrder(characterActor);
 
             yield return characterActor.GetInElevatorEnd();

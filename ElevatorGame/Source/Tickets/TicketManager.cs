@@ -74,7 +74,7 @@ public class TicketManager(Elevator.Elevator elevator)
     {
         Vector2 drawerPosition = MainGame.GetCursorParallaxValue(new(
             MathHelper.Lerp(-40, 1, (_offset / MaxOffset)),
-            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, _tickets.Count / 5) * 22 * (_offset / MaxOffset) + 17)
+            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, MathUtil.CeilToInt(_tickets.Count / 5f)) * 22 * (_offset / MaxOffset) + 17)
         ), 45);
 
         _cardTraySprite.Draw(spriteBatch, drawerPosition);

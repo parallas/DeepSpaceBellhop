@@ -16,7 +16,7 @@ public static class CharacterRegistry
                 Name = "Blueulet",
                 SpritePath = "graphics/characters/BlueAxolotl",
                 WalkSpeed = 10,
-                EnterPhrases = [new("C-can you take me to this floor, please?")],
+                EnterPhrases = [new("Can you take me to this floor?")],
                 ExitPhrases = [new("Thank you.")],
                 AngryPhrases = [new("Actually, I think she might be on this floor...")]
             },
@@ -35,11 +35,17 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/EmalynCat",
                 WalkSpeed = 6,
                 EnterPhrases = [new("I want to see the world through the eyes of a normal girl!")],
-                ExitPhrases = [new("Thank you!")],
+                ExitPhrases = [new("Thank You!")],
                 AngryPhrases = [
                     new("Did I scare you? Well I'm sorry. But I'm not sorry enough to stop!"),
                     new("I feel like I'm stuck between dangerous extremes...")
                 ]
+            },
+            new()
+            {
+                Name = "Kloob",
+                SpritePath = "graphics/characters/Kloob",
+                WalkSpeed = 2,
             },
         ];
 
