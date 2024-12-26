@@ -29,6 +29,18 @@ public static class CharacterRegistry
                 ExitPhrases = [new("Bye bye!")],
                 AngryPhrases = [new("At this rate I'll never find him. See ya!")]
             },
+            new()
+            {
+                Name = "EmalynCat",
+                SpritePath = "graphics/characters/EmalynCat",
+                WalkSpeed = 6,
+                EnterPhrases = [new("I want to see the world through the eyes of a normal girl!")],
+                ExitPhrases = [new("Thank you!")],
+                AngryPhrases = [
+                    new("Did I scare you? Well I'm sorry. But I'm not sorry enough to stop!"),
+                    new("I feel like I'm stuck between dangerous extremes...")
+                ]
+            },
         ];
 
         foreach (var characterDef in _characterDefs)
