@@ -28,10 +28,17 @@ public class Cursor
     public Vector2 ViewPosition => RtScreen.ToScreenSpace(
         InputManager.MousePosition.ToVector2(),
         MainGame.RenderBufferSize,
-        MainGame.Graphics.GraphicsDevice
+        MainGame.ScreenBounds
     );
 
     public Vector2 WorldPosition => ViewPosition + MainGame.ScreenPosition;
+    public Vector2 TiltOffset => (
+        Vector2.Clamp(
+            ViewPosition,
+            Vector2.Zero,
+            MainGame.GameBounds.Size.ToVector2()
+        ) - MainGame.GameBounds.Size.ToVector2() / 2f
+    ) * (8 / 120f);
 
     private AsepriteFile _file;
     private AnimatedSprite _sprite;

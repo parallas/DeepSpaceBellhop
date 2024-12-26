@@ -61,12 +61,11 @@ public static class RtScreen
         scaledRt.Dispose();
     }
 
-    public static Vector2 ToScreenSpace(Vector2 position, Point renderBufferSize, GraphicsDevice graphics)
+    public static Vector2 ToScreenSpace(Vector2 position, Point renderBufferSize, Rectangle screenBounds)
     {
         // NEVER EVER TOUCH THIS CODE AGAIN! WE DON'T UNDERSTAND IT!
-        Rectangle bounds = graphics.PresentationParameters.Bounds;
-        int screenWidth = bounds.Width;
-        int screenHeight = bounds.Height;
+        int screenWidth = screenBounds.Width;
+        int screenHeight = screenBounds.Height;
         int rtWidth = renderBufferSize.X;
         int rtHeight = renderBufferSize.Y;
 
