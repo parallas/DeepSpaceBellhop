@@ -46,7 +46,7 @@ public class TicketActor
     public void Draw(SpriteBatch spriteBatch)
     {
         Vector2 renderedTicketPos = Position - Vector2.UnitY * (_ticketsSpriteAnim.Height - 1);
-        renderedTicketPos = MainGame.GetCursorParallaxValue(renderedTicketPos, 25);
+        renderedTicketPos = Vector2.Round(MainGame.GetCursorParallaxValue(renderedTicketPos, 25));
         if (_isUpsideDown)
         {
             _ticketsSpriteAnim.FlipVertically = true;

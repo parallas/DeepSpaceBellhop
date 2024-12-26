@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using AsepriteDotNet.Aseprite;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source.Tickets;
 
@@ -19,9 +21,12 @@ public class TicketManager(Elevator.Elevator elevator)
 
     private CoroutineHandle _easeOffsetHandle;
 
+    private Sprite _cardTraySprite;
+
     public void LoadContent()
     {
-        
+        _cardTraySprite = ContentLoader.Load<AsepriteFile>("graphics/CardTray")!
+            .CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
     }
 
     public void Update(GameTime gameTime)
@@ -68,19 +73,20 @@ public class TicketManager(Elevator.Elevator elevator)
     public void Draw(SpriteBatch spriteBatch)
     {
         Vector2 drawerPosition = MainGame.GetCursorParallaxValue(new(
-            1,
-            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, _tickets.Count / 5) * 22 * (_offset / MaxOffset))
-        ), 30);
+            MathHelper.Lerp(-40, 1, (_offset / MaxOffset)),
+            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, _tickets.Count / 5) * 22 * (_offset / MaxOffset) + 17)
+        ), 45);
 
-        spriteBatch.Draw(
-            MainGame.PixelTexture, new Rectangle(
-                MathUtil.RoundToInt(drawerPosition.X),
-                MathUtil.RoundToInt(drawerPosition.Y),
-                5 * 16 + 1,
-                MathHelper.Max(1, _tickets.Count / 5) * 22
-            ),
-            Color.Black * 0.5f * (_offset / MaxOffset)
-        );
+        _cardTraySprite.Draw(spriteBatch, drawerPosition);
+        // spriteBatch.Draw(
+        //     MainGame.PixelTexture, new Rectangle(
+        //         MathUtil.RoundToInt(drawerPosition.X),
+        //         MathUtil.RoundToInt(drawerPosition.Y),
+        //         5 * 16 + 1,
+        //         MathHelper.Max(1, _tickets.Count / 5) * 22
+        //     ),
+        //     Color.Black * 0.5f * (_offset / MaxOffset)
+        // );
 
         for (int i = 0; i < _tickets.Count; i++)
         {
@@ -137,7 +143,7 @@ public class TicketManager(Elevator.Elevator elevator)
         {
             var ticketActor = _tickets[i];
 
-            ticketActor.TargetPosition = new(((i % 5)) * 16 + 2, MainGame.GameBounds.Height - 4 - ((i / 5) * 22));
+            ticketActor.TargetPosition = new(((i % 5)) * 16 + 9, MainGame.GameBounds.Height - 4 - ((i / 5) * 22));
             yield return 4;
         }
 

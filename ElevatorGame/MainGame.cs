@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
@@ -46,9 +47,12 @@ public class MainGame : Game
     public static CoroutineRunner Coroutines { get; set; } = new();
 
     public static int CurrentFloor { get; set; } = 1;
+    public static int CurrentHealth { get; set; } = 5000; // 5000 is 50% rating
+    private float _renderHealth = 5000;
 
     public static float GrayscaleCoeff { get; set; } = 1;
 
+    public static Rectangle ScreenBounds { get; private set; }
     public static Cursor Cursor { get; private set; }
 
     public enum Menus
@@ -78,9 +82,7 @@ public class MainGame : Game
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
 
-    private readonly List<CharacterActor> _waitList = [];
-    private readonly List<CharacterActor> _movingList = [];
-    private readonly List<CharacterActor> _cabList = [];
+    public static CharacterManager CharacterManager { get; private set; }
 
     private Effect _elevatorEffects;
     private Effect _postProcessingEffects;
@@ -177,31 +179,8 @@ public class MainGame : Game
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
         
         CharacterRegistry.Init();
-        for (int i = 0; i < 5; i++)
-        {
-            foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
-            {
-                var newCharacter = new CharacterActor
-                {
-                    Def = characterTableValue,
-                    FloorNumberCurrent = Random.Shared.Next(2, Elevator.Elevator.MaxFloors + 1),
-                    Patience = 5,
-                    OffsetXTarget = Random.Shared.Next(-48, 49)
-                };
-                do
-                {
-                    newCharacter.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
-                } while (newCharacter.FloorNumberTarget == newCharacter.FloorNumberCurrent);
-
-                _phone.AddOrder(newCharacter);
-
-                Console.WriteLine(
-                    $"{characterTableValue.Name} is going from {newCharacter.FloorNumberCurrent} to {newCharacter.FloorNumberTarget}");
-                newCharacter.LoadContent();
-                _waitList.Add(newCharacter);
-            }
-        }
-
+        CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
+        CharacterManager.LoadContent();
     }
 
     protected override void UnloadContent()
@@ -214,102 +193,35 @@ public class MainGame : Game
 
     protected override void Update(GameTime gameTime)
     {
+        // Static Properties
+        ScreenBounds = GraphicsDevice.PresentationParameters.Bounds;
+
+        // Update Systems
         FmodManager.Update();
-        InputManager.InputDisabled = !IsActive;
+        Coroutines.Update();
 
-        InputManager.RefreshKeyboardState();
-        InputManager.RefreshMouseState();
-        InputManager.RefreshGamePadState();
+        // Update Input
+        UpdateInput(gameTime);
 
-        InputManager.UpdateTypingInput(gameTime);
-
-        Cursor.Update();
-
+        // TODO: REMOVE THIS IN THE FINAL GAME
         if(Keybindings.Pause.Pressed)
             Exit();
 
-        if(InputManager.GetPressed(Keys.F11) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            if(_isFullscreen)
-            {
-                Graphics.PreferredBackBufferWidth = _actualWindowSize.X;
-                Graphics.PreferredBackBufferHeight = _actualWindowSize.Y;
-                Window.Position = new((GraphicsDevice.DisplayMode.Width - Graphics.PreferredBackBufferWidth) / 2, (GraphicsDevice.DisplayMode.Height - Graphics.PreferredBackBufferHeight) / 2);
-                Window.IsBorderless = false;
-                Graphics.ApplyChanges();
-            }
-            else
-            {
-                _actualWindowSize.X = Graphics.PreferredBackBufferWidth;
-                _actualWindowSize.Y = Graphics.PreferredBackBufferHeight;
+        HandleToggleFullscreen();
 
-                Graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
-                Graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
-                Window.IsBorderless = true;
-                Graphics.ApplyChanges();
-            }
+        DebugSystems();
 
-            _isFullscreen = !_isFullscreen;
-        }
-
-        Coroutines.Update();
-
-        var mousePos =
-            Vector2.Floor(
-                RtScreen.ToScreenSpace(
-                    InputManager.MousePosition.ToVector2(),
-                    RenderBufferSize,
-                    GraphicsDevice
-                )
-            );
+        // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
-            CameraPosition + (
-                Vector2.Clamp(
-                    mousePos,
-                    Vector2.Zero,
-                    new(240, 135)
-                ) - new Vector2(240, 135)/2f
-            ) * (8/120f);
-
-        Camera.Update();
-
-        if(InputManager.GetPressed(Keys.Y))
-        {
-            Coroutines.Stop("main_day_advance");
-            Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
-        }
+            CameraPosition + Cursor.TiltOffset;
 
         _elevator.Update(gameTime);
         _ticketManager.Update(gameTime);
         _phone.Update(gameTime);
 
-        foreach (var characterActor in _waitList)
-        {
-            characterActor.Update(gameTime);
-        }
-        foreach (var characterActor in _cabList)
-        {
-            if (_cabList.Count <= 10)
-            {
-                var hitPerson = _cabList.Find((actor =>
-                    actor != characterActor &&
-                    MathUtil.Approximately(actor.OffsetXTarget, characterActor.OffsetXTarget,
-                        MathHelper.Lerp(32, 16, _cabList.Count / 10f))));
-                if (hitPerson is not null)
-                {
-                    var dir = Math.Sign(characterActor.OffsetXTarget - hitPerson.OffsetXTarget);
-                    if (dir == 0) dir = 1;
-                    var target = characterActor.OffsetXTarget + dir;
-                    characterActor.OffsetXTarget = Math.Clamp(target, -CharacterActor.StandingRoomSize,
-                        CharacterActor.StandingRoomSize);
-                }
-            }
-            characterActor.Update(gameTime);
-        }
-        foreach (var characterActor in _movingList)
-        {
-            characterActor.Update(gameTime);
-        }
+        CharacterManager.Update(gameTime);
+
+        Camera.Update();
 
         base.Update(gameTime);
 
@@ -318,10 +230,7 @@ public class MainGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
-        // _elevatorGameTime.SetValue(Frame / 60f);
-        _ppWobbleInfluence.SetValue(0);
-        _ppGameTime.SetValue(Frame / 60f);
+        UpdateShaderProperties();
 
         _roomRenderer.PreRender(SpriteBatch);
         _phone.PreRenderScreen(SpriteBatch);
@@ -331,7 +240,7 @@ public class MainGame : Game
             GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
-                DrawScene(gameTime);
+                DrawScene(SpriteBatch);
             }
             SpriteBatch.End();
         });
@@ -341,15 +250,7 @@ public class MainGame : Game
             GraphicsDevice.Clear(Color.Transparent);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
-                _phone.Draw(SpriteBatch);
-
-                _ticketManager.Draw(SpriteBatch);
-
-                _dialog.Draw(SpriteBatch);
-
-                Cursor.Draw(SpriteBatch);
-
-                SpriteBatch.Draw(PixelTexture, GameBounds with { X = 0, Y = 0 }, Color.Black * _fadeoutProgress);
+                DrawUI(SpriteBatch);
             }
             SpriteBatch.End();
         });
@@ -362,29 +263,29 @@ public class MainGame : Game
         Frame++;
     }
 
-    private void DrawScene(GameTime gameTime)
+    private void DrawScene(SpriteBatch spriteBatch)
     {
-        _roomRenderer.Draw(SpriteBatch);
-        // _yetiIdle.Draw(SpriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
+        _roomRenderer.Draw(spriteBatch);
+        // _yetiIdle.Draw(spriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
 
-        foreach (var characterActor in _waitList)
-        {
-            characterActor.Draw(SpriteBatch);
-        }
+        CharacterManager.DrawWaiting(spriteBatch);
 
-        _elevator.Draw(SpriteBatch);
+        _elevator.Draw(spriteBatch);
 
-        for (var i = 0; i < _cabList.Count; i++)
-        {
-            var characterActor = _cabList[i];
-            characterActor.Draw(SpriteBatch, i);
-        }
+        CharacterManager.DrawMain(spriteBatch);
+    }
 
-        for (var i = 0; i < _movingList.Count; i++)
-        {
-            var characterActor = _movingList[i];
-            characterActor.Draw(SpriteBatch, i);
-        }
+    private void DrawUI(SpriteBatch spriteBatch)
+    {
+        _phone.Draw(spriteBatch);
+
+        _ticketManager.Draw(spriteBatch);
+
+        _dialog.Draw(spriteBatch);
+
+        Cursor.Draw(spriteBatch);
+
+        spriteBatch.Draw(PixelTexture, GameBounds with { X = 0, Y = 0 }, Color.Black * _fadeoutProgress);
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -402,50 +303,7 @@ public class MainGame : Game
 
         CurrentMenu = Menus.TurnTransition;
 
-        for (int index = 0; index < _cabList.Count; index++)
-        {
-            var characterActor = _cabList[index];
-            if (characterActor.FloorNumberTarget == CurrentFloor)
-            {
-                _cabList.Remove(characterActor);
-                index--;
-                _movingList.Add(characterActor);
-                yield return characterActor.GetOffElevatorBegin();
-                Coroutines.Stop("ticket_remove");
-                Coroutines.TryRun("ticket_remove", _ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
-                yield return _dialog.Display(characterActor.Def.ExitPhrases[0].Pages,
-                    Dialog.Dialog.DisplayMethod.Human);
-
-                _movingList.Remove(characterActor);
-                _waitList.Add(characterActor);
-                yield return characterActor.GetOffElevatorEnd();
-
-                _waitList.Remove(characterActor);
-            }
-        }
-
-        for (var index = _waitList.Count - 1; index >= 0; index--)
-        {
-            var characterActor = _waitList[index];
-            if (characterActor.FloorNumberCurrent == CurrentFloor)
-            {
-                Coroutines.TryRun("phone_show", _phone.Open(false, false), out _);
-                _phone.CanOpen = false;
-                // _cabList.ForEach(actor => actor.MoveOutOfTheWay());
-                yield return characterActor.GetInElevatorBegin();
-                _waitList.Remove(characterActor);
-                _movingList.Add(characterActor);
-                _phone.HighlightOrder(characterActor);
-                _ticketManager.AddTicket(characterActor.FloorNumberTarget);
-                yield return _dialog.Display(characterActor.Def.EnterPhrases[0].Pages,
-                    Dialog.Dialog.DisplayMethod.Human);
-                yield return _phone.RemoveOrder(characterActor);
-
-                yield return characterActor.GetInElevatorEnd();
-                _movingList.Remove(characterActor);
-                _cabList.Add(characterActor);
-            }
-        }
+        yield return CharacterManager.EndOfTurnSequence();
 
         _phone.CanOpen = true;
         Coroutines.Stop("phone_show");
@@ -488,25 +346,70 @@ public class MainGame : Game
         }
         _fadeoutProgress = 0;
     }
+
+    public void UpdateInput(GameTime gameTime)
+    {
+        InputManager.InputDisabled = !IsActive;
+        InputManager.RefreshKeyboardState();
+        InputManager.RefreshMouseState();
+        InputManager.RefreshGamePadState();
+        InputManager.UpdateTypingInput(gameTime);
+        Cursor.Update();
+    }
     
     public static Vector2 GetCursorParallaxValue(Vector2 position,  float distance)
     {
-        var mousePos =
-            Vector2.Floor(
-                RtScreen.ToScreenSpace(
-                    InputManager.MousePosition.ToVector2(),
-                    RenderBufferSize,
-                    Graphics.GraphicsDevice
-                ) 
-            );
-
         Vector2 checkPos = (
             Vector2.Clamp(
-                mousePos,
+                Cursor.ViewPosition,
                 Vector2.Zero,
                 new(240, 135)
             ) - new Vector2(240, 135) / 2f
         ) * (8 / 120f);
         return position + Vector2.Round(checkPos * MathUtil.InverseLerp01(0, 100, distance));
+    }
+
+    private void UpdateShaderProperties()
+    {
+        _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
+        _ppWobbleInfluence.SetValue(0);
+        _ppGameTime.SetValue(Frame / 60f);
+    }
+
+    private void HandleToggleFullscreen()
+    {
+        if(InputManager.GetPressed(Keys.F11) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            if(_isFullscreen)
+            {
+                Graphics.PreferredBackBufferWidth = _actualWindowSize.X;
+                Graphics.PreferredBackBufferHeight = _actualWindowSize.Y;
+                Window.Position = new((GraphicsDevice.DisplayMode.Width - Graphics.PreferredBackBufferWidth) / 2, (GraphicsDevice.DisplayMode.Height - Graphics.PreferredBackBufferHeight) / 2);
+                Window.IsBorderless = false;
+                Graphics.ApplyChanges();
+            }
+            else
+            {
+                _actualWindowSize.X = Graphics.PreferredBackBufferWidth;
+                _actualWindowSize.Y = Graphics.PreferredBackBufferHeight;
+
+                Graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+                Graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+                Window.IsBorderless = true;
+                Graphics.ApplyChanges();
+            }
+
+            _isFullscreen = !_isFullscreen;
+        }
+    }
+
+    [Conditional("DEBUG")]
+    private void DebugSystems()
+    {
+        if (InputManager.GetPressed(Keys.Y))
+        {
+            Coroutines.Stop("main_day_advance");
+            Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+        }
     }
 }
