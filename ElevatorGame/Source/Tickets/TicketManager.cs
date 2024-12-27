@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AsepriteDotNet.Aseprite;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -24,10 +25,14 @@ public class TicketManager(Elevator.Elevator elevator)
 
     private Sprite _cardTraySprite;
 
+    private EventDescription _audioSlideEventDescription;
+
     public void LoadContent()
     {
         _cardTraySprite = ContentLoader.Load<AsepriteFile>("graphics/CardTray")!
             .CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
+
+        _audioSlideEventDescription = StudioSystem.GetEvent("event:/SFX/UI/Tickets/Slide");
     }
 
     public void Update(GameTime gameTime)
@@ -168,6 +173,8 @@ public class TicketManager(Elevator.Elevator elevator)
         {
             var ticketActor = _tickets[i];
 
+            PlaySlideSound((float)(_tickets.Count - i) / 10);
+
             ticketActor.TargetPosition = new(((i % 5)) * 16 + 9, MainGame.GameBounds.Height - 4 - ((i / 5) * 22));
             yield return 4;
         }
@@ -182,6 +189,8 @@ public class TicketManager(Elevator.Elevator elevator)
             var ticketActor = _tickets[i];
 
             var oldTarget = ticketActor.TargetPosition;
+
+            PlaySlideSound((float)(_tickets.Count - i) / 10);
 
             ticketActor.TargetPosition =
                 new(2 + i * 3, MainGame.GameBounds.Height - 2);
@@ -216,5 +225,13 @@ public class TicketManager(Elevator.Elevator elevator)
             yield return null;
         }
         _offset = _targetOffset;
+    }
+
+    private void PlaySlideSound(float pitchPercent)
+    {
+        var eventInstance = _audioSlideEventDescription.CreateInstance();
+        eventInstance.SetParameterValue("PitchPercent", pitchPercent);
+        eventInstance.Start();
+        eventInstance.Dispose();
     }
 }
