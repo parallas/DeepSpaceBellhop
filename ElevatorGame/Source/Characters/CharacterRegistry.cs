@@ -18,7 +18,8 @@ public static class CharacterRegistry
                 WalkSpeed = 10,
                 EnterPhrases = [new("Can you take me to this floor?")],
                 ExitPhrases = [new("Thank you.")],
-                AngryPhrases = [new("Actually, I think she might be on this floor...")]
+                AngryPhrases = [new("Actually, I think she might be on this floor...")],
+                AngryIconPosition = new(-13, -72),
             },
             new()
             {
@@ -27,7 +28,8 @@ public static class CharacterRegistry
                 WalkSpeed = 6,
                 EnterPhrases = [new("Hi, can you take me to floor $floorNumDest, please?")],
                 ExitPhrases = [new("Bye bye!")],
-                AngryPhrases = [new("At this rate I'll never find him. See ya...")]
+                AngryPhrases = [new("At this rate I'll never find him. See ya...")],
+                AngryIconPosition = new(-13, -69),
             },
             new()
             {
@@ -45,13 +47,15 @@ public static class CharacterRegistry
                 AngryPhrases = [
                     new("Did I scare you? Well I'm sorry. But I'm not sorry enough to stop!"),
                     new("I feel like I'm stuck between dangerous extremes...")
-                ]
+                ],
+                AngryIconPosition = new(-10, -46),
             },
             new()
             {
                 Name = "Kloob",
                 SpritePath = "graphics/characters/Kloob",
                 WalkSpeed = 2,
+                AngryIconPosition = new(-10, -76),
             },
             new()
             {
@@ -67,6 +71,7 @@ public static class CharacterRegistry
                     new("The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).")
                 ],
                 AngryPhrases = [new("Unhandled Exception in thread 'Main': Timed out;")],
+                AngryIconPosition = new(-6, -39),
             },
         ];
 

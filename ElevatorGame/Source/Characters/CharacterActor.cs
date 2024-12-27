@@ -16,6 +16,7 @@ public class CharacterActor
     public int FloorNumberTarget { get; set; }
     public int Patience { get; set; }
     public int InitialPatience { get; private set; }
+    public bool DrawAngryIcon { get; set; }
 
     public int OffsetXTarget { get; set; }
     private float _offsetX;
@@ -27,6 +28,7 @@ public class CharacterActor
     private AnimatedSprite _animFront;
     private AnimatedSprite _animBack;
     private AnimatedSprite _animAngry;
+    private AnimatedSprite _angryIcon;
     private bool _isInElevator;
     private float _currentWalkSpeed;
 
@@ -53,6 +55,12 @@ public class CharacterActor
         _animBack = spriteSheet.CreateAnimatedSprite("Back");
         _animAngry = spriteSheet.CreateAnimatedSprite("Angry");
 
+        _angryIcon = ContentLoader.Load<AsepriteFile>("graphics/Anger")
+            .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false)
+            .CreateAnimatedSprite("Tag");
+        _angryIcon.Origin = Vector2.One * 7 - Def.AngryIconPosition;
+        _angryIcon.Play();
+
         PlayAnimation(_animFront);
 
         _seed = Random.Shared.Next(500);
@@ -65,6 +73,7 @@ public class CharacterActor
     public void Update(GameTime gameTime)
     {
         _currentAnimation.Update(1f/60f);
+        _angryIcon.Update(1f/60f);
 
         _offsetX = MathUtil.ExpDecay(_offsetX, OffsetXTarget, _currentWalkSpeed, 1f / 60f);
         if (MathUtil.Approximately(_offsetX, OffsetXTarget, 1))
@@ -87,7 +96,7 @@ public class CharacterActor
         _currentAnimation.ScaleX = 1 - _squashStretchOffset;
         _currentAnimation.ScaleY = 1 + _squashStretchOffset;
 
-        Vector2 pos = new Vector2(
+        Vector2 pos = new(
             MainGame.GameBounds.Center.X + _offsetX,
             MainGame.GameBounds.Bottom + 8 + -MathHelper.Max(MathF.Sin((MainGame.Frame + _seed) / 60f * 3), 0f) + _offsetY
         );
@@ -95,21 +104,45 @@ public class CharacterActor
 
         _currentAnimation.Color = Color.Black;
         _currentAnimation.Draw(
-            MainGame.SpriteBatch,
+            spriteBatch,
             MainGame.Camera.GetParallaxPosition(
                 pos + Vector2.One * 2,
                 _renderDepth
             )
         );
 
+        if(DrawAngryIcon)
+        {
+            _angryIcon.Color = Color.Black;
+            _angryIcon.Draw(
+                spriteBatch,
+                MainGame.Camera.GetParallaxPosition(
+                    pos + Vector2.One * 2,
+                    _renderDepth
+                )
+            );
+        }
+
         _currentAnimation.Color = Color.White;
         _currentAnimation.Draw(
-            MainGame.SpriteBatch,
+            spriteBatch,
             MainGame.Camera.GetParallaxPosition(
                 pos,
                 _renderDepth
             )
         );
+
+        if(DrawAngryIcon)
+        {
+            _angryIcon.Color = Color.White;
+            _angryIcon.Draw(
+                spriteBatch,
+                MainGame.Camera.GetParallaxPosition(
+                    pos,
+                    _renderDepth
+                )
+            );
+        }
     }
 
     public void MoveOutOfTheWay()

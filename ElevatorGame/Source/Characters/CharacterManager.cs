@@ -96,6 +96,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         foreach (var characterActor in _cabList)
         {
             characterActor.Patience--;
+            if(characterActor.Patience <= 0)
+                characterActor.DrawAngryIcon = true;
         }
 
         yield return GetOnAtFloorSequence();
