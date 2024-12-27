@@ -143,6 +143,19 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         _elevatorInteriorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(Vector2.Zero, ParallaxWalls));
 
         _floorNumbers.Draw(spriteBatch, _floorNumber, _comboDirection);
+
+        Vector2 dotsCenter = Vector2.Round(MainGame.Camera.GetParallaxPosition(new((MainGame.GameBounds.Width / 2) + 8, 33), ParallaxWalls));
+        var dotCount = MathHelper.Min(40, MaxFloors);
+
+        for(int i = 0; i < dotCount; i++)
+        {
+            spriteBatch.Draw(
+                MainGame.PixelTexture,
+                dotsCenter + new Vector2(((i - (dotCount * 0.5f)) * 3) + 1, 0),
+                (MathUtil.RoundToInt(_floorNumber) == i + 1) ? Color.Yellow : Color.Black
+                // Color.Black
+            );
+        }
     }
 
     private void UpdateStateStopped(GameTime gameTime)
