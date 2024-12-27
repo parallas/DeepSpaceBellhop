@@ -48,7 +48,7 @@ public class MainGame : Game
     public static CoroutineRunner Coroutines { get; set; } = new();
 
     public static int CurrentDay { get; private set; } = 0;
-    public static int FloorCount { get; private set; }
+    public static int FloorCount => DayRegistry.Days[CurrentDay].FloorCount;
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
 
@@ -126,6 +126,10 @@ public class MainGame : Game
 
         FmodController.Init();
 
+        DayRegistry.Init();
+
+        CharacterRegistry.Init();
+
         base.Initialize();
     }
 
@@ -154,14 +158,10 @@ public class MainGame : Game
         _dialog = new();
         _dialog.LoadContent();
 
-        DayRegistry.Init();
-        FloorCount = DayRegistry.Days[CurrentDay].FloorCount;
-
-        CharacterRegistry.Init();
         CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
         CharacterManager.LoadContent();
 
-        for (int i = 0; i < FloorCount; i++)
+        for (int i = 0; i < 99; i++)
         {
             var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
             _roomDefs.Add(newRoomDef);
@@ -387,7 +387,7 @@ public class MainGame : Game
 
         CameraPosition = Vector2.Zero;
         Camera.Position = Vector2.Zero;
-        GrayscaleCoeff = 1;
+        ResetShaderProperties();
 
         _roomRenderer.SetDefinition(_roomDefs[0]);
         _roomRenderer.PreRender(SpriteBatch);
@@ -396,6 +396,7 @@ public class MainGame : Game
 
         yield return FadeFromBlack();
         CurrentMenu = Menus.None;
+        Coroutines.StopAll();
     }
 
     private IEnumerator FadeToBlack()
@@ -440,6 +441,11 @@ public class MainGame : Game
             ) - new Vector2(240, 135) / 2f
         ) * (8 / 120f);
         return position + Vector2.Round(checkPos * MathUtil.InverseLerp01(0, 100, distance));
+    }
+
+    private void ResetShaderProperties()
+    {
+        GrayscaleCoeff = 1;
     }
 
     private void UpdateShaderProperties()
