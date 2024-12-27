@@ -27,7 +27,7 @@ public static class CharacterRegistry
                 WalkSpeed = 6,
                 EnterPhrases = [new("Hi, can you take me to floor $floorNumDest, please?")],
                 ExitPhrases = [new("Bye bye!")],
-                AngryPhrases = [new("At this rate I'll never find him. See ya!")]
+                AngryPhrases = [new("At this rate I'll never find him. See ya...")]
             },
             new()
             {

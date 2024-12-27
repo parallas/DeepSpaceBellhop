@@ -313,6 +313,16 @@ public class MainGame : Game
         CurrentMenu = Menus.None;
     }
 
+    public void SimulateBatteryChange(int newValue)
+    {
+        _phone.SimulateBatteryChange(newValue);
+    }
+
+    public static void ChangeHealth(int change)
+    {
+        CurrentHealth += change;
+    }
+
     private IEnumerator AdvanceDay()
     {
         yield return FadeToBlack();

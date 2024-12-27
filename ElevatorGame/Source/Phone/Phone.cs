@@ -47,6 +47,8 @@ public class Phone(Elevator.Elevator elevator)
     public float ScrollTarget { get; set; }
     private float _scrollOffset;
 
+    private int _simulatedBatteryValue;
+
     public bool CanOpen { get; set; } = true;
     
     private List<PhoneOrder> _orders = new();
@@ -95,6 +97,7 @@ public class Phone(Elevator.Elevator elevator)
             .CreateAnimatedSprite("Tag");
         
         _phonePosition = new Vector2(202, 77);
+        _simulatedBatteryValue = MainGame.CurrentHealth;
 
         _screenRenderTarget = new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 28, 37);
     }
@@ -178,6 +181,16 @@ public class Phone(Elevator.Elevator elevator)
             }
         }
 
+        _batterySpriteAnim.SetFrame(MainGame.CurrentHealth);
+        if (_simulatedBatteryValue != MainGame.CurrentHealth)
+        {
+            bool changeUp = _simulatedBatteryValue > MainGame.CurrentHealth;
+            SetFace(changeUp ? 5 : 3);
+            int stepTime = changeUp ? 10 : 20;
+            bool showChangedFrame = MainGame.Step % stepTime < stepTime * 0.5;
+            _batterySpriteAnim.SetFrame(showChangedFrame ? _simulatedBatteryValue : MainGame.CurrentHealth);
+        }
+
         float blend = _offset / 32f;
         Vector2 blendedPhonePos = Vector2.Lerp(_dockedPhonePos, _openPhonePos, blend);
         Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, 25);
@@ -210,7 +223,6 @@ public class Phone(Elevator.Elevator elevator)
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             Color mainColor = ColorUtil.CreateFromHex(0x40318d);
 
-            _batterySpriteAnim.SetFrame(MainGame.CurrentHealth);
             _batterySpriteAnim.Color = mainColor;
             _batterySpriteAnim.Draw(spriteBatch, new Vector2(2, -6));
 
@@ -431,6 +443,16 @@ public class Phone(Elevator.Elevator elevator)
             _orders[i].TargetPosition = new Vector2(0, i * 6);
             yield return 5;
         }
+    }
+
+    public void SimulateBatteryValue(int newValue)
+    {
+        _simulatedBatteryValue = Math.Clamp(newValue, 0, 8);
+    }
+
+    public void SimulateBatteryChange(int change)
+    {
+        _simulatedBatteryValue = Math.Clamp(_simulatedBatteryValue + change, 0, 8);
     }
 
     public void Scroll(int direction)

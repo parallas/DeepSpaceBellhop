@@ -117,6 +117,13 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             MainGame.Coroutines.Stop("ticket_remove");
             MainGame.Coroutines.TryRun("ticket_remove", ticketManager.RemoveTicket(characterActor.FloorNumberTarget), out _);
 
+            // Pretend to reduce health (and show phone)
+            if (isPatienceOut)
+            {
+                phone.SimulateBatteryChange(-3);
+                yield return phone.Open(false, false);
+            }
+
             // Use angry phrases if patience is <= 0
             var phrases =
                 isPatienceOut
@@ -143,7 +150,12 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             _movingList.Remove(characterActor);
             _waitList.Add(characterActor);
 
-            // TODO: Subtract "health" from player if isPatienceOut
+            // Reduce health for real now
+            if (isPatienceOut)
+            {
+                MainGame.ChangeHealth(-3);
+                yield return phone.Close(false, false);
+            }
 
             yield return characterActor.GetOffElevatorEnd();
 
