@@ -9,6 +9,7 @@ namespace ElevatorGame.Source.Phone;
 
 public class PhoneOrder
 {
+    public Guid CharacterId { get; set; }
     public int FloorNumber { get; set; }
     public int DestinationNumber { get; set; }
     public int Mood { get; set; }
@@ -29,8 +30,10 @@ public class PhoneOrder
     private Color _bgColor = ColorUtil.CreateFromHex(0x67b6bd);
     private Color _currentColor;
 
-    public PhoneOrder()
+    public PhoneOrder(Guid characterId)
     {
+        CharacterId = characterId;
+
         // Digits
         _digitsSpriteAnim4x5 = ContentLoader.Load<AsepriteFile>("graphics/Digits4x5")!
             .CreateSpriteSheet(

@@ -402,7 +402,7 @@ public class Phone(Elevator.Elevator elevator)
 
     public void AddOrder(CharacterActor characterActor)
     {
-        PhoneOrder newOrder = new PhoneOrder()
+        PhoneOrder newOrder = new PhoneOrder(characterActor.CharacterId)
         {
             FloorNumber = characterActor.FloorNumberCurrent,
             DestinationNumber = characterActor.FloorNumberTarget,
@@ -442,6 +442,11 @@ public class Phone(Elevator.Elevator elevator)
         )];
 
         order.Highlighted = false;
+    }
+
+    public void SetOrderMood(Guid characterId, int mood)
+    {
+        _orders.Find(order => order.CharacterId == characterId).Mood = mood;
     }
 
     public IEnumerator RemoveOrder(CharacterActor characterActor)

@@ -99,6 +99,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         }
 
         yield return GetOnAtFloorSequence();
+
+        yield return SubtractPatienceOfWaiting();
     }
 
     private IEnumerator LeaveAtFloorSequence()
@@ -206,7 +208,21 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         }
     }
 
-    public void SpawnCharacter(CharacterDef characterDef, int minFloor = 1)
+    private IEnumerator SubtractPatienceOfWaiting()
+    {
+        foreach (var characterActor in _waitList)
+        {
+            characterActor.Patience--;
+            characterActor.Patience = Math.Max(0, characterActor.Patience);
+            float patiencePercent = MathUtil.InverseLerp01(1, characterActor.InitialPatience, characterActor.Patience);
+            int moodValue = MathUtil.RoundToInt(MathHelper.Lerp(3, 0, patiencePercent));
+            if (patiencePercent <= 0) moodValue = 3;
+            phone.SetOrderMood(characterActor.CharacterId, moodValue);
+        }
+        yield return null;
+    }
+
+    public CharacterActor SpawnCharacter(CharacterDef characterDef, int minFloor = 1)
     {
         var newCharacter = new CharacterActor
         {
@@ -216,6 +232,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             OffsetXTarget = Random.Shared.Next(-48, 49)
         };
         SpawnCharacter(newCharacter);
+        return newCharacter;
     }
 
     public void SpawnCharacter(CharacterActor characterActor)

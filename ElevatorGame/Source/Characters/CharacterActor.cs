@@ -10,10 +10,12 @@ namespace ElevatorGame.Source.Characters;
 
 public class CharacterActor
 {
+    public Guid CharacterId { get; set; } = Guid.NewGuid();
     public CharacterDef Def { get; set; }
     public int FloorNumberCurrent { get; set; }
     public int FloorNumberTarget { get; set; }
     public int Patience { get; set; }
+    public int InitialPatience { get; private set; }
 
     public int OffsetXTarget { get; set; }
     private float _offsetX;
@@ -56,6 +58,8 @@ public class CharacterActor
         _seed = Random.Shared.Next(500);
 
         _currentWalkSpeed = Def.WalkSpeed;
+
+        InitialPatience = Patience;
     }
 
     public void Update(GameTime gameTime)
