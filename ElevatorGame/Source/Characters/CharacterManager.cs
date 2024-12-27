@@ -210,15 +210,39 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     private IEnumerator SubtractPatienceOfWaiting()
     {
+        int orderFailedCount = 0;
+        for (int i = 0; i < _waitList.Count; i++)
+        {
+            var characterActor = _waitList[i];
+            if (characterActor.Patience > 0) continue;
+
+            MainGame.Coroutines.TryRun("phone_show", phone.Open(false, false), out _);
+
+            yield return phone.CancelOrder(characterActor.CharacterId);
+            _waitList.Remove(characterActor);
+            i--;
+            orderFailedCount++;
+        }
+
+        if (orderFailedCount > 0)
+        {
+            phone.ScrollToTop();
+            phone.SimulateBatteryChange(-orderFailedCount);
+            yield return 60;
+            MainGame.ChangeHealth(-orderFailedCount);
+            yield return 30;
+        }
+
         foreach (var characterActor in _waitList)
         {
             characterActor.Patience--;
             characterActor.Patience = Math.Max(0, characterActor.Patience);
             float patiencePercent = MathUtil.InverseLerp01(1, characterActor.InitialPatience, characterActor.Patience);
-            int moodValue = MathUtil.RoundToInt(MathHelper.Lerp(3, 0, patiencePercent));
-            if (patiencePercent <= 0) moodValue = 3;
+            int moodValue = MathUtil.RoundToInt(MathHelper.Lerp(2, 0, patiencePercent));
+            if (characterActor.Patience <= 0) moodValue = 3;
             phone.SetOrderMood(characterActor.CharacterId, moodValue);
         }
+
         yield return null;
     }
 

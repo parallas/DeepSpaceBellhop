@@ -186,7 +186,7 @@ public class Phone(Elevator.Elevator elevator)
         {
             bool changeUp = _simulatedBatteryValue > MainGame.CurrentHealth;
             SetFace(changeUp ? 5 : 3);
-            int stepTime = changeUp ? 10 : 20;
+            int stepTime = changeUp ? 6 : 10;
             bool showChangedFrame = MainGame.Step % stepTime < stepTime * 0.5;
             _batterySpriteAnim.SetFrame(showChangedFrame ? _simulatedBatteryValue : MainGame.CurrentHealth);
         }
@@ -473,6 +473,26 @@ public class Phone(Elevator.Elevator elevator)
         }
     }
 
+    public IEnumerator CancelOrder(Guid characterId)
+    {
+        var order = _orders.Find(order => order.CharacterId == characterId);
+        var index = _orders.IndexOf(order);
+
+        ScrollTo(index);
+
+        yield return 20; // plinky HERE
+
+        yield return order.DeleteSequence();
+
+        _orders.Remove(order);
+
+        for (int i = 0; i < _orders.Count; i++)
+        {
+            _orders[i].TargetPosition = new Vector2(0, i * 6);
+            yield return 5;
+        }
+    }
+
     public void SimulateBatteryChange(int change)
     {
         SimulateBatteryValue(_simulatedBatteryValue + change);
@@ -492,6 +512,11 @@ public class Phone(Elevator.Elevator elevator)
 
     public void ScrollTo(int index)
     {
-        ScrollTarget = index * 6;
+        ScrollTarget = (index + 1) * 6;
+    }
+
+    public void ScrollToTop()
+    {
+        ScrollTarget = 0;
     }
 }

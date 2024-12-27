@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using AsepriteDotNet.Aseprite;
 using Engine;
 using Microsoft.Xna.Framework;
@@ -23,6 +24,8 @@ public class PhoneOrder
     private Sprite _arrowSprite;
     private AnimatedSprite _moodsSpriteAnim;
     private Sprite _starSprite;
+
+    private bool _isDeleting;
 
     private bool _viewed;
 
@@ -100,9 +103,17 @@ public class PhoneOrder
             _starSprite.Draw(spriteBatch, orderPos + new Vector2(14, 1));
         }
 
-        _moodsSpriteAnim.Color = _currentColor;
-        _moodsSpriteAnim.SetFrame(Mood);
-        _moodsSpriteAnim.Draw(spriteBatch, orderPos + Vector2.UnitX * 18);
+        if (Mood < 3 || MainGame.Frame % 30 < 15)
+        {
+            _moodsSpriteAnim.Color = _currentColor;
+            _moodsSpriteAnim.SetFrame(Mood);
+            _moodsSpriteAnim.Draw(spriteBatch, orderPos + Vector2.UnitX * 18);
+        }
+
+        if (_isDeleting && MainGame.Frame % 20 < 10)
+        {
+            spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)orderPos.X, (int)orderPos.Y + 1, 26, 1), _currentColor);
+        }
     }
 
     public void SnapToTarget()
@@ -113,5 +124,11 @@ public class PhoneOrder
     public void MarkAsViewed()
     {
         _viewed = true;
+    }
+
+    public IEnumerator DeleteSequence()
+    {
+        _isDeleting = true;
+        yield return 90;
     }
 }
