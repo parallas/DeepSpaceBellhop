@@ -222,6 +222,13 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         yield return null;
     }
 
+    public int WaitingDirectionOnFloor(int floorNumber)
+    {
+         var firstWaiting = _waitList.FirstOrDefault(actor => actor.FloorNumberCurrent == floorNumber);
+         if (firstWaiting is null) return 0;
+         return Math.Sign(firstWaiting.FloorNumberTarget - firstWaiting.FloorNumberCurrent);
+    }
+
     public CharacterActor SpawnCharacter(CharacterDef characterDef, int minFloor = 1)
     {
         var newCharacter = new CharacterActor

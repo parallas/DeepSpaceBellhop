@@ -300,6 +300,8 @@ public class MainGame : Game
         // Any passengers with patience <= 0 leave
         // Any passengers getting on this floor get on
 
+        var waitingDir = CharacterManager.WaitingDirectionOnFloor(CurrentFloor);
+        if (waitingDir != 0) _elevator.SetComboDirection(waitingDir);
         CurrentMenu = Menus.TurnTransition;
 
         yield return CharacterManager.EndOfTurnSequence();
