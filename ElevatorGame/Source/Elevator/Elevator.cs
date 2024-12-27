@@ -152,9 +152,17 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
             spriteBatch.Draw(
                 MainGame.PixelTexture,
                 dotsCenter + new Vector2(((i - (dotCount * 0.5f)) * 3) + 1, 0),
-                (MathUtil.RoundToInt(_floorNumber) == i + 1) ? Color.Yellow : Color.Black
-                // Color.Black
+                Color.Black
             );
+
+            if(MathUtil.RoundToInt(_floorNumber) == i + 1)
+            {
+                spriteBatch.Draw(
+                    MainGame.PixelTexture,
+                    dotsCenter + new Vector2(((i - (dotCount * 0.5f)) * 3) + 1, 0),
+                    Color.Yellow * (1 - Math.Abs(MathUtil.RoundToInt(_floorNumber) - _floorNumber))
+                );
+            }
         }
     }
 
