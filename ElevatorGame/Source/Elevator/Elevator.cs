@@ -17,7 +17,6 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 {
     public const int ParallaxDoors = 35;
     public const int ParallaxWalls = 25;
-    public static int MaxFloors = 10;
 
     public enum ElevatorStates
     {
@@ -41,7 +40,6 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     private float _lastMaxUnsignedVelocity;
     private float _maxSpeed = 0.16f;
 
-    private int _turns;
     private int _comboDirection = 0;
     private int _dir;
 
@@ -145,7 +143,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         _floorNumbers.Draw(spriteBatch, _floorNumber, _comboDirection);
 
         Vector2 dotsCenter = Vector2.Round(MainGame.Camera.GetParallaxPosition(new((MainGame.GameBounds.Width / 2) + 8, 33), ParallaxWalls));
-        var dotCount = MathHelper.Min(40, MaxFloors);
+        var dotCount = MathHelper.Min(40, MainGame.FloorCount);
 
         for(int i = 0; i < dotCount; i++)
         {
@@ -174,7 +172,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         if(Keybindings.Down.Pressed)
             inputDir -= 1;
 
-        if (inputDir > 0 && (int)Math.Round(_floorNumber) >= MaxFloors || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
+        if (inputDir > 0 && (int)Math.Round(_floorNumber) >= MainGame.FloorCount || inputDir < 0 && (int)Math.Round(_floorNumber) <= 1)
         {
             MainGame.Camera.SetShake(2, 15);
             return;
@@ -198,9 +196,9 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         }
 
         bool didSoftCrash = false;
-        if(_floorNumber < 1 || _floorNumber > MaxFloors)
+        if(_floorNumber < 1 || _floorNumber > MainGame.FloorCount)
         {
-            _floorNumber = MathHelper.Clamp(_floorNumber, 1, MaxFloors);
+            _floorNumber = MathHelper.Clamp(_floorNumber, 1, MainGame.FloorCount);
 
             _velocityParallax *= 0.25f;
             _dir = 0;
@@ -240,7 +238,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
                 _targetFloorNumber += rolloverAmount;
             }
 
-            _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, MaxFloors);
+            _targetFloorNumber = MathHelper.Clamp(_targetFloorNumber, 1, MainGame.FloorCount);
 
             MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
             State = ElevatorStates.Stopping;
@@ -286,6 +284,24 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     private void UpdateStateWaiting(GameTime gameTime)
     {
 
+    }
+
+    public void SetFloor(int floorNumber)
+    {
+        _floorNumber = floorNumber;
+    }
+
+    public void Reset()
+    {
+        SetFloor(0);
+        _comboDirection = 0;
+        _dir = 0;
+        _velocity = 0;
+        _lastMaxUnsignedVelocity = 0;
+        _stopping = false;
+        _velocityParallax = 0;
+        _doors.Open();
+        State = ElevatorStates.Stopped;
     }
 
     private IEnumerator CrashSequence()

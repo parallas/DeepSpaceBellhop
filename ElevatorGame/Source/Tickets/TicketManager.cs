@@ -144,8 +144,8 @@ public class TicketManager(Elevator.Elevator elevator)
 
         _toRemove.Add(ticket);
 
-        ticket.TargetPosition = new(ticket.TargetPosition.X, MainGame.GameBounds.Height + 20);
-        while(ticket.Position.Y < MainGame.GameBounds.Height + 20 - 1)
+        ticket.TargetPosition = new(ticket.TargetPosition.X, MainGame.GameBounds.Height + 32);
+        while(ticket.Position.Y < ticket.TargetPosition.Y - 1)
         {
             yield return null;
         }

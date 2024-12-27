@@ -185,7 +185,7 @@ public class Phone(Elevator.Elevator elevator)
         if (_simulatedBatteryValue != MainGame.CurrentHealth)
         {
             bool changeUp = _simulatedBatteryValue > MainGame.CurrentHealth;
-            SetFace(changeUp ? 5 : 3);
+            SetFace(changeUp ? 4 : 3);
             int stepTime = changeUp ? 6 : 10;
             bool showChangedFrame = MainGame.Step % stepTime < stepTime * 0.5;
             _batterySpriteAnim.SetFrame(showChangedFrame ? _simulatedBatteryValue : MainGame.CurrentHealth);

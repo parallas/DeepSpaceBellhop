@@ -7,6 +7,7 @@ using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
 using ElevatorGame.Source.Characters;
+using ElevatorGame.Source.Days;
 using ElevatorGame.Source.Rooms;
 using ElevatorGame.Source.Tickets;
 using Engine;
@@ -46,6 +47,8 @@ public class MainGame : Game
 
     public static CoroutineRunner Coroutines { get; set; } = new();
 
+    public static int CurrentDay { get; private set; } = 1;
+    public static int FloorCount { get; private set; }
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
 
@@ -151,7 +154,14 @@ public class MainGame : Game
         _dialog = new();
         _dialog.LoadContent();
 
-        for (int i = 0; i < Elevator.Elevator.MaxFloors; i++)
+        DayRegistry.Init();
+        FloorCount = DayRegistry.Days[CurrentDay].FloorCount;
+
+        CharacterRegistry.Init();
+        CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
+        CharacterManager.LoadContent();
+
+        for (int i = 0; i < FloorCount; i++)
         {
             var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
             _roomDefs.Add(newRoomDef);
@@ -176,10 +186,6 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
-        
-        CharacterRegistry.Init();
-        CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
-        CharacterManager.LoadContent();
     }
 
     protected override void UnloadContent()

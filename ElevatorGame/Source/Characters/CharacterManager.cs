@@ -110,8 +110,9 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         for (int index = 0; index < _cabList.Count; index++)
         {
             var characterActor = _cabList[index];
-            var isPatienceOut = characterActor.Patience <= 0;
-            var doTurn = characterActor.FloorNumberTarget == MainGame.CurrentFloor || isPatienceOut;
+            var isTargetFloor = characterActor.FloorNumberTarget == MainGame.CurrentFloor;
+            var isPatienceOut = characterActor.Patience <= 0 && !isTargetFloor;
+            var doTurn = isTargetFloor || isPatienceOut;
             if (!doTurn) continue;
 
             _cabList.Remove(characterActor);
@@ -125,6 +126,11 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             if (isPatienceOut)
             {
                 phone.SimulateBatteryChange(-3);
+                yield return phone.Open(false, false);
+            }
+            else
+            {
+                phone.SimulateBatteryChange(+1);
                 yield return phone.Open(false, false);
             }
 
@@ -158,6 +164,13 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             if (isPatienceOut)
             {
                 MainGame.ChangeHealth(-3);
+                yield return 60;
+                yield return phone.Close(false, false);
+            }
+            else
+            {
+                MainGame.ChangeHealth(+1);
+                yield return 60;
                 yield return phone.Close(false, false);
             }
 
@@ -228,6 +241,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
             MainGame.Coroutines.TryRun("phone_show", phone.Open(false, false), out _);
 
+            phone.SimulateBatteryChange(-1);
             yield return phone.CancelOrder(characterActor.CharacterId);
             _waitList.Remove(characterActor);
             i--;
@@ -237,7 +251,6 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         if (orderFailedCount > 0)
         {
             phone.ScrollToTop();
-            phone.SimulateBatteryChange(-orderFailedCount);
             yield return 60;
             MainGame.ChangeHealth(-orderFailedCount);
             yield return 30;
@@ -268,7 +281,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         var newCharacter = new CharacterActor
         {
             Def = characterDef,
-            FloorNumberCurrent = Random.Shared.Next(minFloor, Elevator.Elevator.MaxFloors + 1),
+            FloorNumberCurrent = Random.Shared.Next(minFloor, MainGame.FloorCount + 1),
             Patience = Random.Shared.Next(5, 9),
             OffsetXTarget = Random.Shared.Next(-48, 49)
         };
@@ -280,7 +293,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     {
         do
         {
-            characterActor.FloorNumberTarget = Random.Shared.Next(1, Elevator.Elevator.MaxFloors + 1);
+            characterActor.FloorNumberTarget = Random.Shared.Next(1, MainGame.FloorCount + 1);
         } while (characterActor.FloorNumberTarget == characterActor.FloorNumberCurrent);
 
         phone.AddOrder(characterActor);
