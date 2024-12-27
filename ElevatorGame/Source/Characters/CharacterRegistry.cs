@@ -34,7 +34,10 @@ public static class CharacterRegistry
                 Name = "EmalynCat",
                 SpritePath = "graphics/characters/EmalynCat",
                 WalkSpeed = 6,
-                EnterPhrases = [new("I want to see the world through the eyes of a normal girl!")],
+                EnterPhrases = [
+                    new("I want to see the world through the eyes of a normal girl!"),
+                    new("Maow Maow Maow!")
+                ],
                 ExitPhrases = [
                     new("Thank You!"),
                     new("Haven't felt this happy in so long!")

@@ -21,6 +21,9 @@ public class PhoneOrder
     private AnimatedSprite _digitsSpriteAnim4x5;
     private Sprite _arrowSprite;
     private AnimatedSprite _moodsSpriteAnim;
+    private Sprite _starSprite;
+
+    private bool _viewed;
 
     private Color _mainColor = ColorUtil.CreateFromHex(0x40318d);
     private Color _bgColor = ColorUtil.CreateFromHex(0x67b6bd);
@@ -39,7 +42,11 @@ public class PhoneOrder
         // Arrow
         _arrowSprite = ContentLoader.Load<AsepriteFile>("graphics/phone/Arrow")!
             .CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
-        
+
+        // Star
+        _starSprite = ContentLoader.Load<AsepriteFile>("graphics/phone/Star")!
+            .CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
+
         // Moods
         _moodsSpriteAnim = ContentLoader.Load<AsepriteFile>("graphics/phone/Moods")!
             .CreateSpriteSheet(
@@ -82,10 +89,26 @@ public class PhoneOrder
 
         _arrowSprite.Color = _currentColor;
         _arrowSprite.FlipVertically = DestinationNumber < FloorNumber;
-        _arrowSprite.Draw(spriteBatch, orderPos + new Vector2(10, 1));
+        _arrowSprite.Draw(spriteBatch, orderPos + new Vector2(8, 1));
+
+        if (!_viewed && (MainGame.Frame - orderPos.Y * 0.2f) % 30 < 15)
+        {
+            _starSprite.Color = _currentColor;
+            _starSprite.Draw(spriteBatch, orderPos + new Vector2(14, 1));
+        }
 
         _moodsSpriteAnim.Color = _currentColor;
         _moodsSpriteAnim.SetFrame(Mood);
         _moodsSpriteAnim.Draw(spriteBatch, orderPos + Vector2.UnitX * 18);
+    }
+
+    public void SnapToTarget()
+    {
+        _position = TargetPosition;
+    }
+
+    public void MarkAsViewed()
+    {
+        _viewed = true;
     }
 }

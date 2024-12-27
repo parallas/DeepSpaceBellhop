@@ -99,7 +99,7 @@ public class Phone(Elevator.Elevator elevator)
         _phonePosition = new Vector2(202, 77);
         _simulatedBatteryValue = MainGame.CurrentHealth;
 
-        _screenRenderTarget = new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 28, 37);
+        _screenRenderTarget = new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 26, 35);
     }
     
     public void UnloadContent()
@@ -196,6 +196,17 @@ public class Phone(Elevator.Elevator elevator)
         Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, 25);
         _phonePosition = MathUtil.ExpDecay(_phonePosition, phonePos, 13f, 1f / 60f);
 
+        // if (InputManager.GetPressed(Keys.T))
+        // {
+        //     // _orders.Sort((a, b) => Math.Abs(MainGame.CurrentFloor - a.FloorNumber).CompareTo(Math.Abs(MainGame.CurrentFloor - b.FloorNumber)));
+        //     // _orders.Sort((a, b) => -(a.DestinationNumber > a.FloorNumber).CompareTo(b.DestinationNumber > b.FloorNumber));
+        //     _orders.Sort((a, b) => a.FloorNumber.CompareTo(b.FloorNumber));
+        //     for (var i = 0; i < _orders.Count; i++)
+        //     {
+        //         _orders[i].TargetPosition = new Vector2(0, i * 6);
+        //     }
+        // }
+
         foreach (var order in _orders)
         {
             order.Update(gameTime);
@@ -209,16 +220,19 @@ public class Phone(Elevator.Elevator elevator)
         _faceSpriteAnim.Draw(spriteBatch, phonePos + _faceSliceKey.Location.ToVector2());
         _buttonsSpriteAnim.Draw(spriteBatch, phonePos + _buttonsSliceKey.Location.ToVector2());
         
-        Vector2 screenPos = phonePos + _screenSliceKey.Location.ToVector2();
+        Vector2 screenPos = phonePos + _screenSliceKey.Location.ToVector2() + Vector2.One;
         spriteBatch.Draw(_screenRenderTarget, screenPos + Vector2.One, Color.Black * 0.1f);
         spriteBatch.Draw(_screenRenderTarget, screenPos, Color.White);
     }
 
     public void PreRenderScreen(SpriteBatch spriteBatch)
     {
+        Matrix matrix =
+            Matrix.CreateTranslation(Vector3.Round((Vector3.UnitY * 6) - Vector3.UnitY * (_scrollOffset - 3)));
+        matrix *= Matrix.CreateTranslation(-1, -1, 0);
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_screenRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp,
-            transformMatrix: Matrix.CreateTranslation(Vector3.Round((Vector3.UnitY * 6) -Vector3.UnitY * (_scrollOffset - 3))));
+            transformMatrix: matrix);
         {
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
             Color mainColor = ColorUtil.CreateFromHex(0x40318d);
@@ -382,6 +396,8 @@ public class Phone(Elevator.Elevator elevator)
         }
         if(changeCanOpen)
             CanOpen = true;
+
+        foreach (var o in _orders) o.MarkAsViewed();
     }
 
     public void AddOrder(CharacterActor characterActor)
@@ -394,6 +410,13 @@ public class Phone(Elevator.Elevator elevator)
             TargetPosition = new Vector2(0, _orders.Count * 6)
         };
         _orders.Add(newOrder);
+
+        _orders.Sort((a, b) => a.FloorNumber.CompareTo(b.FloorNumber));
+        for (var i = 0; i < _orders.Count; i++)
+        {
+            _orders[i].TargetPosition = new Vector2(0, i * 6);
+            _orders[i].SnapToTarget();
+        }
     }
     
     public void HighlightOrder(CharacterActor characterActor)
@@ -445,14 +468,14 @@ public class Phone(Elevator.Elevator elevator)
         }
     }
 
+    public void SimulateBatteryChange(int change)
+    {
+        SimulateBatteryValue(_simulatedBatteryValue + change);
+    }
+
     public void SimulateBatteryValue(int newValue)
     {
         _simulatedBatteryValue = Math.Clamp(newValue, 0, 8);
-    }
-
-    public void SimulateBatteryChange(int change)
-    {
-        _simulatedBatteryValue = Math.Clamp(_simulatedBatteryValue + change, 0, 8);
     }
 
     public void Scroll(int direction)
