@@ -377,8 +377,8 @@ public class MainGame : Game
         // the rest of the cleanup process
         CurrentDay = day;
 
-        _elevator.UnloadContent();
-        _phone.UnloadContent();
+        _elevator.Dispose();
+        _phone.Dispose();
         // _dialog.UnloadContent();
         // _ticketManager.UnloadContent();
         // CharacterManager.UnloadContent();

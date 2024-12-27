@@ -13,7 +13,7 @@ using MonoGame.Aseprite.Utils;
 
 namespace ElevatorGame.Source.Elevator;
 
-public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTurnSequence)
+public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTurnSequence) : IDisposable
 {
     public const int ParallaxDoors = 35;
     public const int ParallaxWalls = 25;
@@ -81,13 +81,18 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     public void UnloadContent()
     {
-        _audioElevatorMove.Stop();
-        _audioElevatorMove.Dispose();
-        _doors.UnloadContent();
-        _audioBellUpEvent.Stop();
-        _audioBellUpEvent.Dispose();
-        _audioBellDownEvent.Stop();
-        _audioBellDownEvent.Dispose();
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        _doors?.Dispose();
+        _audioElevatorMove?.Stop();
+        _audioElevatorMove?.Dispose();
+        _audioBellUpEvent?.Stop();
+        _audioBellUpEvent?.Dispose();
+        _audioBellDownEvent?.Stop();
+        _audioBellDownEvent?.Dispose();
     }
 
     public void Update(GameTime gameTime)

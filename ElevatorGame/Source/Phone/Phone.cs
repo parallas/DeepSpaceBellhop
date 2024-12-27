@@ -13,7 +13,7 @@ using MonoGame.Aseprite.Utils;
 
 namespace ElevatorGame.Source.Phone;
 
-public class Phone(Elevator.Elevator elevator)
+public class Phone(Elevator.Elevator elevator) : IDisposable
 {
     public const float MaxOffset = 32f;
 
@@ -104,7 +104,12 @@ public class Phone(Elevator.Elevator elevator)
     
     public void UnloadContent()
     {
-        _screenRenderTarget.Dispose();
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        _screenRenderTarget?.Dispose();
     }
 
     public void Update(GameTime gameTime)

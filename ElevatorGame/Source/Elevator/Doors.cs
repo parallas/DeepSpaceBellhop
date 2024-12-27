@@ -11,7 +11,7 @@ using MonoGame.Aseprite.Utils;
 
 namespace ElevatorGame.Source.Elevator;
 
-public class Doors
+public class Doors : IDisposable
 {
     private readonly Elevator _elevator;
 
@@ -55,10 +55,7 @@ public class Doors
 
     public void UnloadContent()
     {
-        _audioDoorOpen.Stop();
-        _audioDoorOpen.Dispose();
-        _audioDoorClose.Stop();
-        _audioDoorClose.Dispose();
+        Dispose();
     }
 
     public void Draw(SpriteBatch spriteBatch, int floorTop)
@@ -67,6 +64,15 @@ public class Doors
 
         _elevatorLeftDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorLeftOrigin + Vector2.UnitX * -_doorOpenedness, Elevator.ParallaxDoors));
         _elevatorRightDoorSprite.Draw(spriteBatch, MainGame.Camera.GetParallaxPosition(_doorRightOrigin + Vector2.UnitX * _doorOpenedness, Elevator.ParallaxDoors));
+    }
+
+    public void Dispose()
+    {
+        _audioDoorOpen?.Stop();
+        _audioDoorClose?.Stop();
+
+        _audioDoorOpen?.Dispose();
+        _audioDoorClose?.Dispose();
     }
 
     private void DrawLight(SpriteBatch spriteBatch, int floorTop)
