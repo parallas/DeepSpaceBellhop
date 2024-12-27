@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{7f476665-2856-4eea-a359-4f55565cc876}">
+		<property name="name">
+			<value>PitchPercent</value>
+		</property>
+		<relationship name="folder">
+			<destination>{3d67ea5d-6a73-48ad-8859-f06448a804c3}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{fb099bf4-2586-48dd-837c-9dfd0a5b72aa}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{fb099bf4-2586-48dd-837c-9dfd0a5b72aa}">
+		<property name="isHeld">
+			<value>true</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

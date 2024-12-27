@@ -347,7 +347,7 @@ public class MainGame : Game
 
     public static void ChangeHealth(int change)
     {
-        CurrentHealth += change;
+        CurrentHealth = Math.Clamp(CurrentHealth + change, 0, 8);
     }
 
     private IEnumerator AdvanceDay()
