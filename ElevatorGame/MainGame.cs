@@ -284,7 +284,32 @@ public class MainGame : Game
 
         Cursor.Draw(spriteBatch);
 
-        spriteBatch.Draw(PixelTexture, GameBounds with { X = 0, Y = 0 }, Color.Black * _fadeoutProgress);
+        DrawScreenTransition(spriteBatch);
+    }
+
+    private void DrawScreenTransition(SpriteBatch spriteBatch)
+    {
+        // left
+        spriteBatch.Draw(
+            PixelTexture,
+            GameBounds with {
+                X = 0,
+                Y = 0,
+                Width = MathUtil.CeilToInt(_fadeoutProgress * GameBounds.Width / 2)
+            },
+            Color.Black
+        );
+
+        // right
+        spriteBatch.Draw(
+            PixelTexture,
+            GameBounds with {
+                X = GameBounds.Width - MathUtil.CeilToInt(_fadeoutProgress * GameBounds.Width / 2),
+                Y = 0,
+                Width = MathUtil.CeilToInt(_fadeoutProgress * GameBounds.Width / 2)
+            },
+            Color.Black
+        );
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -329,7 +354,7 @@ public class MainGame : Game
     {
         yield return FadeToBlack();
 
-        yield return 10;
+        yield return 60;
 
         // the rest of the cleanup process
 
@@ -339,9 +364,9 @@ public class MainGame : Game
     private IEnumerator FadeToBlack()
     {
         _fadeoutProgress = 0;
-        while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.03f))
+        while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.01f))
         {
-            _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 1, 5, 1f/60f);
+            _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 1, 8, 1f/60f);
             yield return null;
         }
         _fadeoutProgress = 1;
@@ -350,7 +375,7 @@ public class MainGame : Game
     private IEnumerator FadeFromBlack()
     {
         _fadeoutProgress = 1;
-        while(!MathUtil.Approximately(_fadeoutProgress, 0, 0.03f))
+        while(!MathUtil.Approximately(_fadeoutProgress, 0, 0.01f))
         {
             _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 0, 5, 1f/60f);
             yield return null;
