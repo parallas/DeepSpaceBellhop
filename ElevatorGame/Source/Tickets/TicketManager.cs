@@ -4,6 +4,7 @@ using AsepriteDotNet.Aseprite;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source.Tickets;
@@ -47,7 +48,31 @@ public class TicketManager(Elevator.Elevator elevator)
             ticket.Update(gameTime);
         }
 
-        if(!_isOpen && Keybindings.Left.Pressed && MainGame.CurrentMenu == MainGame.Menus.None && elevator.State == Elevator.Elevator.ElevatorStates.Stopped)
+        bool mouseOver = new Rectangle(
+            new(0, _isOpen
+                ? MathUtil.RoundToInt(MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, MathUtil.CeilToInt(_tickets.Count / 5f)) * 22 + 5))
+                : MainGame.GameBounds.Height - 22
+            ),
+            new(
+                5 * 16 + (_isOpen ? 6 : -32),
+                200
+            )
+        ).Contains(MainGame.Cursor.ViewPosition);
+
+        if(MainGame.CurrentMenu == MainGame.Menus.None || MainGame.CurrentMenu == MainGame.Menus.Tickets)
+        {
+            if(mouseOver)
+            {
+                if(!_isOpen)
+                    MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.OpenTickets;
+            }
+            else if(_isOpen)
+            {
+                MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.CloseTickets;
+            }
+        }
+
+        if(!_isOpen && (Keybindings.Left.Pressed || (mouseOver && InputManager.GetPressed(MouseButtons.LeftButton))) && MainGame.CurrentMenu == MainGame.Menus.None && elevator.State == Elevator.Elevator.ElevatorStates.Stopped)
         {
             MainGame.CurrentMenu = MainGame.Menus.Tickets;
             elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
@@ -58,7 +83,7 @@ public class TicketManager(Elevator.Elevator elevator)
             MainGame.Coroutines.Stop("ticket_ease_offset");
             MainGame.Coroutines.TryRun("ticket_ease_offset", EaseOffset(), out _easeOffsetHandle);
         }
-        else if(_isOpen && Keybindings.Right.Pressed && MainGame.CurrentMenu == MainGame.Menus.Tickets)
+        else if(_isOpen && (Keybindings.Right.Pressed || (!mouseOver && InputManager.GetPressed(MouseButtons.LeftButton))) && MainGame.CurrentMenu == MainGame.Menus.Tickets)
         {
             elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
             MainGame.Coroutines.Stop("ticket_show");
@@ -156,9 +181,14 @@ public class TicketManager(Elevator.Elevator elevator)
         {
             var ticketActor = _tickets[i];
 
+            var oldTarget = ticketActor.TargetPosition;
+
             ticketActor.TargetPosition =
                 new(2 + i * 3, MainGame.GameBounds.Height - 2);
-            yield return 2;
+
+            // should make interrupting the open animation be less delayed
+            if(oldTarget != ticketActor.TargetPosition)
+                yield return 2;
         }
 
         yield return _easeOffsetHandle?.Wait();

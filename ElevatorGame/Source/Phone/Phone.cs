@@ -159,7 +159,7 @@ public class Phone(Elevator.Elevator elevator)
             }
             else if(_isOpen)
             {
-                MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.Close;
+                MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.ClosePhone;
             }
 
             if(CanOpen && ((rightPressed || leftPressed) ^ (mouseEnter || mouseExit)))

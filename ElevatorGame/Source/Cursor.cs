@@ -18,7 +18,9 @@ public class Cursor
         Wait,
         Interact,
         OpenPhone,
-        Close
+        ClosePhone,
+        OpenTickets,
+        CloseTickets,
     }
 
     public CursorSprites CursorSprite { get; set; }
@@ -92,9 +94,19 @@ public class Cursor
                 _sprite.SetFrame(6);
                 break;
             }
-            case CursorSprites.Close:
+            case CursorSprites.ClosePhone:
             {
                 _sprite.SetFrame(7);
+                break;
+            }
+            case CursorSprites.OpenTickets:
+            {
+                _sprite.SetFrame(8);
+                break;
+            }
+            case CursorSprites.CloseTickets:
+            {
+                _sprite.SetFrame(9);
                 break;
             }
         }
