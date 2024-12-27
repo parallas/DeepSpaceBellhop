@@ -24,6 +24,7 @@ public class Phone(Elevator.Elevator elevator)
     private Sprite _phoneSprite;
     private AnimatedSprite _faceSpriteAnim;
     private AnimatedSprite _buttonsSpriteAnim;
+    private AnimatedSprite _batterySpriteAnim;
     private AnimatedSprite _emoticonRowSpriteAnim;
 
     private RenderTarget2D _screenRenderTarget;
@@ -76,6 +77,15 @@ public class Phone(Elevator.Elevator elevator)
             )
             .CreateAnimatedSprite("Tag");
 
+        // Battery
+        _batterySpriteAnim = ContentLoader.Load<AsepriteFile>("graphics/phone/PhoneBattery")!
+            .CreateSpriteSheet(
+                MainGame.Graphics.GraphicsDevice,
+                true,
+                innerPadding: 2
+            )
+            .CreateAnimatedSprite("Tag");
+
         // Emoticon row
         _emoticonRowSpriteAnim = ContentLoader.Load<AsepriteFile>("graphics/phone/EmoticonRow")!
             .CreateSpriteSheet(
@@ -103,7 +113,7 @@ public class Phone(Elevator.Elevator elevator)
         _scrollOffset = MathUtil.ExpDecay(_scrollOffset, ScrollTarget, 16f, 1f / 60f);
 
         int bottomPaddingRows = 4;
-        var scrollTargetMax = MathHelper.Max(0, (_orders.Count - bottomPaddingRows) * 6);
+        var scrollTargetMax = MathHelper.Max(0, (_orders.Count + (_orders.Count > 4 ? 1 : 0) - bottomPaddingRows) * 6);
         if (ScrollTarget > scrollTargetMax)
         {
             PlayEmoticonReaction();
@@ -195,15 +205,20 @@ public class Phone(Elevator.Elevator elevator)
     {
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_screenRenderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp,
-            transformMatrix: Matrix.CreateTranslation(Vector3.Round(-Vector3.UnitY * (_scrollOffset - 3))));
+            transformMatrix: Matrix.CreateTranslation(Vector3.Round((Vector3.UnitY * 6) -Vector3.UnitY * (_scrollOffset - 3))));
         {
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            Color mainColor = ColorUtil.CreateFromHex(0x40318d);
+
+            _batterySpriteAnim.SetFrame(MainGame.CurrentHealth);
+            _batterySpriteAnim.Color = mainColor;
+            _batterySpriteAnim.Draw(spriteBatch, new Vector2(2, -6));
+
             foreach (var order in _orders)
             {
                 order.Draw(spriteBatch);
             }
-            Color mainColor = ColorUtil.CreateFromHex(0x40318d);
-            if(_orders.Count >= 6)
+            if(_orders.Count > 4)
             {
                 _emoticonRowSpriteAnim.Color = mainColor;
                 _emoticonRowSpriteAnim.Draw(spriteBatch, new Vector2(1, 8 + _orders[^1].Position.Y));

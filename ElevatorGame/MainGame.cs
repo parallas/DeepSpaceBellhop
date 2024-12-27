@@ -47,8 +47,7 @@ public class MainGame : Game
     public static CoroutineRunner Coroutines { get; set; } = new();
 
     public static int CurrentFloor { get; set; } = 1;
-    public static int CurrentHealth { get; set; } = 5000; // 5000 is 50% rating
-    private float _renderHealth = 5000;
+    public static int CurrentHealth { get; set; } = 8;
 
     public static float GrayscaleCoeff { get; set; } = 1;
 
