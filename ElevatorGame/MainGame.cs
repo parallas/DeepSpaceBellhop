@@ -47,7 +47,7 @@ public class MainGame : Game
 
     public static CoroutineRunner Coroutines { get; set; } = new();
 
-    public static int CurrentDay { get; private set; } = 1;
+    public static int CurrentDay { get; private set; } = 0;
     public static int FloorCount { get; private set; }
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
@@ -362,9 +362,40 @@ public class MainGame : Game
 
         yield return 60;
 
+        if (CurrentDay >= DayRegistry.Days.Length)
+        {
+            // End of the game
+            yield return FadeFromBlack();
+            yield break;
+        }
+
         // the rest of the cleanup process
+        CurrentDay++;
+
+        _dialog = new();
+        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
+        _phone = new(_elevator);
+        _ticketManager = new(_elevator);
+        CharacterManager = new(_phone, _ticketManager, _dialog);
+
+        CurrentFloor = 1;
+        _dialog.LoadContent();
+        _elevator.LoadContent();
+        _phone.LoadContent();
+        _ticketManager.LoadContent();
+        CharacterManager.LoadContent();
+
+        CameraPosition = Vector2.Zero;
+        Camera.Position = Vector2.Zero;
+        GrayscaleCoeff = 1;
+
+        _roomRenderer.SetDefinition(_roomDefs[0]);
+        _roomRenderer.PreRender(SpriteBatch);
+
+        GC.Collect();
 
         yield return FadeFromBlack();
+        CurrentMenu = Menus.None;
     }
 
     private IEnumerator FadeToBlack()
