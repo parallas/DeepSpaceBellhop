@@ -187,17 +187,15 @@ public class TicketManager(Elevator.Elevator elevator)
         for (int i = 0; i < _tickets.Count; i++)
         {
             var ticketActor = _tickets[i];
-
             var oldTarget = ticketActor.TargetPosition;
-
-            PlaySlideSound((float)(_tickets.Count - i) / 10);
-
             ticketActor.TargetPosition =
                 new(2 + i * 3, MainGame.GameBounds.Height - 2);
 
             // should make interrupting the open animation be less delayed
-            if(oldTarget != ticketActor.TargetPosition)
-                yield return 2;
+            if (oldTarget == ticketActor.TargetPosition) continue;
+
+            PlaySlideSound((float)(_tickets.Count - i) / 10);
+            yield return 2;
         }
 
         yield return _easeOffsetHandle?.Wait();
