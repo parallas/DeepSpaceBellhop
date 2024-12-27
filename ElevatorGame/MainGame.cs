@@ -358,11 +358,16 @@ public class MainGame : Game
 
     private IEnumerator AdvanceDay()
     {
+        yield return SetDay(CurrentDay + 1);
+    }
+
+    private IEnumerator SetDay(int day)
+    {
         yield return FadeToBlack();
 
         yield return 60;
 
-        if (CurrentDay >= DayRegistry.Days.Length)
+        if (day >= DayRegistry.Days.Length || day < 0)
         {
             // End of the game
             yield return FadeFromBlack();
@@ -370,7 +375,13 @@ public class MainGame : Game
         }
 
         // the rest of the cleanup process
-        CurrentDay++;
+        CurrentDay = day;
+
+        _elevator.UnloadContent();
+        _phone.UnloadContent();
+        // _dialog.UnloadContent();
+        // _ticketManager.UnloadContent();
+        // CharacterManager.UnloadContent();
 
         _dialog = new();
         _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);

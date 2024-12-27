@@ -81,9 +81,12 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     public void UnloadContent()
     {
+        _audioElevatorMove.Stop();
         _audioElevatorMove.Dispose();
         _doors.UnloadContent();
+        _audioBellUpEvent.Stop();
         _audioBellUpEvent.Dispose();
+        _audioBellDownEvent.Stop();
         _audioBellDownEvent.Dispose();
     }
 

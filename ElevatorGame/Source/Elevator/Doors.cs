@@ -55,7 +55,9 @@ public class Doors
 
     public void UnloadContent()
     {
+        _audioDoorOpen.Stop();
         _audioDoorOpen.Dispose();
+        _audioDoorClose.Stop();
         _audioDoorClose.Dispose();
     }
 
