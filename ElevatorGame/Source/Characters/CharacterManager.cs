@@ -174,6 +174,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             var characterActor = _waitList[index];
             if (characterActor.FloorNumberCurrent != MainGame.CurrentFloor) continue;
 
+            characterActor.Patience = characterActor.InitialPatience;
             MainGame.Coroutines.TryRun("phone_show", phone.Open(false, false), out _);
             phone.CanOpen = false;
             // _cabList.ForEach(actor => actor.MoveOutOfTheWay());
