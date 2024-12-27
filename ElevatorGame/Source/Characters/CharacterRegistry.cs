@@ -11,7 +11,7 @@ public static class CharacterRegistry
     {
         _characterDefs =
         [
-            new()
+            new CharacterDef
             {
                 Name = "Blueulet",
                 SpritePath = "graphics/characters/BlueAxolotl",
@@ -20,8 +20,9 @@ public static class CharacterRegistry
                 ExitPhrases = [new("Thank you.")],
                 AngryPhrases = [new("Actually, I think she might be on this floor...")],
                 AngryIconPosition = new(-13, -72),
+                Flags = CharacterDef.CharacterFlag.Clumsy
             },
-            new()
+            new CharacterDef
             {
                 Name = "Greenulet",
                 SpritePath = "graphics/characters/GreenAxolotl",
@@ -31,7 +32,7 @@ public static class CharacterRegistry
                 AngryPhrases = [new("At this rate I'll never find him. See ya...")],
                 AngryIconPosition = new(-13, -69),
             },
-            new()
+            new CharacterDef
             {
                 Name = "EmalynCat",
                 SpritePath = "graphics/characters/EmalynCat",
@@ -50,14 +51,15 @@ public static class CharacterRegistry
                 ],
                 AngryIconPosition = new(-10, -46),
             },
-            new()
+            new CharacterDef
             {
                 Name = "Kloob",
                 SpritePath = "graphics/characters/Kloob",
                 WalkSpeed = 2,
                 AngryIconPosition = new(-10, -76),
+                Flags = CharacterDef.CharacterFlag.Clumsy
             },
-            new()
+            new CharacterDef
             {
                 Name = "Robot",
                 SpritePath = "graphics/characters/Robot",
@@ -72,6 +74,14 @@ public static class CharacterRegistry
                 ],
                 AngryPhrases = [new("Unhandled Exception in thread 'Main': Timed out;")],
                 AngryIconPosition = new(-6, -39),
+            },
+            new CharacterDef
+            {
+                Name = "Slime",
+                SpritePath = "graphics/characters/Slime",
+                WalkSpeed = 4,
+                AngryIconPosition = new(-13, -40),
+                Flags = CharacterDef.CharacterFlag.Slimy
             },
         ];
 

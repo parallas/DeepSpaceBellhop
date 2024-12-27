@@ -125,14 +125,13 @@ public class TicketManager(Elevator.Elevator elevator)
         }
     }
 
-    public void AddTicket(int floorNumber, string[] flags = null)
+    public void AddTicket(int floorNumber, TicketActor.TicketFlags flags)
     {
-        flags ??= [];
-
         var newTicket = new TicketActor()
         {
             FloorNumber = floorNumber,
-            TargetPosition = new Vector2(MainGame.GameBounds.Center.X, MainGame.GameBounds.Bottom - 32)
+            TargetPosition = new Vector2(MainGame.GameBounds.Center.X, MainGame.GameBounds.Bottom - 32),
+            Flags = flags,
         };
         newTicket.LoadContent();
 

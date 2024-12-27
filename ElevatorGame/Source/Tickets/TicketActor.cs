@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AsepriteDotNet.Aseprite;
 using Engine;
 using Microsoft.Xna.Framework;
@@ -15,11 +16,18 @@ public class TicketActor
     
     public int FloorNumber { get; set; }
 
-    private bool _isHighlighted;
-    private bool _isUpsideDown;
-    
+    [Flags]
+    public enum TicketFlags
+    {
+        None,
+        UpsideDown,
+        Slimy,
+    }
+    public TicketFlags Flags { get; set; }
+
     private AnimatedSprite _digitsSpriteAnim5x7;
     private AnimatedSprite _ticketsSpriteAnim;
+    private AnimatedSprite _ticketSpriteOverlaysAnim;
 
     public void LoadContent()
     {
@@ -30,12 +38,14 @@ public class TicketActor
         
         var ticketsFile = ContentLoader.Load<AsepriteFile>("graphics/Tickets")!;
         _ticketsSpriteAnim = ticketsFile
-            .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
+            .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, ["Main"])
+            .CreateAnimatedSprite("Tag");
+
+        _ticketSpriteOverlaysAnim = ticketsFile
+            .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, ["Overlays"])
             .CreateAnimatedSprite("Tag");
 
         Position = TargetPosition;
-
-        _isUpsideDown = Random.Shared.Next(10) == 0;
     }
 
     public void Update(GameTime gameTime)
@@ -47,7 +57,11 @@ public class TicketActor
     {
         Vector2 renderedTicketPos = Position - Vector2.UnitY * (_ticketsSpriteAnim.Height - 1);
         renderedTicketPos = Vector2.Round(MainGame.GetCursorParallaxValue(renderedTicketPos, 25));
-        if (_isUpsideDown)
+
+        bool isUpsideDown = Flags.HasFlag(TicketFlags.UpsideDown);
+        bool isSlimy = Flags.HasFlag(TicketFlags.Slimy);
+
+        if (isUpsideDown)
         {
             _ticketsSpriteAnim.FlipVertically = true;
             _ticketsSpriteAnim.FlipHorizontally = true;
@@ -60,9 +74,9 @@ public class TicketActor
         _ticketsSpriteAnim.Color = Color.White;
         _ticketsSpriteAnim.Draw(spriteBatch, renderedTicketPos);
 
-        Vector2 digitsStartPos = renderedTicketPos + new Vector2(4 - (_isUpsideDown ? 1 : 0), 9);
+        Vector2 digitsStartPos = renderedTicketPos + new Vector2(4 - (isUpsideDown ? 1 : 0), 9);
         _digitsSpriteAnim5x7.Color = Color.Black;
-        if (!_isUpsideDown)
+        if (!isUpsideDown)
         {
             // Draw tens then ones
             _digitsSpriteAnim5x7.SetFrame(FloorNumber / 10);
@@ -78,6 +92,12 @@ public class TicketActor
             _digitsSpriteAnim5x7.SetFrame(FloorNumber / 10);
             _digitsSpriteAnim5x7.Draw(spriteBatch, digitsStartPos + Vector2.UnitX * 5);
         }
-        
+
+        _ticketSpriteOverlaysAnim.SetFrame(0);
+        if (Flags.HasFlag(TicketFlags.Slimy)) _ticketSpriteOverlaysAnim.SetFrame(1);
+        _ticketSpriteOverlaysAnim.Color = Color.Black;
+        _ticketSpriteOverlaysAnim.Draw(spriteBatch, renderedTicketPos + new Vector2(-1, 1));
+        _ticketSpriteOverlaysAnim.Color = Color.White;
+        _ticketSpriteOverlaysAnim.Draw(spriteBatch, renderedTicketPos);
     }
 }

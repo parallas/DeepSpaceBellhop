@@ -184,7 +184,14 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             _waitList.Remove(characterActor);
             _movingList.Add(characterActor);
             phone.HighlightOrder(characterActor);
-            ticketManager.AddTicket(characterActor.FloorNumberTarget);
+
+            TicketActor.TicketFlags flags = TicketActor.TicketFlags.None;
+            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Slimy))
+                flags |= TicketActor.TicketFlags.Slimy;
+            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Clumsy) && Random.Shared.Next(0, 3) == 0)
+                flags |= TicketActor.TicketFlags.UpsideDown;
+
+            ticketManager.AddTicket(characterActor.FloorNumberTarget, flags);
 
             Dialog.Dialog.Page[] rawPages;
             Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
