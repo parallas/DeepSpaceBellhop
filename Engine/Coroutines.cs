@@ -27,7 +27,7 @@ SOFTWARE.
 
 // original source: https://github.com/ChevyRay/Coroutines
 // original fork used: https://github.com/Linerichka/Coroutines
-// basis: https://github.com/tmaster-terrarian/BeeboMG/tree/main/Jelly/Coroutines/
+// basis: https://github.com/tmaster-terrarian/magequest/blob/main/MageQuest/Engine/Coroutines.cs
 
 // edited significantly to use frames instead of seconds
 #endregion
