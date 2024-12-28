@@ -190,6 +190,7 @@ public class MainGame : Game
 
         var darkOverlayFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDarkOverlay");
         _darkOverlaySprite = darkOverlayFile!.CreateSprite(GraphicsDevice, 0, true);
+        _darkOverlaySprite.OriginX = -64;
 
         Cursor = new();
         Cursor.LoadContent();
