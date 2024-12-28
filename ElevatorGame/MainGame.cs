@@ -142,6 +142,8 @@ public class MainGame : Game
 
         CharacterRegistry.Init();
 
+        SaveManager.Load();
+
         base.Initialize();
     }
 
@@ -188,6 +190,7 @@ public class MainGame : Game
 
         var darkOverlayFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDarkOverlay");
         _darkOverlaySprite = darkOverlayFile!.CreateSprite(GraphicsDevice, 0, true);
+        _darkOverlaySprite.OriginX = -64;
 
         Cursor = new();
         Cursor.LoadContent();
@@ -235,7 +238,7 @@ public class MainGame : Game
 
         HandleToggleFullscreen();
 
-        DebugSystems();
+        DebugUpdate();
 
         // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
@@ -560,7 +563,7 @@ public class MainGame : Game
     }
 
     [Conditional("DEBUG")]
-    private void DebugSystems()
+    private void DebugUpdate()
     {
         if (InputManager.GetPressed(Keys.Y))
         {
