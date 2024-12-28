@@ -524,4 +524,9 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     {
         ScrollTarget = 0;
     }
+
+    public void ForceClearOrders()
+    {
+        _orders.Clear();
+    }
 }

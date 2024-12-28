@@ -388,4 +388,13 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
         SpawnMultipleRandomCharacters(spawnAmount);
     }
+
+    public void ForceCompleteDay()
+    {
+        CharactersFinished = MainGame.CompletionRequirement;
+        _waitList.Clear();
+        _movingList.Clear();
+        _cabList.Clear();
+        phone.ForceClearOrders();
+    }
 }

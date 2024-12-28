@@ -396,6 +396,8 @@ public class MainGame : Game
             {
                 EndOfDaySequence = true;
 
+                yield return _phone.Open(false, false);
+
                 yield return _dialog.Display([
                     new() {
                         Content = "Day complete - time to go home!",
@@ -404,6 +406,8 @@ public class MainGame : Game
                         Content = "Return to the Ground Floor to clock out.",
                     }
                 ], Dialog.Dialog.DisplayMethod.Human);
+
+                yield return _phone.Close(false, false);
             }
 
             if(CurrentFloor == 1)
@@ -578,6 +582,11 @@ public class MainGame : Game
         {
             Coroutines.Stop("main_day_advance");
             Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+        }
+
+        if (InputManager.GetPressed(Keys.T))
+        {
+            CharacterManager.ForceCompleteDay();
         }
     }
 }

@@ -33,7 +33,7 @@ public static class DayRegistry
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat"],
-                StartCharacterCount = 4
+                StartCharacterCount = 3
             },
             new DayDef
             {
@@ -42,7 +42,7 @@ public static class DayRegistry
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat"],
-                StartCharacterCount = 5
+                StartCharacterCount = 3
             },
         ];
     }
