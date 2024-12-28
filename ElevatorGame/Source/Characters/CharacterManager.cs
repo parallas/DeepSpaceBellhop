@@ -116,6 +116,11 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             var isPatienceOut = characterActor.Patience <= 0 && !isTargetFloor;
             var doTurn = isTargetFloor || isPatienceOut;
             if (!doTurn) continue;
+            if(isTargetFloor)
+            {
+                characterActor.DrawAngryIcon = false;
+                characterActor.Patience = 1;
+            }
 
             _cabList.Remove(characterActor);
             index--;
