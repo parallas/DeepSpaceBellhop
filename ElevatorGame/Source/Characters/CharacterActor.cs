@@ -18,6 +18,8 @@ public class CharacterActor
     public int InitialPatience { get; private set; }
     public bool DrawAngryIcon { get; set; }
 
+    public int FloorTargetDirection => Math.Sign(FloorNumberTarget - FloorNumberCurrent);
+
     public int OffsetXTarget { get; set; }
     private float _offsetX;
     private float _offsetY;

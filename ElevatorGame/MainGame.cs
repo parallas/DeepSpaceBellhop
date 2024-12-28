@@ -50,6 +50,7 @@ public class MainGame : Game
     public static int CurrentDay { get; private set; } = 0;
     public static int FloorCount => DayRegistry.Days[CurrentDay].FloorCount;
     public static int CompletionRequirement => DayRegistry.Days[CurrentDay].CompletionRequirement;
+    public static float SpawnChance => DayRegistry.Days[CurrentDay].OrderSpawnChancePerTurn;
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
 
