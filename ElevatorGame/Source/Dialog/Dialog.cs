@@ -30,8 +30,10 @@ public class Dialog()
     public const int FastScrollSpeed = 1;
     public const int LineHeight = 10;
 
-    private SpriteFont _font;
     private AnimatedSprite _glyphSprite;
+
+    private int _targetOffsetY = -LineHeight * 3 - Padding * 2;
+    private float _offsetY = -LineHeight * 3 - Padding * 2;
 
     private bool _awaitingConfirmation;
 
@@ -40,8 +42,6 @@ public class Dialog()
 
     public void LoadContent()
     {
-        _font = ContentLoader.Load<SpriteFont>("fonts/default");
-
         _glyphSprite = ContentLoader.Load<AsepriteFile>("graphics/Glyphs")
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false)
             .CreateAnimatedSprite("Tag");
@@ -53,6 +53,7 @@ public class Dialog()
         var lastMenu = MainGame.CurrentMenu;
         MainGame.CurrentMenu = MainGame.Menus.Dialog;
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
+        _targetOffsetY = 0;
         switch (displayMethod)
         {
             case DisplayMethod.Human:
@@ -64,6 +65,7 @@ public class Dialog()
         }
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Default;
         MainGame.CurrentMenu = lastMenu;
+        _targetOffsetY = -LineHeight * 3 - Padding * 2;
     }
 
     private IEnumerator DisplayHuman(Page[] pages)
@@ -145,6 +147,26 @@ public class Dialog()
 
     public void Draw(SpriteBatch spriteBatch)
     {
+        _offsetY = MathUtil.ExpDecay(_offsetY, _targetOffsetY, 10, 1f/60f);
+        spriteBatch.Draw(
+            MainGame.PixelTexture,
+            MainGame.GameBounds with {
+                X = 0,
+                Y = MathUtil.RoundToInt(_offsetY),
+                Height = LineHeight * 3 + Padding * 2
+            },
+            Color.Black
+        );
+        spriteBatch.Draw(
+            MainGame.PixelTexture,
+            MainGame.GameBounds with {
+                X = 0,
+                Y = MathUtil.RoundToInt(_offsetY),
+                Height = LineHeight * 3 + Padding * 2 - 1
+            },
+            Color.White
+        );
+
         if(_charBuffer.Count != 0)
         {
             StringBuilder builder = new();
@@ -154,7 +176,7 @@ public class Dialog()
             var words = str.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             foreach(var word in words)
             {
-                var w = (int)_font.MeasureString(word).X + 6;
+                var w = (int)MainGame.Font.MeasureString(word).X + 6;
                 if(x + w > 240 - (Padding * 2))
                 {
                     builder = new();
@@ -166,10 +188,10 @@ public class Dialog()
                 x += w;
 
                 spriteBatch.DrawStringSpacesFix(
-                    _font,
+                    MainGame.Font,
                     builder.ToString(),
-                    new Vector2(Padding, Padding + y - 2),
-                    _awaitingConfirmation ? Color.Yellow : Color.White,
+                    new Vector2(Padding, Padding + y - 2 + _offsetY),
+                    _awaitingConfirmation ? Color.Blue : Color.Black,
                     6
                 );
             }
@@ -190,11 +212,11 @@ public class Dialog()
 
                 _glyphSprite.SetFrame(ind);
                 if(_awaitingConfirmation)
-                    _glyphSprite.Color = Color.Yellow;
+                    _glyphSprite.Color = Color.Blue;
                 else
-                    _glyphSprite.Color = Color.White;
+                    _glyphSprite.Color = Color.Black;
 
-                _glyphSprite.Draw(spriteBatch, new(Padding + x, Padding + y - 4));
+                _glyphSprite.Draw(spriteBatch, new(Padding + x, Padding + y - 4 + _offsetY));
 
                 x += w;
             }

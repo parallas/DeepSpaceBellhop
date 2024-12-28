@@ -58,6 +58,10 @@ public class MainGame : Game
     public static Rectangle ScreenBounds { get; private set; }
     public static Cursor Cursor { get; private set; }
 
+    public static SpriteFont Font { get; private set; }
+    public static SpriteFont FontBold { get; private set; }
+    public static SpriteFont FontItalic { get; private set; }
+
     public enum Menus
     {
         None,
@@ -187,6 +191,10 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
+
+        Font = ContentLoader.Load<SpriteFont>("fonts/default");
+        FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
+        FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
     }
 
     protected override void UnloadContent()
