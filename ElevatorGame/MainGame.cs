@@ -141,6 +141,8 @@ public class MainGame : Game
 
         CharacterRegistry.Init();
 
+        SaveManager.Load();
+
         base.Initialize();
     }
 
