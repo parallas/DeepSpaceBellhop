@@ -15,14 +15,16 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     private readonly List<CharacterActor> _movingList = [];
     private readonly List<CharacterActor> _cabList = [];
 
+    public List<CharacterActor> CharactersInPlay => _waitList.Concat(_movingList).Concat(_cabList).ToList();
+
     public int CharactersFinished { get; private set; }
 
     public void LoadContent()
     {
-        foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
-        {
-            SpawnCharacter(characterTableValue, 2);
-        }
+        // foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
+        // {
+        //     SpawnCharacter(characterTableValue, 2);
+        // }
     }
 
     public void Update(GameTime gameTime)
@@ -105,6 +107,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         yield return GetOnAtFloorSequence();
 
         yield return SubtractPatienceOfWaiting();
+
+        yield return SpawnMoreCharacters();
     }
 
     private IEnumerator LeaveAtFloorSequence()
@@ -280,6 +284,20 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         yield return null;
     }
 
+    private IEnumerator SpawnMoreCharacters()
+    {
+        bool shouldSpawn = Random.Shared.Next(100) < MainGame.SpawnChance;
+        if (!shouldSpawn) yield break;
+
+        var validCharactersToSpawn = CharacterRegistry.CharacterTable.Values
+            .Where(characterDef => CharactersInPlay.Find(a => a.Def.Name == characterDef.Name) is null)
+            .ToArray();
+        if (validCharactersToSpawn.Length == 0) yield break;
+
+        var characterDef = validCharactersToSpawn[Random.Shared.Next(validCharactersToSpawn.Length)];
+        SpawnCharacter(characterDef);
+    }
+
     public int WaitingDirectionOnFloor(int floorNumber)
     {
          var firstWaiting = _waitList.FirstOrDefault(actor => actor.FloorNumberCurrent == floorNumber);
@@ -289,10 +307,17 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     public CharacterActor SpawnCharacter(CharacterDef characterDef, int minFloor = 1)
     {
+        var spawnFloor = 0;
+        do
+        {
+            spawnFloor = Random.Shared.Next(minFloor, MainGame.FloorCount + 1);
+        }
+        while (spawnFloor == MainGame.CurrentFloor);
+
         var newCharacter = new CharacterActor
         {
             Def = characterDef,
-            FloorNumberCurrent = Random.Shared.Next(minFloor, MainGame.FloorCount + 1),
+            FloorNumberCurrent = spawnFloor,
             Patience = Random.Shared.Next(5, 9),
             OffsetXTarget = Random.Shared.Next(-48, 49)
         };
@@ -308,8 +333,18 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         }
         do
         {
-            characterActor.FloorNumberTarget = Random.Shared.Next(1, MainGame.FloorCount + 1);
-        } while (characterActor.FloorNumberTarget == characterActor.FloorNumberCurrent);
+            int randomFloor = Random.Shared.Next(1, MainGame.FloorCount + 1);
+            var other = _waitList.FirstOrDefault(c => c.FloorNumberCurrent == characterActor.FloorNumberCurrent);
+            if (other is not null)
+            {
+                randomFloor = other.FloorTargetDirection > 0
+                    ? Random.Shared.Next(other.FloorNumberCurrent + 1, MainGame.FloorCount + 1)
+                    : Random.Shared.Next(1, other.FloorNumberCurrent);
+            }
+            characterActor.FloorNumberTarget = randomFloor;
+        } while (
+            characterActor.FloorNumberTarget == characterActor.FloorNumberCurrent
+        );
 
         phone.AddOrder(characterActor);
 
