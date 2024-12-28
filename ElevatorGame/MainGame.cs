@@ -234,7 +234,7 @@ public class MainGame : Game
 
         HandleToggleFullscreen();
 
-        DebugSystems();
+        DebugUpdate();
 
         // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
@@ -562,7 +562,7 @@ public class MainGame : Game
     }
 
     [Conditional("DEBUG")]
-    private void DebugSystems()
+    private void DebugUpdate()
     {
         if (InputManager.GetPressed(Keys.Y))
         {
