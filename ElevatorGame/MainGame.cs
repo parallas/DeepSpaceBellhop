@@ -51,6 +51,9 @@ public class MainGame : Game
     public static int FloorCount => DayRegistry.Days[CurrentDay].FloorCount;
     public static int CompletionRequirement => DayRegistry.Days[CurrentDay].CompletionRequirement;
     public static float SpawnChance => DayRegistry.Days[CurrentDay].OrderSpawnChancePerTurn;
+    public static string[] CharacterIdsPool => DayRegistry.Days[CurrentDay].CharacterIds;
+    public static int StartCharacterCount => DayRegistry.Days[CurrentDay].StartCharacterCount;
+    public static int MaxCountPerSpawn => DayRegistry.Days[CurrentDay].MaxCountPerSpawn;
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
 
@@ -173,6 +176,7 @@ public class MainGame : Game
         _dialog.LoadContent();
 
         CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
+        CharacterManager.Init();
         CharacterManager.LoadContent();
 
         for (int i = 0; i < 99; i++)
@@ -408,6 +412,9 @@ public class MainGame : Game
             }
         }
         CurrentMenu = Menus.None;
+
+        if (CharacterManager.CharactersInPlay.Count == 0)
+            CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
     }
 
     public void SimulateBatteryChange(int newValue)
@@ -457,6 +464,8 @@ public class MainGame : Game
         _phone = new(_elevator);
         _ticketManager = new(_elevator);
         CharacterManager = new(_phone, _ticketManager, _dialog);
+
+        CharacterManager.Init();
 
         CurrentFloor = 1;
         _dialog.LoadContent();

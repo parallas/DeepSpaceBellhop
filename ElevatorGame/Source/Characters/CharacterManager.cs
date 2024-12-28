@@ -27,6 +27,16 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         // }
     }
 
+    public void Init()
+    {
+        CharactersFinished = 0;
+        _waitList.Clear();
+        _movingList.Clear();
+        _cabList.Clear();
+
+        SpawnMultipleRandomCharacters(MainGame.StartCharacterCount);
+    }
+
     public void Update(GameTime gameTime)
     {
         foreach (var characterActor in _waitList)
@@ -284,25 +294,6 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         yield return null;
     }
 
-    private IEnumerator SpawnMoreCharacters()
-    {
-        bool shouldSpawn = Random.Shared.Next(100) < MainGame.SpawnChance;
-        if (!shouldSpawn) yield break;
-
-        int spawnAmount = Random.Shared.Next(2) + 1;
-
-        for (int i = 0; i < spawnAmount; i++)
-        {
-            var validCharactersToSpawn = CharacterRegistry.CharacterTable.Values
-                .Where(characterDef => CharactersInPlay.Find(a => a.Def.Name == characterDef.Name) is null)
-                .ToArray();
-            if (validCharactersToSpawn.Length == 0) yield break;
-
-            var characterDef = validCharactersToSpawn[Random.Shared.Next(validCharactersToSpawn.Length)];
-            SpawnCharacter(characterDef);
-        }
-    }
-
     public int WaitingDirectionOnFloor(int floorNumber)
     {
          var firstWaiting = _waitList.FirstOrDefault(actor => actor.FloorNumberCurrent == floorNumber);
@@ -357,5 +348,44 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             $"{characterActor.Def.Name} is going from {characterActor.FloorNumberCurrent} to {characterActor.FloorNumberTarget}");
         characterActor.LoadContent();
         _waitList.Add(characterActor);
+    }
+
+    public CharacterActor[] SpawnMultipleRandomCharacters(int count)
+    {
+        List<CharacterActor> characters = new();
+        for (int i = 0; i < count; i++)
+        {
+            if (!TryGetRandomValidCharacter(out var characterDef))
+                break;
+            var newCharacter = SpawnCharacter(characterDef);
+            characters.Add(newCharacter);
+        }
+
+        return characters.ToArray();
+    }
+
+    private bool TryGetRandomValidCharacter(out CharacterDef characterDef)
+    {
+        characterDef = default;
+        var validCharactersToSpawn = CharacterRegistry.CharacterTable.Values
+            .Where(characterDef =>
+                    MainGame.CharacterIdsPool.Contains(characterDef.Name) && // Get characters from the day's available characters
+                    CharactersInPlay.Find(a => a.Def.Name == characterDef.Name) is null // Don't spawn the same character twice
+            )
+            .ToArray();
+        if (validCharactersToSpawn.Length == 0) return false;
+
+        characterDef = validCharactersToSpawn[Random.Shared.Next(validCharactersToSpawn.Length)];
+        return true;
+    }
+
+    private IEnumerator SpawnMoreCharacters()
+    {
+        bool shouldSpawn = Random.Shared.Next(100) < MainGame.SpawnChance;
+        if (!shouldSpawn) yield break;
+
+        int spawnAmount = Random.Shared.Next(MainGame.MaxCountPerSpawn) + 1;
+
+        SpawnMultipleRandomCharacters(spawnAmount);
     }
 }

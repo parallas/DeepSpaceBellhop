@@ -14,31 +14,35 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 10,
-                CharacterIDs = ["Blueulet", "Greenulet", "Kloob"]
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob"],
+                StartCharacterCount = 1
             },
             new DayDef
             {
-                FloorCount = 25,
+                FloorCount = 20,
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 25,
-                CharacterIDs = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime"]
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime"],
+                StartCharacterCount = 2
             },
             new DayDef
             {
-                FloorCount = 50,
+                FloorCount = 30,
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIDs = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat"]
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat"],
+                StartCharacterCount = 4
             },
             new DayDef
             {
-                FloorCount = 99,
+                FloorCount = 40,
                 OrderSpawnChancePerTurn = 60,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIDs = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat"]
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat"],
+                StartCharacterCount = 5
             },
         ];
     }
