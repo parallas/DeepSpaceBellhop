@@ -25,6 +25,7 @@ public class DayTransition
 
     private RenderTarget2D _transitionRenderTarget;
     private float _transitionAlpha;
+    private int _transitionDirection = 1;
 
     public void LoadContent()
     {
@@ -83,7 +84,9 @@ public class DayTransition
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_transitionRenderTarget, Vector2.UnitY * MathHelper.Lerp(16, 0, MathF.Pow(_transitionAlpha, 0.5f)), Color.White * _transitionAlpha);
+        spriteBatch.Draw(_transitionRenderTarget,
+            Vector2.UnitY * -_transitionDirection * MathHelper.Lerp(16, 0, MathF.Pow(_transitionAlpha, 0.5f)),
+            Color.White * _transitionAlpha);
     }
 
     public IEnumerator TransitionToNextDay(int newLevelNumber)
@@ -96,6 +99,7 @@ public class DayTransition
         _arrowSprite.Transparency = 0;
 
         // Fade in
+        _transitionDirection = 1;
         while (_transitionAlpha < 1)
         {
             _transitionAlpha += 1f / 30f;
@@ -103,7 +107,7 @@ public class DayTransition
         }
 
         yield return 30;
-
+        ;
         // Start moving dot
         _arrowSprite.Transparency = 1;
         _floorDotAnimSprite.Play(1);
@@ -114,9 +118,10 @@ public class DayTransition
         // Update floor number
         _digits5x7AnimSprite.SetFrame(newLevelNumber);
 
-        yield return 90;
+        yield return 120;
 
         // Fade out
+        _transitionDirection = -1;
         while (_transitionAlpha > 0)
         {
             _transitionAlpha -= 1f / 30f;
