@@ -197,7 +197,7 @@ public class CharacterActor
         PlayAnimation(isAngry ? _animAngry : _animFront);
     }
 
-    public IEnumerator GetOffElevatorEnd()
+    public IEnumerator GetOffElevatorEnd(Action onEnd)
     {
         _currentWalkSpeed = MathUtil.CeilToInt(Def.WalkSpeed * 0.5f);
         _squashStretchOffset = -0.1f;
@@ -209,5 +209,6 @@ public class CharacterActor
             yield return null;
         }
         _isInElevator = false;
+        onEnd?.Invoke();
     }
 }

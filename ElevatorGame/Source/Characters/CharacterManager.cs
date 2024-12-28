@@ -14,8 +14,10 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     private readonly List<CharacterActor> _waitList = [];
     private readonly List<CharacterActor> _movingList = [];
     private readonly List<CharacterActor> _cabList = [];
+    private readonly List<CharacterActor> _leavingList = [];
 
-    public List<CharacterActor> CharactersInPlay => _waitList.Concat(_movingList).Concat(_cabList).ToList();
+    public List<CharacterActor> CharactersInPlay =>
+        _waitList.Concat(_movingList).Concat(_cabList).ToList();
 
     public int CharactersFinished { get; private set; }
 
@@ -33,12 +35,17 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         _waitList.Clear();
         _movingList.Clear();
         _cabList.Clear();
+        _leavingList.Clear();
 
         SpawnMultipleRandomCharacters(MainGame.StartCharacterCount);
     }
 
     public void Update(GameTime gameTime)
     {
+        foreach (var characterActor in _leavingList)
+        {
+            characterActor.Update(gameTime);
+        }
         foreach (var characterActor in _waitList)
         {
             characterActor.Update(gameTime);
@@ -70,6 +77,10 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     public void DrawWaiting(SpriteBatch spriteBatch)
     {
         foreach (var characterActor in _waitList)
+        {
+            characterActor.Draw(spriteBatch);
+        }
+        foreach (var characterActor in _leavingList)
         {
             characterActor.Draw(spriteBatch);
         }
@@ -179,7 +190,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             yield return dialog.Display(parsesPages, displayMethod);
 
             _movingList.Remove(characterActor);
-            _waitList.Add(characterActor);
+            _leavingList.Add(characterActor);
 
             // Reduce health for real now
             if (isPatienceOut)
@@ -195,9 +206,12 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                 yield return phone.Close(false, false);
             }
 
-            yield return characterActor.GetOffElevatorEnd();
-
-            _waitList.Remove(characterActor);
+            MainGame.Coroutines.TryRun(
+                $"character_get_off_elevator_{characterActor.CharacterId.ToString()}",
+                characterActor.GetOffElevatorEnd(() =>
+                {
+                    _leavingList.Remove(characterActor);
+                }), out _);
 
             CharactersFinished++;
         }
