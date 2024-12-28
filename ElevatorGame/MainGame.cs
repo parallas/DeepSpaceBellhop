@@ -74,6 +74,8 @@ public class MainGame : Game
 
     public static Menus CurrentMenu { get; set; }
 
+    public bool EndOfDaySequence { get; private set; }
+
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
@@ -88,6 +90,9 @@ public class MainGame : Game
 
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
+
+    private Sprite _darkOverlaySprite;
+    private float _darkOverlayOpacity;
 
     public static CharacterManager CharacterManager { get; private set; }
 
@@ -179,6 +184,9 @@ public class MainGame : Game
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
         _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
 
+        var darkOverlayFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDarkOverlay");
+        _darkOverlaySprite = darkOverlayFile!.CreateSprite(GraphicsDevice, 0, true);
+
         Cursor = new();
         Cursor.LoadContent();
 
@@ -237,6 +245,12 @@ public class MainGame : Game
 
         Camera.Update();
 
+        if(EndOfDaySequence)
+        {
+            _darkOverlayOpacity = MathUtil.Approach(_darkOverlayOpacity, 1, 0.1f);
+        }
+        _darkOverlaySprite.Color = Color.White * _darkOverlayOpacity;
+
         base.Update(gameTime);
 
         Step++;
@@ -287,6 +301,11 @@ public class MainGame : Game
         _elevator.Draw(spriteBatch);
 
         CharacterManager.DrawMain(spriteBatch);
+
+        if(EndOfDaySequence)
+        {
+            _darkOverlaySprite.Draw(spriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 0));
+        }
     }
 
     private void DrawUI(SpriteBatch spriteBatch)
@@ -355,7 +374,12 @@ public class MainGame : Game
         if (CharacterManager.CharactersFinished >= DayRegistry.Days[CurrentDay].CompletionRequirement)
         {
             // Advance to the next day
-            Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+            // Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+            EndOfDaySequence = true;
+            if(CurrentFloor == 1)
+            {
+                Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+            }
         }
         else
         {
@@ -381,6 +405,9 @@ public class MainGame : Game
     private IEnumerator SetDay(int day)
     {
         yield return FadeToBlack();
+
+        EndOfDaySequence = false;
+        _darkOverlayOpacity = 0;
 
         yield return 60;
 
