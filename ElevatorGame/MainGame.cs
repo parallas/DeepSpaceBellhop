@@ -375,7 +375,21 @@ public class MainGame : Game
         {
             // Advance to the next day
             // Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
-            EndOfDaySequence = true;
+
+            if(!EndOfDaySequence)
+            {
+                EndOfDaySequence = true;
+
+                yield return _dialog.Display([
+                    new() {
+                        Content = "Day complete - time to go home!",
+                    },
+                    new() {
+                        Content = "Return to the Ground Floor to clock out.",
+                    }
+                ], Dialog.Dialog.DisplayMethod.Human);
+            }
+
             if(CurrentFloor == 1)
             {
                 Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
