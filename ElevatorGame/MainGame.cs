@@ -100,6 +100,7 @@ public class MainGame : Game
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
+    private DayTransition _dayTransition = new DayTransition();
     private float _fadeoutProgress;
 
     public MainGame()
@@ -192,6 +193,8 @@ public class MainGame : Game
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
 
+        _dayTransition.LoadContent();
+
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
@@ -235,6 +238,8 @@ public class MainGame : Game
 
         CharacterManager.Update(gameTime);
 
+        _dayTransition.Update(gameTime);
+
         Camera.Update();
 
         base.Update(gameTime);
@@ -248,6 +253,7 @@ public class MainGame : Game
 
         _roomRenderer.PreRender(SpriteBatch);
         _phone.PreRenderScreen(SpriteBatch);
+        _dayTransition.PreDraw(SpriteBatch);
 
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
@@ -325,6 +331,8 @@ public class MainGame : Game
             },
             Color.Black
         );
+
+        _dayTransition.Draw(spriteBatch);
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -383,6 +391,8 @@ public class MainGame : Game
         yield return FadeToBlack();
 
         yield return 60;
+
+        yield return _dayTransition.TransitionToNextDay(day + 1);
 
         if (day >= DayRegistry.Days.Length || day < 0)
         {
