@@ -15,6 +15,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     private readonly List<CharacterActor> _movingList = [];
     private readonly List<CharacterActor> _cabList = [];
 
+    public int CharactersFinished { get; private set; }
+
     public void LoadContent()
     {
         foreach (var characterTableValue in CharacterRegistry.CharacterTable.Values)
@@ -177,6 +179,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             yield return characterActor.GetOffElevatorEnd();
 
             _waitList.Remove(characterActor);
+
+            CharactersFinished++;
         }
     }
 
@@ -253,6 +257,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             phone.ScrollToTop();
             yield return 60;
             MainGame.ChangeHealth(-orderFailedCount);
+
+            CharactersFinished += orderFailedCount;
             yield return 30;
         }
 
@@ -291,6 +297,10 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     public void SpawnCharacter(CharacterActor characterActor)
     {
+        if (CharactersFinished + _waitList.Count >= MainGame.CompletionRequirement)
+        {
+            return; // Don't spawn anyone!!!!!!!!!!!!
+        }
         do
         {
             characterActor.FloorNumberTarget = Random.Shared.Next(1, MainGame.FloorCount + 1);
