@@ -404,10 +404,7 @@ public class MainGame : Game
                 Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
             }
         }
-        else
-        {
-            CurrentMenu = Menus.None;
-        }
+        CurrentMenu = Menus.None;
     }
 
     public void SimulateBatteryChange(int newValue)

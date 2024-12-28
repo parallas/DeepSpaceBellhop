@@ -13,7 +13,7 @@ public static class DayRegistry
                 FloorCount = 10,
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
-                CompletionRequirement = 20,
+                CompletionRequirement = 10,
                 CharacterIDs = ["Blueulet", "Greenulet", "Kloob"]
             },
             new DayDef
@@ -21,7 +21,7 @@ public static class DayRegistry
                 FloorCount = 25,
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
-                CompletionRequirement = 30,
+                CompletionRequirement = 25,
                 CharacterIDs = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime"]
             },
             new DayDef

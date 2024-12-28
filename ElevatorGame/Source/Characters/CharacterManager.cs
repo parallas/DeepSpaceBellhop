@@ -289,13 +289,18 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         bool shouldSpawn = Random.Shared.Next(100) < MainGame.SpawnChance;
         if (!shouldSpawn) yield break;
 
-        var validCharactersToSpawn = CharacterRegistry.CharacterTable.Values
-            .Where(characterDef => CharactersInPlay.Find(a => a.Def.Name == characterDef.Name) is null)
-            .ToArray();
-        if (validCharactersToSpawn.Length == 0) yield break;
+        int spawnAmount = Random.Shared.Next(2) + 1;
 
-        var characterDef = validCharactersToSpawn[Random.Shared.Next(validCharactersToSpawn.Length)];
-        SpawnCharacter(characterDef);
+        for (int i = 0; i < spawnAmount; i++)
+        {
+            var validCharactersToSpawn = CharacterRegistry.CharacterTable.Values
+                .Where(characterDef => CharactersInPlay.Find(a => a.Def.Name == characterDef.Name) is null)
+                .ToArray();
+            if (validCharactersToSpawn.Length == 0) yield break;
+
+            var characterDef = validCharactersToSpawn[Random.Shared.Next(validCharactersToSpawn.Length)];
+            SpawnCharacter(characterDef);
+        }
     }
 
     public int WaitingDirectionOnFloor(int floorNumber)
@@ -327,7 +332,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     public void SpawnCharacter(CharacterActor characterActor)
     {
-        if (CharactersFinished + _waitList.Count >= MainGame.CompletionRequirement)
+        if (CharactersFinished + CharactersInPlay.Count >= MainGame.CompletionRequirement)
         {
             return; // Don't spawn anyone!!!!!!!!!!!!
         }
