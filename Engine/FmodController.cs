@@ -37,13 +37,13 @@ public static class FmodController
         CoreSystem.Native.setAdvancedSettings(ref advancedSettings);
     }
 
-    private static async Task LoadContentAsync()
-    {
-        // var native = _masterBus.Native;
-        // while (native.getChannelGroup(out _channelGroup) != RESULT.OK) { await Task.Yield(); }
+    // private static async Task LoadContentAsync()
+    // {
+    //     // var native = _masterBus.Native;
+    //     // while (native.getChannelGroup(out _channelGroup) != RESULT.OK) { await Task.Yield(); }
 
-        // _masterBus.UnlockChannelGroup();
-    }
+    //     // _masterBus.UnlockChannelGroup();
+    // }
 
     public static void LoadContent(string banksPath, bool loadStrings, string[] banksToLoad, string[] bussesToLoad)
     {
@@ -68,7 +68,7 @@ public static class FmodController
         _masterBus = StudioSystem.GetBus("bus:/Sounds");
 
         // Loads FMOD DSPs which won't load until the update after FMOD is initialized
-        LoadContentAsync();
+        // LoadContentAsync();
     }
 
     public static void UnloadContent()
