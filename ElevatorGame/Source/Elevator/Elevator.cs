@@ -174,6 +174,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
 
     private void UpdateStateStopped(GameTime gameTime)
     {
+        if (MainGame.CurrentMenu != MainGame.Menus.None) return;
         int inputDir = 0;
         if(Keybindings.Up.Pressed)
             inputDir += 1;

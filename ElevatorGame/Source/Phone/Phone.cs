@@ -201,17 +201,6 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, 25);
         _phonePosition = MathUtil.ExpDecay(_phonePosition, phonePos, 13f, 1f / 60f);
 
-        // if (InputManager.GetPressed(Keys.T))
-        // {
-        //     // _orders.Sort((a, b) => Math.Abs(MainGame.CurrentFloor - a.FloorNumber).CompareTo(Math.Abs(MainGame.CurrentFloor - b.FloorNumber)));
-        //     // _orders.Sort((a, b) => -(a.DestinationNumber > a.FloorNumber).CompareTo(b.DestinationNumber > b.FloorNumber));
-        //     _orders.Sort((a, b) => a.FloorNumber.CompareTo(b.FloorNumber));
-        //     for (var i = 0; i < _orders.Count; i++)
-        //     {
-        //         _orders[i].TargetPosition = new Vector2(0, i * 6);
-        //     }
-        // }
-
         foreach (var order in _orders)
         {
             order.Update(gameTime);
@@ -328,7 +317,16 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _isOpen = true;
         MainGame.Coroutines.Stop("phone_hide");
         CanOpen = false;
+        if(changeCanOpen)
+            CanOpen = true;
         _offset = 0;
+
+        if (shiftCam)
+        {
+            MainGame.CameraPositionTarget = MainGame.CameraPositionTarget with { X = MaxOffset };
+            MainGame.GrayscaleCoeffTarget = 0;
+        }
+
         while(_offset < MaxOffset - 1)
         {
             _offset = MathUtil.ExpDecay(
@@ -338,26 +336,9 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 1/60f
             );
             
-            if (shiftCam)
-            {
-                var camPos = MainGame.CameraPosition;
-                camPos.X = _offset;
-                MainGame.CameraPosition = camPos;
-                MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
-            }
-            
             yield return null;
         }
         _offset = MaxOffset;
-        if (shiftCam)
-        {
-            var camPos = MainGame.CameraPosition;
-            camPos.X = _offset;
-            MainGame.CameraPosition = camPos;
-            MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
-        }
-        if(changeCanOpen)
-            CanOpen = true;
     }
 
     public IEnumerator Close(bool shiftCam, bool changeCanOpen = true)
@@ -371,7 +352,16 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _isOpen = false;
         MainGame.Coroutines.Stop("phone_show");
         CanOpen = false;
+        if(changeCanOpen)
+            CanOpen = true;
         _offset = MaxOffset;
+
+        if (shiftCam)
+        {
+            MainGame.CameraPositionTarget = MainGame.CameraPositionTarget with { X = 0 };
+            MainGame.GrayscaleCoeffTarget = 1;
+        }
+
         while(_offset > 1)
         {
             _offset = MathUtil.ExpDecay(
@@ -381,26 +371,9 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 1/60f
             );
             
-            if (shiftCam)
-            {
-                var camPos = MainGame.CameraPosition;
-                camPos.X = _offset;
-                MainGame.CameraPosition = camPos;
-                MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
-            }
-            
             yield return null;
         }
         _offset = 0;
-        if (shiftCam)
-        {
-            var camPos = MainGame.CameraPosition;
-            camPos.X = _offset;
-            MainGame.CameraPosition = camPos;
-            MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
-        }
-        if(changeCanOpen)
-            CanOpen = true;
 
         foreach (var o in _orders) o.MarkAsViewed();
     }

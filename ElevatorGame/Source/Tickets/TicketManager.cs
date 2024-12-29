@@ -167,6 +167,7 @@ public class TicketManager(Elevator.Elevator elevator)
     public IEnumerator Open()
     {
         _isOpen = true;
+        MainGame.CurrentMenu = MainGame.Menus.Tickets;
 
         for (int i = _tickets.Count - 1; i >= 0; i--)
         {
@@ -183,6 +184,8 @@ public class TicketManager(Elevator.Elevator elevator)
 
     public IEnumerator Close()
     {
+        _isOpen = false;
+        MainGame.CurrentMenu = MainGame.Menus.None;
         for (int i = 0; i < _tickets.Count; i++)
         {
             var ticketActor = _tickets[i];
@@ -198,13 +201,12 @@ public class TicketManager(Elevator.Elevator elevator)
         }
 
         yield return _easeOffsetHandle?.Wait();
-
-        MainGame.CurrentMenu = MainGame.Menus.None;
-        _isOpen = false;
     }
 
     private IEnumerator EaseOffset()
     {
+        MainGame.CameraPositionTarget = MainGame.CameraPositionTarget with { X = -_targetOffset };
+        MainGame.GrayscaleCoeffTarget = 1-_targetOffset/MaxOffset;
         while(!MathUtil.Approximately(_offset, _targetOffset, 1))
         {
             _offset = MathUtil.ExpDecay(
@@ -213,11 +215,6 @@ public class TicketManager(Elevator.Elevator elevator)
                 8,
                 1/60f
             );
-
-            var camPos = MainGame.CameraPosition;
-            camPos.X = -_offset;
-            MainGame.CameraPosition = camPos;
-            MainGame.GrayscaleCoeff = 1-(_offset / MaxOffset);
 
             yield return null;
         }

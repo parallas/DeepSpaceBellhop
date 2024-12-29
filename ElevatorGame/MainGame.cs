@@ -42,6 +42,7 @@ public class MainGame : Game
     };
 
     public static Vector2 CameraPosition { get; set; }
+    public static Vector2 CameraPositionTarget { get; set; }
 
     public static Vector2 ScreenPosition => Vector2.Round(Camera.Position) + Vector2.One * 8;
 
@@ -58,6 +59,7 @@ public class MainGame : Game
     public static int CurrentHealth { get; set; } = 8;
 
     public static float GrayscaleCoeff { get; set; } = 1;
+    public static float GrayscaleCoeffTarget { get; set; } = 1;
 
     public static Rectangle ScreenBounds { get; private set; }
     public static Cursor Cursor { get; private set; }
@@ -256,6 +258,7 @@ public class MainGame : Game
 
         _dayTransition.Update(gameTime);
 
+        CameraPosition = MathUtil.ExpDecay(CameraPosition, CameraPositionTarget, 8f, 1f / 60f);
         Camera.Update();
 
         if(EndOfDaySequence)
@@ -407,7 +410,7 @@ public class MainGame : Game
                     }
                 ], Dialog.Dialog.DisplayMethod.Human);
 
-                yield return _phone.Close(false, false);
+                yield return _phone.Close(false, true);
             }
 
             if(CurrentFloor == 1)
@@ -438,6 +441,8 @@ public class MainGame : Game
 
     private IEnumerator SetDay(int day)
     {
+        CurrentMenu = Menus.DayTransition;
+
         yield return FadeToBlack();
 
         EndOfDaySequence = false;
@@ -479,6 +484,7 @@ public class MainGame : Game
         CharacterManager.LoadContent();
 
         CameraPosition = Vector2.Zero;
+        CameraPositionTarget = Vector2.Zero;
         Camera.Position = Vector2.Zero;
         ResetShaderProperties();
 
@@ -490,6 +496,8 @@ public class MainGame : Game
         yield return FadeFromBlack();
         CurrentMenu = Menus.None;
         Coroutines.StopAll();
+
+        CurrentMenu = Menus.None;
     }
 
     private IEnumerator FadeToBlack()
@@ -538,11 +546,13 @@ public class MainGame : Game
 
     private void ResetShaderProperties()
     {
+        GrayscaleCoeffTarget = 1;
         GrayscaleCoeff = 1;
     }
 
     private void UpdateShaderProperties()
     {
+        GrayscaleCoeff = MathUtil.ExpDecay(GrayscaleCoeff, GrayscaleCoeffTarget, 8, 1f / 60f);
         _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
         _ppWobbleInfluence.SetValue(0);
         _ppGameTime.SetValue(Frame / 60f);
