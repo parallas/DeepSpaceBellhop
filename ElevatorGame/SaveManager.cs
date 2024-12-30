@@ -13,6 +13,14 @@ public static class SaveManager
 
     private static string _filePath = Path.Combine(FileLocations.ProgramPath, "save.json");
 
+    public static void DeleteFile()
+    {
+        if (File.Exists(_filePath))
+        {
+            File.Delete(_filePath);
+        }
+    }
+
     public static void Load()
     {
         if (!File.Exists(_filePath))
