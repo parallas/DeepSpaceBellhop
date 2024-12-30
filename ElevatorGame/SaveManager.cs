@@ -11,17 +11,18 @@ public static class SaveManager
     public static event Action<SaveData?> OnSave;
     public static event Action<SaveData?> OnLoad;
 
+    private static string _filePath = Path.Combine(FileLocations.ProgramPath, "save.json");
+
     public static void Load()
     {
-        var filePath = Path.Combine(FileLocations.ProgramPath, "save.json");
-        if(!File.Exists(filePath))
+        if (!File.Exists(_filePath))
         {
             SaveData = new();
             return;
         }
 
         SaveData = JsonSerializer.Deserialize<SaveData>(
-            File.OpenRead(filePath)
+            File.ReadAllText(_filePath)
         );
 
         OnLoad?.Invoke(SaveData);
@@ -32,7 +33,7 @@ public static class SaveManager
         OnSave?.Invoke(SaveData);
 
         File.WriteAllText(
-            Path.Combine(FileLocations.ProgramPath, "save.json"),
+            _filePath,
             JsonSerializer.Serialize(SaveData)
         );
     }

@@ -150,9 +150,22 @@ public class MainGame : Game
 
         CharacterRegistry.Init();
 
-        SaveManager.Load();
+        SaveManager.OnLoad += OnSaveDataLoad;
+        SaveManager.OnSave += OnSaveDataSave;
 
         base.Initialize();
+    }
+
+    private void OnSaveDataSave(SaveData data)
+    {
+        data.Day = CurrentDay;
+        data.Rooms = [.. _roomDefs];
+    }
+
+    private void OnSaveDataLoad(SaveData data)
+    {
+        CurrentDay = data.Day;
+        _roomDefs = [.. data.Rooms];
     }
 
     protected override void LoadContent()
@@ -184,15 +197,6 @@ public class MainGame : Game
         CharacterManager.Init();
         CharacterManager.LoadContent();
 
-        for (int i = 0; i < 99; i++)
-        {
-            var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
-            _roomDefs.Add(newRoomDef);
-        }
-        _roomRenderer = new RoomRenderer();
-        _roomRenderer.LoadContent();
-        _roomRenderer.SetDefinition(_roomDefs[0]);
-
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
         _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
@@ -220,6 +224,20 @@ public class MainGame : Game
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
+
+        SaveManager.Load();
+
+        if (SaveManager.SaveData.Rooms.Count == 0)
+        {
+            for (int i = 0; i < 99; i++)
+            {
+                var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
+                _roomDefs.Add(newRoomDef);
+            }
+        }
+        _roomRenderer = new RoomRenderer();
+        _roomRenderer.LoadContent();
+        _roomRenderer.SetDefinition(_roomDefs[0]);
     }
 
     protected override void UnloadContent()
@@ -228,6 +246,13 @@ public class MainGame : Game
 
         _elevator.UnloadContent();
         _phone.UnloadContent();
+    }
+
+    protected override void EndRun()
+    {
+        SaveManager.Save();
+
+        base.EndRun();
     }
 
     protected override void Update(GameTime gameTime)
