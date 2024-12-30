@@ -20,6 +20,7 @@ public class TicketManager(Elevator.Elevator elevator)
     private bool _isOpen;
     private float _offset;
     private float _targetOffset;
+    private Vector2 _drawerPosition;
 
     private CoroutineHandle _easeOffsetHandle;
 
@@ -37,6 +38,11 @@ public class TicketManager(Elevator.Elevator elevator)
 
     public void Update(GameTime gameTime)
     {
+        _drawerPosition = MainGame.GetCursorParallaxValue(new(
+            MathHelper.Lerp(-40, 1, (_offset / MaxOffset)),
+            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, MathUtil.CeilToInt(_tickets.Count / 5f)) * 22 * (_offset / MaxOffset) + 17)
+        ), 45);
+
         for (int i = 0; i < _tickets.Count; i++)
         {
             var ticket = _tickets[i];
@@ -102,12 +108,7 @@ public class TicketManager(Elevator.Elevator elevator)
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        Vector2 drawerPosition = MainGame.GetCursorParallaxValue(new(
-            MathHelper.Lerp(-40, 1, (_offset / MaxOffset)),
-            MainGame.GameBounds.Height + 1 - (MathHelper.Max(1, MathUtil.CeilToInt(_tickets.Count / 5f)) * 22 * (_offset / MaxOffset) + 17)
-        ), 45);
-
-        _cardTraySprite.Draw(spriteBatch, drawerPosition);
+        _cardTraySprite.Draw(spriteBatch, _drawerPosition);
         // spriteBatch.Draw(
         //     MainGame.PixelTexture, new Rectangle(
         //         MathUtil.RoundToInt(drawerPosition.X),

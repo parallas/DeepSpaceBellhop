@@ -23,9 +23,8 @@ public class PauseButton(
     public void LoadContent()
     {
         var file = ContentLoader.Load<AsepriteFile>(imagePath)!;
-        _sprite = file.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, ["Button"]);
-        _sprite.Origin = new Vector2(_sprite.Width * 0.5f, _sprite.Height * 0.5f);
-        _bounds = new Rectangle((int)position.X, (int)position.Y, _sprite.Width, _sprite.Height);
+        _sprite = file.CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
+        _bounds = new Rectangle(MathUtil.RoundToInt(position.X), MathUtil.RoundToInt(position.Y), _sprite.Width, _sprite.Height);
     }
 
     public void Update(GameTime gameTime, bool isSelected)
@@ -46,9 +45,13 @@ public class PauseButton(
 
     public void Draw(SpriteBatch spriteBatch, bool isSelected)
     {
+        _sprite.Color = isSelected ? Color.Yellow : Color.Gray;
         _sprite.Draw(spriteBatch, position);
 
-        Vector2 hoverTextPosition = new Vector2(_bounds.Center.X, _bounds.Top - 3);
-        hoverSprite?.Draw(spriteBatch, hoverTextPosition);
+        if (isSelected)
+        {
+            Vector2 hoverTextPosition = new Vector2(_bounds.Center.X, _bounds.Top);
+            hoverSprite?.Draw(spriteBatch, hoverTextPosition);
+        }
     }
 }

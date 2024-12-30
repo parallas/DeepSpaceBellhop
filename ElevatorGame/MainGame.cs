@@ -8,6 +8,7 @@ using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
 using ElevatorGame.Source.Characters;
 using ElevatorGame.Source.Days;
+using ElevatorGame.Source.Pause;
 using ElevatorGame.Source.Rooms;
 using ElevatorGame.Source.Tickets;
 using Engine;
@@ -111,6 +112,8 @@ public class MainGame : Game
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
+    private PauseManager _pauseManager = new PauseManager();
+
     private DayTransition _dayTransition = new DayTransition();
     private float _fadeoutProgress;
 
@@ -212,6 +215,7 @@ public class MainGame : Game
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
 
         _dayTransition.LoadContent();
+        _pauseManager.LoadContent();
 
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
@@ -238,13 +242,17 @@ public class MainGame : Game
         // Update Input
         UpdateInput(gameTime);
 
-        // TODO: REMOVE THIS IN THE FINAL GAME
-        if(Keybindings.Pause.Pressed)
-            Exit();
-
         HandleToggleFullscreen();
 
         DebugUpdate();
+
+        if (Keybindings.Pause.Pressed)
+        {
+            _pauseManager.Pause();
+        }
+        _pauseManager.Update(gameTime);
+
+        if (_pauseManager.IsPaused) return;
 
         // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
@@ -279,6 +287,7 @@ public class MainGame : Game
         _roomRenderer.PreRender(SpriteBatch);
         _phone.PreRenderScreen(SpriteBatch);
         _dayTransition.PreDraw(SpriteBatch);
+        _pauseManager.PreDraw(SpriteBatch);
 
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
@@ -333,9 +342,11 @@ public class MainGame : Game
 
         _dialog.Draw(spriteBatch);
 
-        Cursor.Draw(spriteBatch);
+        _pauseManager.Draw(spriteBatch);
 
         DrawScreenTransition(spriteBatch);
+
+        Cursor.Draw(spriteBatch);
     }
 
     private void DrawScreenTransition(SpriteBatch spriteBatch)
