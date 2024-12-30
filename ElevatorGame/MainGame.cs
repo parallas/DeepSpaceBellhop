@@ -112,9 +112,9 @@ public class MainGame : Game
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
-    private PauseManager _pauseManager = new PauseManager();
+    private readonly PauseManager _pauseManager = new PauseManager();
 
-    private DayTransition _dayTransition = new DayTransition();
+    private readonly DayTransition _dayTransition = new DayTransition();
     private float _fadeoutProgress;
 
     public MainGame()
@@ -219,6 +219,8 @@ public class MainGame : Game
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
 
         _dayTransition.LoadContent();
+
+        _pauseManager.ExitGame = Exit;
         _pauseManager.LoadContent();
 
         Font = ContentLoader.Load<SpriteFont>("fonts/default");

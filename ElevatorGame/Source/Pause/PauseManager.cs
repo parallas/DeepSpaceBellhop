@@ -11,6 +11,7 @@ namespace ElevatorGame.Source.Pause;
 public class PauseManager
 {
     public bool IsPaused { get; private set; }
+    public Action ExitGame { get; set; }
 
     private float _opacity;
 
@@ -57,7 +58,10 @@ public class PauseManager
             _hoverResumeSprite,
             0,
             SetSelectedButton,
-            () => { }
+            () =>
+            {
+                IsPaused = false;
+            }
         );
         _resumeButton.LoadContent();
         
@@ -67,7 +71,10 @@ public class PauseManager
             _hoverMainMenuSprite,
             1,
             SetSelectedButton,
-            () => { }
+            () =>
+            {
+
+            }
         );
         _mainMenuButton.LoadContent();
 
@@ -77,7 +84,10 @@ public class PauseManager
             _hoverQuitSprite,
             2,
             SetSelectedButton,
-            () => { }
+            () =>
+            {
+                ExitGame?.Invoke();
+            }
         );
         _quitButton.LoadContent();
     }
