@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ElevatorGame.Source.Dialog;
 using ElevatorGame.Source.Tickets;
 using Engine;
 using Microsoft.Xna.Framework;
@@ -101,19 +102,6 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         }
     }
 
-    public static Dialog.Dialog.Page[] ParsePages(Dialog.Dialog.Page[] pages, CharacterActor characterActor)
-    {
-        Dialog.Dialog.Page[] newPages = new Dialog.Dialog.Page[pages.Length];
-        for (int i = 0; i < pages.Length; i++)
-        {
-            var page = pages[i];
-            var content = page.Content;
-            var parsedContent = content.Replace("$floorNumDest", characterActor.FloorNumberTarget.ToString());
-            newPages[i] = new Dialog.Dialog.Page() { Content = parsedContent, CharInterval = page.CharInterval };
-        }
-        return newPages;
-    }
-
     public IEnumerator EndOfTurnSequence()
     {
         yield return LeaveAtFloorSequence();
@@ -171,23 +159,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                 isPatienceOut
                     ? characterActor.Def.AngryPhrases
                     : characterActor.Def.ExitPhrases;
-            Dialog.Dialog.Page[] rawPages;
-            Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
-            if (phrases.Length == 0)
-            {
-                int randomCharCout = Random.Shared.Next(3, 30);
-                string randomString = new string(Enumerable.Range(0, randomCharCout)
-                    .Select(_ => (char)Random.Shared.Next('a', 'z' + 1)).ToArray());
-                rawPages = [new Dialog.Dialog.Page() { Content = randomString }];
-                displayMethod = Dialog.Dialog.DisplayMethod.Alien;
-            }
-            else
-            {
-                rawPages = phrases[Random.Shared.Next(phrases.Length)]
-                    .Pages;
-            }
-            var parsesPages = ParsePages(rawPages, characterActor);
-            yield return dialog.Display(parsesPages, displayMethod);
+            var pages = DialogParser.GetRandomDialog(phrases, out var displayMethod);
+            yield return dialog.Display(DialogParser.ParseCharacterDialog(pages, characterActor), displayMethod);
 
             _movingList.Remove(characterActor);
             _leavingList.Add(characterActor);
@@ -243,23 +216,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
             ticketManager.AddTicket(characterActor.FloorNumberTarget, flags);
 
-            Dialog.Dialog.Page[] rawPages;
-            Dialog.Dialog.DisplayMethod displayMethod = Dialog.Dialog.DisplayMethod.Human;
-            if (characterActor.Def.EnterPhrases.Length == 0)
-            {
-                int randomCharCout = Random.Shared.Next(3, 30);
-                string randomString = new string(Enumerable.Range(0, randomCharCout)
-                    .Select(_ => (char)Random.Shared.Next('a', 'z' + 1)).ToArray());
-                rawPages = [new Dialog.Dialog.Page() { Content = randomString }];
-                displayMethod = Dialog.Dialog.DisplayMethod.Alien;
-            }
-            else
-            {
-                rawPages = characterActor.Def.EnterPhrases[Random.Shared.Next(characterActor.Def.EnterPhrases.Length)]
-                    .Pages;
-            }
-            var parsesPages = ParsePages(rawPages, characterActor);
-            yield return dialog.Display(parsesPages, displayMethod);
+            var pages = DialogParser.GetRandomDialog(characterActor.Def.EnterPhrases, out var displayMethod);
+            yield return dialog.Display(DialogParser.ParseCharacterDialog(pages, characterActor), displayMethod);
             yield return phone.RemoveOrder(characterActor);
 
             yield return characterActor.GetInElevatorEnd();

@@ -166,6 +166,8 @@ public class MainGame : Game
     {
         CurrentDay = data.Day;
         _roomDefs = [.. data.Rooms];
+
+        Coroutines.TryRun("load_day_start", StartDay(data.Day), out _);
     }
 
     protected override void LoadContent()
@@ -535,7 +537,14 @@ public class MainGame : Game
         CurrentMenu = Menus.None;
         Coroutines.StopAll();
 
-        CurrentMenu = Menus.None;
+        yield return StartDay(day);
+    }
+
+    private IEnumerator StartDay(int dayIndex)
+    {
+        yield return _phone.Open(false, false);
+        yield return _dialog.Display(DayRegistry.Days[dayIndex].StartDialog.Pages, Dialog.Dialog.DisplayMethod.Human);
+        yield return _phone.Close(false, true);
     }
 
     private IEnumerator FadeToBlack()

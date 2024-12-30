@@ -1,6 +1,8 @@
+using ElevatorGame.Source.Dialog;
+
 namespace ElevatorGame.Source.Days;
 
-public struct DayDef
+public struct DayDef()
 {
     public required int FloorCount { get; set; }
     public required int OrderSpawnChancePerTurn { get; set; }
@@ -8,4 +10,5 @@ public struct DayDef
     public required int CompletionRequirement { get; set; }
     public required string[] CharacterIds { get; set; }
     public required int StartCharacterCount { get; set; }
+    public DialogDef StartDialog { get; set; }
 }
