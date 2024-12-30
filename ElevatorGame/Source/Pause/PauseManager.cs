@@ -89,7 +89,7 @@ public class PauseManager
 
     public void Update(GameTime gameTime)
     {
-        _transitionAlpha = MathUtil.ExpDecay(_transitionAlpha, IsPaused ? 0.9f : 0f, 8f, 1f / 60f);
+        _transitionAlpha = MathUtil.ExpDecay(_transitionAlpha, IsPaused ? 1f : 0f, 8f, 1f / 60f);
 
         if (!IsPaused)
             return;
@@ -112,8 +112,8 @@ public class PauseManager
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_renderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         {
-
-            spriteBatch.Draw(MainGame.PixelTexture, MainGame.ScreenBounds, Color.Black * 0.8f);
+            MainGame.Graphics.GraphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(MainGame.PixelTexture, MainGame.ScreenBounds, Color.Black * 0.9f);
             _pausedTextSprite.Draw(spriteBatch, new Vector2(0, 0));
             _resumeButton.Draw(spriteBatch, _selectedButton == 0);
             _mainMenuButton.Draw(spriteBatch, _selectedButton == 1);
