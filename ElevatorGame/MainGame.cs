@@ -101,6 +101,10 @@ public class MainGame : Game
     private Sprite _darkOverlaySprite;
     private float _darkOverlayOpacity;
 
+    private AnimatedSprite _buttonHint;
+    private float _buttonHintOpacity;
+    private bool _buttonHintVisible;
+
     public static CharacterManager CharacterManager { get; private set; }
 
     private Effect _elevatorEffects;
@@ -207,6 +211,11 @@ public class MainGame : Game
         _darkOverlaySprite = darkOverlayFile!.CreateSprite(GraphicsDevice, 0, true);
         _darkOverlaySprite.OriginX = 64;
 
+        _buttonHint = ContentLoader.Load<AsepriteFile>("graphics/ButtonHint")
+            .CreateSpriteSheet(GraphicsDevice, false)
+            .CreateAnimatedSprite("Tag");
+        _buttonHint.Origin = new(19, 5);
+
         Cursor = new();
         Cursor.LoadContent();
 
@@ -304,6 +313,19 @@ public class MainGame : Game
         }
         _darkOverlaySprite.Color = Color.White * _darkOverlayOpacity;
 
+        if (CurrentDay == 0 && CurrentFloor == 1 && _buttonHintVisible)
+        {
+            _buttonHintOpacity = MathUtil.Approach(_buttonHintOpacity, 1, 0.1f);
+        }
+        else
+        {
+            _buttonHintOpacity = MathUtil.Approach(_buttonHintOpacity, 0, 0.1f);
+            if (CurrentFloor != 1)
+                _buttonHintVisible = false;
+        }
+        _buttonHint.Color = Color.White * _buttonHintOpacity;
+        _buttonHint.Update(1f / 60f);
+
         base.Update(gameTime);
 
         Step++;
@@ -370,6 +392,8 @@ public class MainGame : Game
         _ticketManager.Draw(spriteBatch);
 
         _dialog.Draw(spriteBatch);
+
+        _buttonHint.Draw(spriteBatch, new(GameBounds.Width / 2, GameBounds.Height - 20 - (_buttonHintOpacity * 4)));
 
         _pauseManager.Draw(spriteBatch);
 
@@ -544,6 +568,8 @@ public class MainGame : Game
     {
         yield return _phone.Open(false, false);
         yield return _dialog.Display(DayRegistry.Days[dayIndex].StartDialog.Pages, Dialog.Dialog.DisplayMethod.Human);
+        _buttonHint.Play();
+        _buttonHintVisible = true;
         yield return _phone.Close(false, true);
     }
 
