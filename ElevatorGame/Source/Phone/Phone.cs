@@ -6,6 +6,7 @@ using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
 using ElevatorGame.Source.Characters;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -60,6 +61,9 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     public bool CanOpen { get; set; } = true;
     
     private List<PhoneOrder> _orders = new();
+
+    private EventInstance _audioOpen;
+    private EventInstance _audioClose;
 
     public void LoadContent()
     {
@@ -137,6 +141,9 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _simulatedBatteryValue = MainGame.CurrentHealth;
 
         _screenRenderTarget = new RenderTarget2D(MainGame.Graphics.GraphicsDevice, 26, 35);
+
+        _audioOpen = StudioSystem.GetEvent("event:/SFX/UI/Phone/Open").CreateInstance();
+        _audioClose = StudioSystem.GetEvent("event:/SFX/UI/Phone/Close").CreateInstance();
     }
     
     public void UnloadContent()
@@ -147,6 +154,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     public void Dispose()
     {
         _screenRenderTarget?.Dispose();
+        _audioOpen?.Dispose();
+        _audioClose?.Dispose();
     }
 
     public void Update(GameTime gameTime)
@@ -419,6 +428,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
     {
+        _audioClose.Stop();
+        _audioOpen.Start();
         if (_isOpen)
         {
             MainGame.Coroutines.Stop("phone_show");
@@ -453,6 +464,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public IEnumerator Close(bool shiftCam, bool changeCanOpen = true, bool markAllViewed = false)
     {
+        _audioOpen.Stop();
+        _audioClose.Start();
         if (!_isOpen)
         {
             MainGame.Coroutines.Stop("phone_hide");
