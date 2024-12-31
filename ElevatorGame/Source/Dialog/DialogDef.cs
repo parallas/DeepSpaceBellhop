@@ -4,12 +4,12 @@ public struct DialogDef(params string[] pagesText)
 {
     public string[] PagesText { get; set; } = pagesText;
 
-    public Dialog.Page[] Pages
+    public readonly Dialog.Page[] Pages
     {
         get
         {
-            Dialog.Page[] pages = new Dialog.Page[PagesText.Length];
-            for (int i = 0; i < PagesText.Length; i++)
+            Dialog.Page[] pages = new Dialog.Page[PagesText?.Length ?? 0];
+            for (int i = 0; i < pages.Length; i++)
             {
                 pages[i] = new Dialog.Page
                 {
