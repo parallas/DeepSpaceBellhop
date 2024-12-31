@@ -333,19 +333,21 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             characters.Add(newCharacter);
         }
 
-        return characters.ToArray();
+        return [.. characters];
     }
 
     private bool TryGetRandomValidCharacter(out CharacterDef characterDef)
     {
         characterDef = default;
-        var validCharactersToSpawn = CharacterRegistry.CharacterTable.Values
+        CharacterDef[] validCharactersToSpawn = [.. CharacterRegistry.CharacterTable.Values
             .Where(characterDef =>
                     MainGame.CharacterIdsPool.Contains(characterDef.Name) && // Get characters from the day's available characters
                     CharactersInPlay.Find(a => a.Def.Name == characterDef.Name) is null // Don't spawn the same character twice
             )
-            .ToArray();
-        if (validCharactersToSpawn.Length == 0) return false;
+        ];
+
+        if (validCharactersToSpawn.Length == 0)
+            return false;
 
         characterDef = validCharactersToSpawn[Random.Shared.Next(validCharactersToSpawn.Length)];
         return true;
