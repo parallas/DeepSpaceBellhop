@@ -36,7 +36,14 @@ public class PauseButton(
 
         if (isSelected)
         {
-            if (Keybindings.Confirm.Pressed)
+            bool mouseClick = InputManager.GetPressed(MouseButtons.LeftButton);
+
+            // this prevents the button from activating on mouse click if the mouse not over the button
+            if (mouseClick && _bounds.Contains(MainGame.Cursor.ViewPosition))
+            {
+                onClick?.Invoke();
+            }
+            else if (!mouseClick && Keybindings.Confirm.Pressed)
             {
                 onClick?.Invoke();
             }
