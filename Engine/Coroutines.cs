@@ -70,7 +70,7 @@ public class CoroutineRunner
 
     public bool TryRun(string methodName, IEnumerator enumerator, int delay, out CoroutineHandle handle)
     {
-        if(!IsRunning(methodName))
+        if (!IsRunning(methodName) && !_toAdd.ContainsKey(methodName))
         {
             handle = Run(methodName, enumerator, delay);
             return true;
