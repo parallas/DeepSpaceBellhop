@@ -315,6 +315,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         );
 
         phone.AddOrder(characterActor);
+        phone.PlayDotBlink();
 
         Console.WriteLine(
             $"{characterActor.Def.Name} is going from {characterActor.FloorNumberCurrent} to {characterActor.FloorNumberTarget}");

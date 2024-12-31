@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
 using ElevatorGame.Source.Characters;
@@ -33,6 +34,11 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     private Rectangle _buttonsSliceKey;
     private Rectangle _screenSliceKey;
     private Rectangle _dotSliceKey;
+
+    private AnimatedSprite _dotSpriteAnim;
+    private AnimatedSprite _dotNormalSpriteAnim;
+    private AnimatedSprite _dotStarSpriteAnim;
+    private AnimatedSprite _dotTransitionSpriteAnim;
 
     private Rectangle _mouseRegion = new(193, 75, 38, 200);
 
@@ -95,7 +101,36 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 true
             )
             .CreateAnimatedSprite("Tag");
-        
+
+        // blinking light
+        var dotFile = ContentLoader.Load<AsepriteFile>("graphics/phone/Dot")!;
+        _dotNormalSpriteAnim = dotFile
+            .CreateSpriteSheet(
+                MainGame.Graphics.GraphicsDevice,
+                true
+            )
+            .CreateAnimatedSprite("Normal");
+
+        _dotStarSpriteAnim = dotFile
+            .CreateSpriteSheet(
+                MainGame.Graphics.GraphicsDevice,
+                true
+            )
+            .CreateAnimatedSprite("Star");
+
+        _dotTransitionSpriteAnim = dotFile
+            .CreateSpriteSheet(
+                MainGame.Graphics.GraphicsDevice,
+                true
+            )
+            .CreateAnimatedSprite("Star");
+
+        _dotNormalSpriteAnim.Origin = new(3);
+        _dotStarSpriteAnim.Origin = new(3);
+        _dotTransitionSpriteAnim.Origin = new(3);
+
+        SetDot(_dotNormalSpriteAnim);
+
         _phonePosition = new Vector2(202, 77);
         _simulatedBatteryValue = MainGame.CurrentHealth;
 
@@ -213,7 +248,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _phoneSprite.Draw(spriteBatch, phonePos);
         _faceSpriteAnim.Draw(spriteBatch, phonePos + _faceSliceKey.Location.ToVector2());
         _buttonsSpriteAnim.Draw(spriteBatch, phonePos + _buttonsSliceKey.Location.ToVector2());
-        
+        _dotSpriteAnim.Draw(spriteBatch, phonePos + _dotSliceKey.Location.ToVector2());
+
         Vector2 screenPos = phonePos + _screenSliceKey.Location.ToVector2() + Vector2.One;
         spriteBatch.Draw(_screenRenderTarget, screenPos + Vector2.One, Color.Black * 0.1f);
         spriteBatch.Draw(_screenRenderTarget, screenPos, Color.White);
@@ -251,6 +287,11 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     public void SetFace(int faceIndex)
     {
         _faceSpriteAnim.SetFrame(faceIndex);
+    }
+
+    void SetDot(AnimatedSprite animatedSprite)
+    {
+        _dotSpriteAnim = animatedSprite;
     }
 
     private void PlayFaceReaction()
@@ -305,6 +346,47 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         yield return 15;
 
         _buttonsSpriteAnim.SetFrame(0);
+    }
+
+    public void PlayDotBlink()
+    {
+        if (!MainGame.Coroutines.IsRunning("phone_dot_blink"))
+            MainGame.Coroutines.TryRun("phone_dot_blink", DotBlinkSequence(), 0, out _);
+    }
+
+    private IEnumerator DotBlinkSequence()
+    {
+        const int frameTime = 6;
+
+        SetDot(_dotTransitionSpriteAnim);
+        _dotSpriteAnim.SetFrame(0);
+        yield return frameTime;
+
+        SetDot(_dotStarSpriteAnim);
+        _dotSpriteAnim.SetFrame(1);
+        // play Beep.ogg here
+        yield return frameTime;
+
+        _dotSpriteAnim.SetFrame(0);
+        yield return frameTime;
+
+        _dotSpriteAnim.SetFrame(1);
+        // play Beep.ogg here too
+        yield return frameTime;
+
+        _dotSpriteAnim.SetFrame(0);
+    }
+
+    private IEnumerator DotRevertSequence()
+    {
+        const int frameTime = 6;
+
+        SetDot(_dotTransitionSpriteAnim);
+        _dotSpriteAnim.SetFrame(0);
+        yield return frameTime;
+
+        SetDot(_dotNormalSpriteAnim);
+        _dotSpriteAnim.SetFrame(0);
     }
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
@@ -375,7 +457,14 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         }
         _offset = 0;
 
-        foreach (var o in _orders) o.MarkAsViewed();
+        if (_orders.Any(o => !o.Viewed))
+        {
+            foreach (var o in _orders) o.MarkAsViewed();
+
+            MainGame.Coroutines.Stop("phone_dot_blink");
+            MainGame.Coroutines.Stop("phone_dot_revert");
+            MainGame.Coroutines.TryRun("phone_dot_revert", DotRevertSequence(), out _);
+        }
     }
 
     public void AddOrder(CharacterActor characterActor)

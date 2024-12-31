@@ -17,7 +17,8 @@ public class PhoneOrder
     public Vector2 TargetPosition { get; set; }
     public bool Highlighted { get; set; }
     public Vector2 Position => _position;
-    
+    public bool Viewed => _viewed;
+
     private Vector2 _position;
     
     private AnimatedSprite _digitsSpriteAnim4x5;
@@ -97,7 +98,7 @@ public class PhoneOrder
         _arrowSprite.FlipVertically = DestinationNumber < FloorNumber;
         _arrowSprite.Draw(spriteBatch, orderPos + new Vector2(8, 1));
 
-        if (!_viewed && (MainGame.Frame - orderPos.Y * 0.2f) % 30 < 15)
+        if (!Viewed && (MainGame.Frame - orderPos.Y * 0.2f) % 30 < 15)
         {
             _starSprite.Color = _currentColor;
             _starSprite.Draw(spriteBatch, orderPos + new Vector2(14, 1));
