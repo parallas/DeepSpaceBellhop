@@ -498,16 +498,13 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         }
         _offset = 0;
 
-        if (_orders.Any(o => !o.Viewed))
+        if (_orders.Any(o => !o.Viewed) && markAllViewed)
         {
             foreach (var o in _orders) o.MarkAsViewed();
 
-            if (markAllViewed)
-            {
-                MainGame.Coroutines.Stop("phone_dot_blink");
-                MainGame.Coroutines.Stop("phone_dot_revert");
-                MainGame.Coroutines.TryRun("phone_dot_revert", DotRevertSequence(), out _);
-            }
+            MainGame.Coroutines.Stop("phone_dot_blink");
+            MainGame.Coroutines.Stop("phone_dot_revert");
+            MainGame.Coroutines.TryRun("phone_dot_revert", DotRevertSequence(), out _);
         }
     }
 
