@@ -200,7 +200,7 @@ public class MainGame : Game
         _dialog.LoadContent();
 
         CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
-        CharacterManager.Init();
+        // CharacterManager.Init();
         CharacterManager.LoadContent();
 
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
@@ -552,8 +552,6 @@ public class MainGame : Game
         _ticketManager = new(_elevator);
         CharacterManager = new(_phone, _ticketManager, _dialog);
 
-        CharacterManager.Init();
-
         CurrentFloor = 1;
         _dialog.LoadContent();
         _elevator.LoadContent();
@@ -596,7 +594,10 @@ public class MainGame : Game
         }
 
         if (displayDialog)
-            yield return _phone.Close(false, true, markAllViewed: true);
+            yield return _phone.Close(false, true);
+
+        // calling Init here prevents characters from spawning during start of day dialog
+        CharacterManager.Init();
     }
 
     private IEnumerator FadeToBlack()
