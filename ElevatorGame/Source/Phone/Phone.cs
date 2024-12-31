@@ -64,6 +64,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     private EventInstance _audioOpen;
     private EventInstance _audioClose;
+    private EventInstance _audioNotification;
 
     public void LoadContent()
     {
@@ -144,6 +145,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
         _audioOpen = StudioSystem.GetEvent("event:/SFX/UI/Phone/Open").CreateInstance();
         _audioClose = StudioSystem.GetEvent("event:/SFX/UI/Phone/Close").CreateInstance();
+        _audioNotification = StudioSystem.GetEvent("event:/SFX/UI/Phone/Notification").CreateInstance();
     }
     
     public void UnloadContent()
@@ -156,6 +158,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _screenRenderTarget?.Dispose();
         _audioOpen?.Dispose();
         _audioClose?.Dispose();
+        _audioNotification?.Dispose();
     }
 
     public void Update(GameTime gameTime)
@@ -375,14 +378,13 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
         SetDot(_dotStarSpriteAnim);
         _dotSpriteAnim.SetFrame(1);
-        // play Beep.ogg here
+        _audioNotification.Start();
         yield return frameTime;
 
         _dotSpriteAnim.SetFrame(0);
         yield return frameTime;
 
         _dotSpriteAnim.SetFrame(1);
-        // play Beep.ogg here too
         yield return frameTime;
 
         _dotSpriteAnim.SetFrame(0);
@@ -415,6 +417,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     private IEnumerator TalkSequence()
     {
+        // play start talking sound
+
         while (_isTalking)
         {
             yield return 5;
@@ -423,13 +427,15 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
             SetFace(1); // eyes open
         }
 
+        // play stop talking sound
+
         SetFace(0); // Reset
     }
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
     {
-        _audioClose.Stop();
-        _audioOpen.Start();
+        _audioClose?.Stop();
+        _audioOpen?.Start();
         if (_isOpen)
         {
             MainGame.Coroutines.Stop("phone_show");
@@ -464,8 +470,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public IEnumerator Close(bool shiftCam, bool changeCanOpen = true, bool markAllViewed = false)
     {
-        _audioOpen.Stop();
-        _audioClose.Start();
+        _audioOpen?.Stop();
+        _audioClose?.Start();
         if (!_isOpen)
         {
             MainGame.Coroutines.Stop("phone_hide");
