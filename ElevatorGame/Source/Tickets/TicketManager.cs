@@ -74,7 +74,7 @@ public class TicketManager(Elevator.Elevator elevator)
         {
             if(mouseOver)
             {
-                if(!_isOpen)
+                if (!_isOpen && elevator.State == Elevator.Elevator.ElevatorStates.Stopped)
                     MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.OpenTickets;
             }
             else if(_isOpen)

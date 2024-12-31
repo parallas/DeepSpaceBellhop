@@ -108,6 +108,8 @@ public class PauseManager
             Resume();
         }
 
+        MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.Default;
+
         _resumeButton.Update(gameTime, _selectedButton == 0);
         _mainMenuButton.Update(gameTime, _selectedButton == 1);
         _quitButton.Update(gameTime, _selectedButton == 2);
@@ -148,6 +150,7 @@ public class PauseManager
     public void Pause()
     {
         IsPaused = true;
+        SetSelectedButton(0); // always default to Resume button on open
     }
 
     public void Resume()

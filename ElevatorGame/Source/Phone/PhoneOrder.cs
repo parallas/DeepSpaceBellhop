@@ -98,20 +98,20 @@ public class PhoneOrder
         _arrowSprite.FlipVertically = DestinationNumber < FloorNumber;
         _arrowSprite.Draw(spriteBatch, orderPos + new Vector2(8, 1));
 
-        if (!Viewed && (MainGame.Frame - orderPos.Y * 0.2f) % 30 < 15)
+        if (!Viewed && (MainGame.Step - orderPos.Y * 0.2f) % 30 < 15)
         {
             _starSprite.Color = _currentColor;
             _starSprite.Draw(spriteBatch, orderPos + new Vector2(14, 1));
         }
 
-        if (Mood < 3 || MainGame.Frame % 30 < 15)
+        if (Mood < 3 || MainGame.Step % 30 < 15)
         {
             _moodsSpriteAnim.Color = _currentColor;
             _moodsSpriteAnim.SetFrame(Mood);
             _moodsSpriteAnim.Draw(spriteBatch, orderPos + Vector2.UnitX * 18);
         }
 
-        if (_isDeleting && MainGame.Frame % 20 < 10)
+        if (_isDeleting && MainGame.Step % 20 < 10)
         {
             spriteBatch.Draw(MainGame.PixelTexture, new Rectangle((int)orderPos.X, (int)orderPos.Y + 1, 26, 1), _currentColor);
         }

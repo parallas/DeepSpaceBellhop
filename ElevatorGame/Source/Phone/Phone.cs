@@ -21,6 +21,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     private bool _isOpen;
     private float _offset;
 
+    private bool _isTalking;
+
     private AsepriteFile _phoneFile;
     private Sprite _phoneSprite;
     private AnimatedSprite _faceSpriteAnim;
@@ -123,7 +125,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 MainGame.Graphics.GraphicsDevice,
                 true
             )
-            .CreateAnimatedSprite("Star");
+            .CreateAnimatedSprite("Transition");
 
         _dotNormalSpriteAnim.Origin = new(3);
         _dotStarSpriteAnim.Origin = new(3);
@@ -161,7 +163,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         {
             PlayEmoticonReaction();
         }
-        if (ScrollTarget < 0)
+        if (ScrollTarget < 0 && !_isTalking)
         {
             PlayFaceReaction();
         }
@@ -194,7 +196,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
             if(mouseOver)
             {
-                if(!_isOpen)
+                if (!_isOpen && elevator.State == Elevator.Elevator.ElevatorStates.Stopped)
                     MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.OpenPhone;
             }
             else if(_isOpen)
@@ -214,7 +216,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 else
                 {
                     MainGame.Coroutines.Stop("phone_show");
-                    MainGame.Coroutines.TryRun("phone_hide", Close(true), 0, out _);
+                    MainGame.Coroutines.TryRun("phone_hide", Close(true, markAllViewed: true), 0, out _);
                     elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
                     MainGame.CurrentMenu = MainGame.Menus.None;
                 }
@@ -351,7 +353,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     public void PlayDotBlink()
     {
         if (!MainGame.Coroutines.IsRunning("phone_dot_blink"))
-            MainGame.Coroutines.TryRun("phone_dot_blink", DotBlinkSequence(), 0, out _);
+            MainGame.Coroutines.TryRun("phone_dot_blink", DotBlinkSequence(), out _);
     }
 
     private IEnumerator DotBlinkSequence()
@@ -389,6 +391,32 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _dotSpriteAnim.SetFrame(0);
     }
 
+    public void StartTalking()
+    {
+        _isTalking = true;
+        SetFace(1);
+        MainGame.Coroutines.Stop("phone_talk");
+        MainGame.Coroutines.TryRun("phone_talk", TalkSequence(), out _);
+    }
+
+    public void StopTalking()
+    {
+        _isTalking = false;
+    }
+
+    private IEnumerator TalkSequence()
+    {
+        while (_isTalking)
+        {
+            yield return 5;
+            SetFace(7); // eyes and mouth open
+            yield return 5;
+            SetFace(1); // eyes open
+        }
+
+        SetFace(0); // Reset
+    }
+
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
     {
         if (_isOpen)
@@ -423,7 +451,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _offset = MaxOffset;
     }
 
-    public IEnumerator Close(bool shiftCam, bool changeCanOpen = true)
+    public IEnumerator Close(bool shiftCam, bool changeCanOpen = true, bool markAllViewed = false)
     {
         if (!_isOpen)
         {
@@ -461,9 +489,12 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         {
             foreach (var o in _orders) o.MarkAsViewed();
 
-            MainGame.Coroutines.Stop("phone_dot_blink");
-            MainGame.Coroutines.Stop("phone_dot_revert");
-            MainGame.Coroutines.TryRun("phone_dot_revert", DotRevertSequence(), out _);
+            if (markAllViewed)
+            {
+                MainGame.Coroutines.Stop("phone_dot_blink");
+                MainGame.Coroutines.Stop("phone_dot_revert");
+                MainGame.Coroutines.TryRun("phone_dot_revert", DotRevertSequence(), out _);
+            }
         }
     }
 

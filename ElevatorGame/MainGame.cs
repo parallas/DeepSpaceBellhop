@@ -275,14 +275,9 @@ public class MainGame : Game
 
         // Update Systems
         FmodManager.Update();
-        Coroutines.Update();
 
         // Update Input
         UpdateInput(gameTime);
-
-        HandleToggleFullscreen();
-
-        DebugUpdate();
 
         if (Keybindings.Pause.Pressed)
         {
@@ -290,7 +285,17 @@ public class MainGame : Game
         }
         _pauseManager.Update(gameTime);
 
-        if (_pauseManager.IsPaused) return;
+        HandleToggleFullscreen();
+
+        DebugUpdate();
+
+        if (_pauseManager.IsPaused)
+        {
+            base.Update(gameTime);
+            return;
+        }
+
+        Coroutines.Update();
 
         // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
@@ -445,6 +450,7 @@ public class MainGame : Game
         var waitingDir = CharacterManager.WaitingDirectionOnFloor(CurrentFloor);
         if (waitingDir != 0) _elevator.SetComboDirection(waitingDir);
         CurrentMenu = Menus.TurnTransition;
+        Cursor.CursorSprite = Cursor.CursorSprites.Wait;
 
         yield return CharacterManager.EndOfTurnSequence();
 
@@ -463,26 +469,32 @@ public class MainGame : Game
             {
                 EndOfDaySequence = true;
 
-                yield return _phone.Open(false, false);
+                if (CurrentDay == 0)
+                {
+                    yield return _phone.Open(false, false);
+                    _phone.StartTalking();
 
-                yield return _dialog.Display([
-                    new() {
-                        Content = "Day complete - time to go home!",
-                    },
-                    new() {
-                        Content = "Return to the Ground Floor to clock out.",
-                    }
-                ], Dialog.Dialog.DisplayMethod.Human);
+                    yield return _dialog.Display([
+                        new() {
+                            Content = "Day complete - time to go home!",
+                        },
+                        new() {
+                            Content = "Return to the Ground Floor to clock out.",
+                        }
+                    ], Dialog.Dialog.DisplayMethod.Human);
 
-                yield return _phone.Close(false, true);
+                    _phone.StopTalking();
+                    yield return _phone.Close(false, true);
+                }
             }
 
-            if(CurrentFloor == 1)
+            if (CurrentFloor == 1)
             {
                 Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
             }
         }
         CurrentMenu = Menus.None;
+        Cursor.CursorSprite = Cursor.CursorSprites.Default;
 
         if (CharacterManager.CharactersInPlay.Count == 0)
             CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
@@ -526,6 +538,8 @@ public class MainGame : Game
         // the rest of the cleanup process
         CurrentDay = day;
 
+        SaveManager.Save();
+
         _elevator.Dispose();
         _phone.Dispose();
         // _dialog.UnloadContent();
@@ -566,11 +580,23 @@ public class MainGame : Game
 
     private IEnumerator StartDay(int dayIndex)
     {
-        yield return _phone.Open(false, false);
-        yield return _dialog.Display(DayRegistry.Days[dayIndex].StartDialog.Pages, Dialog.Dialog.DisplayMethod.Human);
-        _buttonHint.Play();
-        _buttonHintVisible = true;
-        yield return _phone.Close(false, true);
+        bool displayDialog = DayRegistry.Days[dayIndex].StartDialog.Pages.Length != 0;
+        if (displayDialog)
+        {
+            yield return _phone.Open(false, false);
+            _phone.StartTalking();
+            yield return _dialog.Display(DayRegistry.Days[dayIndex].StartDialog.Pages, Dialog.Dialog.DisplayMethod.Human);
+            _phone.StopTalking();
+        }
+
+        if (dayIndex == 0)
+        {
+            _buttonHint.Play();
+            _buttonHintVisible = true;
+        }
+
+        if (displayDialog)
+            yield return _phone.Close(false, true, markAllViewed: true);
     }
 
     private IEnumerator FadeToBlack()

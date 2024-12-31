@@ -121,6 +121,11 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
                 break;
         }
 
+        if (State != ElevatorStates.Stopped && MainGame.CurrentMenu == MainGame.Menus.None)
+        {
+            MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.Wait;
+        }
+
         _audioElevatorMove.SetParameterValue("Velocity", Math.Abs(_velocity) / _maxSpeed);
 
         float targetParallax = 4 * MathUtil.InverseLerp01(_maxSpeed * 0.6f, _maxSpeed, Math.Abs(_velocity)) * _dir;

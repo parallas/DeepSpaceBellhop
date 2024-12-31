@@ -50,6 +50,7 @@ public class Dialog()
 
     public IEnumerator Display(Page[] pages, DisplayMethod displayMethod)
     {
+        var lastCursor = MainGame.Cursor.CursorSprite;
         var lastMenu = MainGame.CurrentMenu;
         MainGame.CurrentMenu = MainGame.Menus.Dialog;
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
@@ -63,7 +64,7 @@ public class Dialog()
                 yield return DisplayAlien(pages);
                 break;
         }
-        MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Default;
+        MainGame.Cursor.CursorSprite = lastCursor;
         MainGame.CurrentMenu = lastMenu;
         _targetOffsetY = -LineHeight * 3 - Padding * 2;
     }
