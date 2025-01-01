@@ -3,7 +3,7 @@ using ElevatorGame.Source.Rooms;
 
 namespace ElevatorGame;
 
-public class SaveData
+public class SaveData()
 {
     public int Day { get; set; }
 

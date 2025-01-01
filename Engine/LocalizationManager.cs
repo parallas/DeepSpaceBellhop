@@ -28,6 +28,8 @@ public static class LocalizationManager
         get => _lang;
         set
         {
+            value ??= "en-us";
+
             if (_lang == value) return;
 
             ReloadAsync().Wait();
@@ -67,8 +69,10 @@ public static class LocalizationManager
                 var text = await File.ReadAllTextAsync(fullPath);
 
                 LanguageSettings data = JsonSerializer.Deserialize<LanguageSettings>(text, SerializerOptions);
+                data.Identifier = Path.GetFileNameWithoutExtension(fullPath);
+                data.Name ??= data.Identifier;
 
-                loadedLanguages.Add(Path.GetFileNameWithoutExtension(fullPath), data);
+                loadedLanguages.Add(data.Identifier, data);
             }
         }
 

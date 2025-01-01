@@ -150,7 +150,10 @@ public class MainGame : Game
             Graphics.PreferredBackBufferHeight
         );
 
-        LocalizationManager.CurrentLanguage = "en-us";
+        SaveManager.OnLoad += OnSaveDataLoad;
+        SaveManager.OnSave += OnSaveDataSave;
+
+        SaveManager.Load();
 
         if (UseSteamworks)
         {
@@ -167,21 +170,18 @@ public class MainGame : Game
 
         CharacterRegistry.Init();
 
-        SaveManager.OnLoad += OnSaveDataLoad;
-        SaveManager.OnSave += OnSaveDataSave;
-
         base.Initialize();
     }
 
-    private void OnSaveDataSave(SaveData data)
+    private void OnSaveDataSave(ref SaveData data)
     {
         data.Day = CurrentDay;
         data.Rooms = [.. _roomDefs];
 
-        data.LanguagePreference = LocalizationManager.CurrentLanguage;
+        data.LanguagePreference = LocalizationManager.CurrentLanguage ?? "en-us";
     }
 
-    private void OnSaveDataLoad(SaveData data)
+    private void OnSaveDataLoad(ref SaveData data)
     {
         CurrentDay = data.Day;
         _roomDefs = [.. data.Rooms];
@@ -254,8 +254,6 @@ public class MainGame : Game
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
-
-        SaveManager.Load();
 
         if (SaveManager.SaveData.Rooms.Count == 0)
         {

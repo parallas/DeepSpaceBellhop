@@ -1,17 +1,32 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ElevatorGame;
 
 public static class SaveManager
 {
-    public static SaveData SaveData { get; private set; }
+    public static SaveData SaveData => saveData;
 
-    public static event Action<SaveData?> OnSave;
-    public static event Action<SaveData?> OnLoad;
+    public delegate void SaveDataEvent(ref SaveData? saveData);
+
+    public static event SaveDataEvent OnSave;
+    public static event SaveDataEvent OnLoad;
 
     private static string _filePath = Path.Combine(FileLocations.ProgramPath, "save.json");
+    private static SaveData saveData;
+
+    public static JsonSerializerOptions SerializerOptions => new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+#if DEBUG
+        WriteIndented = true,
+#else
+        WriteIndented = false,
+#endif
+    };
 
     public static void DeleteFile()
     {
@@ -25,24 +40,29 @@ public static class SaveManager
     {
         if (!File.Exists(_filePath))
         {
-            SaveData = new();
+            saveData = new();
+            OnLoad?.Invoke(ref saveData);
             return;
         }
 
-        SaveData = JsonSerializer.Deserialize<SaveData>(
-            File.ReadAllText(_filePath)
+        saveData = JsonSerializer.Deserialize<SaveData>(
+            File.ReadAllText(_filePath),
+            SerializerOptions
         );
 
-        OnLoad?.Invoke(SaveData);
+        OnLoad?.Invoke(ref saveData);
     }
 
     public static void Save()
     {
-        OnSave?.Invoke(SaveData);
+        OnSave?.Invoke(ref saveData);
 
         File.WriteAllText(
             _filePath,
-            JsonSerializer.Serialize(SaveData)
+            JsonSerializer.Serialize(
+                SaveData,
+                SerializerOptions
+            )
         );
     }
 }
