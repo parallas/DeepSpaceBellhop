@@ -23,7 +23,6 @@ using MonoGame.Aseprite;
 using Elevator = ElevatorGame.Source.Elevator;
 using Phone = ElevatorGame.Source.Phone;
 using Dialog = ElevatorGame.Source.Dialog;
-using Steamworks;
 
 namespace ElevatorGame;
 
