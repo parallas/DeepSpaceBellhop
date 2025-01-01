@@ -10,6 +10,8 @@ TestResults
 
 # Ignore library files
 *.dll
+*.so
+*.dylib
 !Engine/FmodForFoxes.Desktop.dll
 
 # Ignore ImGui runtime info
