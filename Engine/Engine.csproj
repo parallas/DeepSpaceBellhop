@@ -48,7 +48,7 @@
       </None>
 
       <!-- Linux -->
-      <None Update="libstream_api.so">
+      <None Update="libsteam_api.so">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
 
