@@ -52,6 +52,9 @@
     <Content Include="steam_appid.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="steam_api.bundle\**\*">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
