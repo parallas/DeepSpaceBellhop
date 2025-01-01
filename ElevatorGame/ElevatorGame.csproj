@@ -28,14 +28,6 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
     <PackageReference Include="Nopipeline.Task" Version="2.3.0" />
-    <PackageReference Include="Steamworks.NET" Version="2024.8.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Steamworks.NET, Version=2024.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Steamworks.NET.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -52,20 +44,6 @@
     <Content Include="steam_appid.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="steam_api.bundle\**\*">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(OS)' == 'OSX'">
-    <None Include="..\..\Steamworks.NET\OSX-Linux-x64\steam_api.bundle\Contents\MacOS\libsteam_api.dylib">
-      <Link>runtimes\osx\native\libsteam_api.dylib</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Steamworks.NET\OSX-Linux-x64\steam_api.bundle\Steamworks.NET.dll">
-      <Link>Steamworks.NET.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

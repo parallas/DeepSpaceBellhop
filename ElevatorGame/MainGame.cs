@@ -129,13 +129,7 @@ public class MainGame : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
 
-        if (useSteamworks)
-        {
-            UseSteamworks = useSteamworks;
-
-            SteamManager.SetAppID(3429210u);
-            SteamManager.PreInitialize(this);
-        }
+        UseSteamworks = useSteamworks;
     }
 
     protected override void Initialize()
@@ -156,7 +150,10 @@ public class MainGame : Game
             Graphics.PreferredBackBufferHeight
         );
 
-        SteamManager.Initialize();
+        if (UseSteamworks)
+        {
+            SteamManager.Initialize(3429210u);
+        }
 
         Exiting += Game_Exiting;
 

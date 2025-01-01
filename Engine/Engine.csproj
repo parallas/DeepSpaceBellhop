@@ -12,6 +12,10 @@
 
     <ItemGroup>
       <!-- OSX -->
+      <None Update="libsteam_api.dylib">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+
       <None Update="libfmod.dylib">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
@@ -26,6 +30,10 @@
       </None>
 
       <!-- Windows -->
+      <None Update="steam_api64.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+
       <None Update="fmod.dll">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
@@ -88,6 +96,19 @@
       </None>
 
     </ItemGroup>
+
+    <Choose>
+      <When Condition="'$(OS)' == 'Windows_NT'">
+        <ItemGroup>
+          <Reference Include="Facepunch.Steamworks.Win64" HintPath="Facepunch.Steamworks.Win64.dll" SpecificVersion="False" />
+        </ItemGroup>
+      </When>
+      <Otherwise>
+        <ItemGroup>
+          <Reference Include="Facepunch.Steamworks.Posix" HintPath="Facepunch.Steamworks.Posix.dll" SpecificVersion="False" />
+        </ItemGroup>
+      </Otherwise>
+    </Choose>
 
     <ItemGroup>
       <Reference Include="FmodForFoxes.Desktop">
