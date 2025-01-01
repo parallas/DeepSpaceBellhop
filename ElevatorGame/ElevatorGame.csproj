@@ -57,6 +57,17 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(OS)' == 'OSX'">
+    <None Include="..\..\Steamworks.NET\OSX-Linux-x64\steam_api.bundle\Contents\MacOS\libsteam_api.dylib">
+      <Link>runtimes\osx\native\libsteam_api.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Steamworks.NET\OSX-Linux-x64\steam_api.bundle\Steamworks.NET.dll">
+      <Link>Steamworks.NET.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
