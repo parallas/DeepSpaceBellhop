@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ElevatorGame/bin/Debug/net8.0/ElevatorGame.dll",
+            "program": "${workspaceFolder}/ElevatorGame/bin/Debug/net8.0/DeepSpaceBellhop.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ElevatorGame/bin/Debug/net8.0",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
