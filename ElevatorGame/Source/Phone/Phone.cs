@@ -65,6 +65,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     private EventInstance _audioOpen;
     private EventInstance _audioClose;
     private EventInstance _audioNotification;
+    private EventInstance _audioBump;
+    private EventInstance _audioJingle;
 
     public void LoadContent()
     {
@@ -146,6 +148,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _audioOpen = StudioSystem.GetEvent("event:/SFX/UI/Phone/Open").CreateInstance();
         _audioClose = StudioSystem.GetEvent("event:/SFX/UI/Phone/Close").CreateInstance();
         _audioNotification = StudioSystem.GetEvent("event:/SFX/UI/Phone/Notification").CreateInstance();
+        _audioBump = StudioSystem.GetEvent("event:/SFX/UI/Phone/Bump").CreateInstance();
+        _audioJingle = StudioSystem.GetEvent("event:/SFX/UI/Phone/Jingle").CreateInstance();
     }
     
     public void UnloadContent()
@@ -159,6 +163,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _audioOpen?.Dispose();
         _audioClose?.Dispose();
         _audioNotification?.Dispose();
+        _audioBump?.Dispose();
+        _audioJingle?.Dispose();
     }
 
     public void Update(GameTime gameTime)
@@ -174,10 +180,12 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         if (ScrollTarget > scrollTargetMax)
         {
             PlayEmoticonReaction();
+            _audioBump.Start();
         }
         if (ScrollTarget < 0 && !_isTalking)
         {
             PlayFaceReaction();
+            _audioBump.Start();
         }
         ScrollTarget = MathHelper.Clamp(ScrollTarget, 0, scrollTargetMax);
 
@@ -615,6 +623,11 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     public void SimulateBatteryValue(int newValue)
     {
         _simulatedBatteryValue = Math.Clamp(newValue, 0, 8);
+    }
+
+    public void PlayJingle()
+    {
+        _audioJingle.Start();
     }
 
     public void Scroll(int direction)

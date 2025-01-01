@@ -485,6 +485,8 @@ public class MainGame : Game
             {
                 EndOfDaySequence = true;
 
+                _phone.PlayJingle();
+
                 if (CurrentDay == 0)
                 {
                     yield return _phone.Open(false, false);
