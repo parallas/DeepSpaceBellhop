@@ -1,0 +1,28 @@
+{
+    "name": "English (US)",
+    "values": {
+        "dialog.phone.tutorial.intro": "Your job is to pick up passengers and take them to their destination.<PAGE>My screen will show you everybody who has called the elevator.<PAGE>Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!<PAGE>Good luck!",
+        "dialog.phone.tutorial.end_of_day": "Day complete - time to go home!<PAGE>Return to the Ground Floor to clock out.",
+
+        "dialog.character.Blueulet.enter.0": "Can you take me to this floor?",
+        "dialog.character.Blueulet.exit.0": "Thank you.",
+        "dialog.character.Blueulet.angry.0": "Actually, I think she might be on this floor...",
+
+        "dialog.character.Greenulet.enter.0": "Hi, can you take me to floor $floorNumDest, please?",
+        "dialog.character.Greenulet.exit.0": "Bye bye!",
+        "dialog.character.Greenulet.angry.0": "At this rate I'll never find him. See ya...",
+
+        "dialog.character.EmalynCat.enter.0": "I want to see the world through the eyes of a normal girl!",
+        "dialog.character.EmalynCat.enter.1": "Maow Maow Maow!",
+        "dialog.character.EmalynCat.exit.0": "Thank You!",
+        "dialog.character.EmalynCat.exit.1": "Haven't felt this happy in so long!",
+        "dialog.character.EmalynCat.angry.0": "Did I scare you? Well I'm sorry. But I'm not sorry enough to stop!",
+        "dialog.character.EmalynCat.angry.1": "I feel like I'm stuck between dangerous extremes...",
+
+        "dialog.character.Robot.enter.0": "var Greeting = \"HELLO HUMAN\", Destination = $floorNumDest;",
+        "dialog.character.Robot.enter.1": "InvalidCastException: [$floorNumDest] is not a string (Dialog.cs:74);",
+        "dialog.character.Robot.exit.0": "[GRATITUDE];",
+        "dialog.character.Robot.exit.1": "The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).",
+        "dialog.character.Robot.angry.0": "Unhandled Exception in thread 'Main': Timed out;"
+    }
+}

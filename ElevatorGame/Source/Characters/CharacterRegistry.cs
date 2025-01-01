@@ -1,14 +1,17 @@
 using System.Collections.Generic;
+using Engine;
 
 namespace ElevatorGame.Source.Characters;
 
 public static class CharacterRegistry
 {
     private static CharacterDef[] _characterDefs;
-    public static Dictionary<string, CharacterDef> CharacterTable { get; } = new();
+    public static Dictionary<string, CharacterDef> CharacterTable { get; } = [];
 
     public static void Init()
     {
+        CharacterTable.Clear();
+
         _characterDefs =
         [
             new CharacterDef
@@ -16,9 +19,15 @@ public static class CharacterRegistry
                 Name = "Blueulet",
                 SpritePath = "graphics/characters/BlueAxolotl",
                 WalkSpeed = 10,
-                EnterPhrases = [new("Can you take me to this floor?")],
-                ExitPhrases = [new("Thank you.")],
-                AngryPhrases = [new("Actually, I think she might be on this floor...")],
+                EnterPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Blueulet.enter.0"))
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Blueulet.exit.0"))
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Blueulet.angry.0"))
+                ],
                 AngryIconPosition = new(-13, -72),
                 Flags = CharacterDef.CharacterFlag.Clumsy
             },
@@ -27,9 +36,15 @@ public static class CharacterRegistry
                 Name = "Greenulet",
                 SpritePath = "graphics/characters/GreenAxolotl",
                 WalkSpeed = 6,
-                EnterPhrases = [new("Hi, can you take me to floor $floorNumDest, please?")],
-                ExitPhrases = [new("Bye bye!")],
-                AngryPhrases = [new("At this rate I'll never find him. See ya...")],
+                EnterPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Greenulet.enter.0"))
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Greenulet.exit.0"))
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Greenulet.angry.0"))
+                ],
                 AngryIconPosition = new(-13, -69),
             },
             new CharacterDef
@@ -38,16 +53,16 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/EmalynCat",
                 WalkSpeed = 6,
                 EnterPhrases = [
-                    new("I want to see the world through the eyes of a normal girl!"),
-                    new("Maow Maow Maow!")
+                    new(LocalizationManager.Get("character.dialog.EmalynCat.enter.0")),
+                    new(LocalizationManager.Get("character.dialog.EmalynCat.enter.1")),
                 ],
                 ExitPhrases = [
-                    new("Thank You!"),
-                    new("Haven't felt this happy in so long!")
+                    new(LocalizationManager.Get("character.dialog.EmalynCat.exit.0")),
+                    new(LocalizationManager.Get("character.dialog.EmalynCat.exit.1")),
                 ],
                 AngryPhrases = [
-                    new("Did I scare you? Well I'm sorry. But I'm not sorry enough to stop!"),
-                    new("I feel like I'm stuck between dangerous extremes...")
+                    new(LocalizationManager.Get("character.dialog.EmalynCat.angry.0")),
+                    new(LocalizationManager.Get("character.dialog.EmalynCat.angry.1")),
                 ],
                 AngryIconPosition = new(-10, -46),
             },
@@ -65,14 +80,16 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Robot",
                 WalkSpeed = 6,
                 EnterPhrases = [
-                    new("var Greeting = \"HELLO HUMAN\", Destination = $floorNumDest;"),
-                    new("InvalidCastException: [$floorNumDest] is not a string (Dialog.cs:74);"),
+                    new(LocalizationManager.Get("character.dialog.Robot.enter.0")),
+                    new(LocalizationManager.Get("character.dialog.Robot.enter.1")),
                 ],
                 ExitPhrases = [
-                    new("[GRATITUDE];"),
-                    new("The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).")
+                    new(LocalizationManager.Get("character.dialog.Robot.exit.0")),
+                    new(LocalizationManager.Get("character.dialog.Robot.exit.1")),
                 ],
-                AngryPhrases = [new("Unhandled Exception in thread 'Main': Timed out;")],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("character.dialog.Robot.angry.0")),
+                ],
                 AngryIconPosition = new(-6, -39),
             },
             new CharacterDef

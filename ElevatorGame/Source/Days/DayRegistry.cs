@@ -1,3 +1,5 @@
+using Engine;
+
 namespace ElevatorGame.Source.Days;
 
 public static class DayRegistry
@@ -16,12 +18,7 @@ public static class DayRegistry
                 CompletionRequirement = 10,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob"],
                 StartCharacterCount = 1,
-                StartDialog = new(
-                    "Your job is to pick up passengers and take them to their destination.",
-                    "My screen will show you everybody who has called the elevator.",
-                    "Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!",
-                    "Good luck!"
-                )
+                StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.intro"))
             },
             new DayDef
             {

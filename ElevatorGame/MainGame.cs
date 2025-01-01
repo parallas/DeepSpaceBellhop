@@ -150,6 +150,8 @@ public class MainGame : Game
             Graphics.PreferredBackBufferHeight
         );
 
+        LocalizationManager.CurrentLanguage = "en-us";
+
         if (UseSteamworks)
         {
             SteamManager.Initialize(3429210u);
@@ -175,12 +177,16 @@ public class MainGame : Game
     {
         data.Day = CurrentDay;
         data.Rooms = [.. _roomDefs];
+
+        data.LanguagePreference = LocalizationManager.CurrentLanguage;
     }
 
     private void OnSaveDataLoad(SaveData data)
     {
         CurrentDay = data.Day;
         _roomDefs = [.. data.Rooms];
+
+        LocalizationManager.CurrentLanguage = data.LanguagePreference;
 
         Coroutines.TryRun("load_day_start", StartDay(data.Day), out _);
     }
@@ -486,14 +492,12 @@ public class MainGame : Game
                     yield return _phone.Open(false, false);
                     _phone.StartTalking();
 
-                    yield return _dialog.Display([
-                        new() {
-                            Content = "Day complete - time to go home!",
-                        },
-                        new() {
-                            Content = "Return to the Ground Floor to clock out.",
-                        }
-                    ], Dialog.Dialog.DisplayMethod.Human);
+                    yield return _dialog.Display(
+                        new Dialog.DialogDef(
+                            LocalizationManager.Get("dialog.phone.tutorial.end_of_day")
+                        ).Pages,
+                        Dialog.Dialog.DisplayMethod.Human
+                    );
 
                     _phone.StopTalking();
                     yield return _phone.Close(false, true);

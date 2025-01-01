@@ -96,7 +96,7 @@
             "action": "copy",
         },
 		"localization": {
-			"path": "localization/*.json",
+			"path": "localizations/*.json",
 			"action": "copy"
 		},
 		"music":

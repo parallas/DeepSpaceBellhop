@@ -20,9 +20,9 @@ public class Dialog()
         Alien
     }
 
-    public class Page
+    public struct Page()
     {
-        public string Content { get; set; }
+        public required string Content { get; set; }
         public int CharInterval { get; set; } = 4;
     }
 
