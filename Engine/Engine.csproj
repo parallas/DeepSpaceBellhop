@@ -94,6 +94,12 @@
       <None Update="libQt5Network.so.5">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Facepunch.Steamworks.Posix.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Facepunch.Steamworks.Posix.pdb">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
 
     </ItemGroup>
 
