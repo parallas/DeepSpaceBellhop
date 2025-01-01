@@ -220,6 +220,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
             {
                 if(!_isOpen)
                 {
+                    _audioClose?.Stop();
+                    _audioOpen?.Start();
                     MainGame.Coroutines.Stop("phone_hide");
                     MainGame.Coroutines.TryRun("phone_show", Open(true), 0, out _);
                     elevator.SetState(Elevator.Elevator.ElevatorStates.Other);
@@ -227,6 +229,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 }
                 else
                 {
+                    _audioOpen?.Stop();
+                    _audioClose?.Start();
                     MainGame.Coroutines.Stop("phone_show");
                     MainGame.Coroutines.TryRun("phone_hide", Close(true, markAllViewed: true), 0, out _);
                     elevator.SetState(Elevator.Elevator.ElevatorStates.Stopped);
@@ -434,8 +438,6 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
     {
-        _audioClose?.Stop();
-        _audioOpen?.Start();
         if (_isOpen)
         {
             MainGame.Coroutines.Stop("phone_show");
@@ -470,8 +472,6 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public IEnumerator Close(bool shiftCam, bool changeCanOpen = true, bool markAllViewed = false)
     {
-        _audioOpen?.Stop();
-        _audioClose?.Start();
         if (!_isOpen)
         {
             MainGame.Coroutines.Stop("phone_hide");
