@@ -23,6 +23,7 @@ using MonoGame.Aseprite;
 using Elevator = ElevatorGame.Source.Elevator;
 using Phone = ElevatorGame.Source.Phone;
 using Dialog = ElevatorGame.Source.Dialog;
+using Steamworks;
 
 namespace ElevatorGame;
 
@@ -86,6 +87,8 @@ public class MainGame : Game
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
+    public bool UseSteamworks { get; }
+
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
@@ -121,11 +124,19 @@ public class MainGame : Game
     private readonly DayTransition _dayTransition = new DayTransition();
     private float _fadeoutProgress;
 
-    public MainGame()
+    public MainGame(bool useSteamworks)
     {
         Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
+
+        if (useSteamworks)
+        {
+            UseSteamworks = useSteamworks;
+
+            SteamManager.SetAppID(3429210u);
+            SteamManager.PreInitialize(this);
+        }
     }
 
     protected override void Initialize()
@@ -145,6 +156,10 @@ public class MainGame : Game
             Graphics.PreferredBackBufferWidth,
             Graphics.PreferredBackBufferHeight
         );
+
+        SteamManager.Initialize();
+
+        Exiting += Game_Exiting;
 
         ContentLoader.Initialize(Content);
 
@@ -261,11 +276,10 @@ public class MainGame : Game
         _phone.UnloadContent();
     }
 
-    protected override void EndRun()
+    private void Game_Exiting(object sender, ExitingEventArgs e)
     {
         SaveManager.Save();
-
-        base.EndRun();
+        SteamManager.Cleanup();
     }
 
     protected override void Update(GameTime gameTime)
@@ -288,6 +302,8 @@ public class MainGame : Game
         HandleToggleFullscreen();
 
         DebugUpdate();
+
+        SteamManager.Update();
 
         if (_pauseManager.IsPaused)
         {

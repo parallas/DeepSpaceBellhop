@@ -30,6 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Steamworks.NET, Version=2024.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+        <SpecificVersion>False</SpecificVersion>
+        <HintPath>../Engine/Steamworks.NET.dll</HintPath>
+        <Private>True</Private> <!-- Keep it from overlapping with Engine's copy -->
+      </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj" />
   </ItemGroup>
 
@@ -37,6 +45,12 @@
     <ClCompile Include="Content\shaders\postprocessing.fx" />
     <ClCompile Include="Content\shaders\roomrender.fx" />
     <ClCompile Include="Content\shaders\voronoi.hlsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="steam_appid.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
