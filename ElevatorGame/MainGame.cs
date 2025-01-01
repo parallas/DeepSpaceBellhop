@@ -86,7 +86,7 @@ public class MainGame : Game
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
-    private static Elevator.Elevator _elevator;
+    private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
 
