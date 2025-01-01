@@ -15,7 +15,7 @@ public static class LocalizationManager
 
     public static Dictionary<string, LanguageSettings> AdditionalLanguageData { get; } = [];
 
-    public static string LocalizationDataPath { get; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Content", "localization");
+    public static string LocalizationDataPath { get; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Content", "localizations");
 
     public static bool IsInitialized { get; private set; } = false;
 
