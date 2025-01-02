@@ -61,7 +61,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public bool CanOpen { get; set; } = true;
     
-    private List<PhoneOrder> _orders = new();
+    private readonly List<PhoneOrder> _orders = [];
 
     private EventInstance _audioOpen;
     private EventInstance _audioClose;
