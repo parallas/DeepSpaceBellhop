@@ -102,6 +102,25 @@ public static class CharacterRegistry
             },
             new CharacterDef
             {
+                Name = "ShroomKing",
+                SpritePath = "graphics/characters/ShroomKing",
+                WalkSpeed = 6,
+                EnterPhrases = [
+                    new(LocalizationManager.Get("dialog.character.ShroomKing.enter.0")),
+                    new(LocalizationManager.Get("dialog.character.ShroomKing.enter.1")),
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("dialog.character.ShroomKing.exit.0")),
+                    new(LocalizationManager.Get("dialog.character.ShroomKing.exit.1")),
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("dialog.character.ShroomKing.angry.0")),
+                    new(LocalizationManager.Get("dialog.character.ShroomKing.angry.1")),
+                ],
+                AngryIconPosition = new(-13, -74),
+            },
+            new CharacterDef
+            {
                 Name = "Benbo",
                 SpritePath = "graphics/characters/Benbo",
                 WalkSpeed = 16,

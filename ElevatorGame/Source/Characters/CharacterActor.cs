@@ -211,4 +211,10 @@ public class CharacterActor
         _isInElevator = false;
         onEnd?.Invoke();
     }
+
+    public void TurnAround()
+    {
+        _squashStretchOffset = -0.1f;
+        PlayAnimation(_currentAnimation == _animFront ? _animBack : _animFront);
+    }
 }

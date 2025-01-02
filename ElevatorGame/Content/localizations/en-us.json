@@ -23,6 +23,13 @@
         "dialog.character.Robot.enter.1": "InvalidCastException: [$floorNumDest] is not a string (Dialog.cs:74);",
         "dialog.character.Robot.exit.0": "[GRATITUDE];",
         "dialog.character.Robot.exit.1": "The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).",
-        "dialog.character.Robot.angry.0": "Unhandled Exception in thread 'Main': Timed out;"
+        "dialog.character.Robot.angry.0": "Unhandled Exception in thread 'Main': Timed out;",
+
+        "dialog.character.ShroomKing.enter.0": "Salutations! Me and my men have some business to attend to on floor $floorNumDest.",
+        "dialog.character.ShroomKing.enter.1": "It is I! The Shroom King! I require your assistance to reach floor $floorNumDest.",
+        "dialog.character.ShroomKing.exit.0": "All hail the Shroom King!",
+        "dialog.character.ShroomKing.exit.1": "I shall ensure a plot of land for your service to the king!",
+        "dialog.character.ShroomKing.angry.0": "It is treason then...",
+        "dialog.character.ShroomKing.angry.1": "You have failed me for the last time!"
     }
 }
