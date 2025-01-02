@@ -118,10 +118,13 @@ public class MainGame : Game
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
-    private readonly PauseManager _pauseManager = new PauseManager();
+    private static readonly PauseManager _pauseManager = new();
 
     private readonly DayTransition _dayTransition = new DayTransition();
     private float _fadeoutProgress;
+
+    private static Vector2 _lastMouseViewPos;
+    private static Vector2 _lastMouseWorldPos;
 
     public MainGame(bool useSteamworks)
     {
@@ -653,13 +656,17 @@ public class MainGame : Game
         InputManager.RefreshGamePadState();
         InputManager.UpdateTypingInput(gameTime);
         Cursor.Update();
+        _lastMouseViewPos = Cursor.ViewPosition;
+        _lastMouseWorldPos = Cursor.WorldPosition;
     }
-    
-    public static Vector2 GetCursorParallaxValue(Vector2 position,  float distance)
+
+    public static Vector2 GetCursorParallaxValue(Vector2 position, float distance)
     {
         Vector2 checkPos = (
             Vector2.Clamp(
-                Cursor.ViewPosition,
+                _pauseManager.IsPaused
+                    ? _lastMouseViewPos
+                    : Cursor.ViewPosition,
                 Vector2.Zero,
                 new(240, 135)
             ) - new Vector2(240, 135) / 2f

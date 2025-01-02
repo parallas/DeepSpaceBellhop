@@ -29,6 +29,8 @@ public class TicketActor
     private AnimatedSprite _ticketsSpriteAnim;
     private AnimatedSprite _ticketSpriteOverlaysAnim;
 
+    private Vector2 _renderPos;
+
     public void LoadContent()
     {
         var digitsFile = ContentLoader.Load<AsepriteFile>("graphics/Digits5x7")!;
@@ -51,12 +53,12 @@ public class TicketActor
     public void Update(GameTime gameTime)
     {
         Position = MathUtil.ExpDecay(Position, TargetPosition, 13, 1f / 60f);
+        _renderPos = Vector2.Round(MainGame.GetCursorParallaxValue(Position - Vector2.UnitY * (_ticketsSpriteAnim.Height - 1), 25));
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        Vector2 renderedTicketPos = Position - Vector2.UnitY * (_ticketsSpriteAnim.Height - 1);
-        renderedTicketPos = Vector2.Round(MainGame.GetCursorParallaxValue(renderedTicketPos, 25));
+        Vector2 renderedTicketPos = _renderPos;
 
         bool isUpsideDown = Flags.HasFlag(TicketFlags.UpsideDown);
         bool isSlimy = Flags.HasFlag(TicketFlags.Slimy);

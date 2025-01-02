@@ -1,4 +1,5 @@
 using AsepriteDotNet.Aseprite;
+using ElevatorGame.Source.Pause;
 using Engine;
 using Engine.Display;
 using Microsoft.Xna.Framework;
@@ -8,7 +9,7 @@ using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source;
 
-public class Cursor
+public class Cursor()
 {
     public enum CursorSprites
     {
