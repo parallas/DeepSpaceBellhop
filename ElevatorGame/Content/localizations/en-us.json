@@ -30,6 +30,10 @@
         "dialog.character.ShroomKing.exit.0": "All hail the Shroom King!",
         "dialog.character.ShroomKing.exit.1": "I shall ensure a plot of land for your service to the king!",
         "dialog.character.ShroomKing.angry.0": "It is treason then...",
-        "dialog.character.ShroomKing.angry.1": "You have failed me for the last time!"
+        "dialog.character.ShroomKing.angry.1": "You have failed me for the last time!",
+
+        "dialog.character.Beebo.enter.0": "Floor $floorNumDest please.",
+        "dialog.character.Beebo.exit.0": "...<PAGE>Thanks.",
+        "dialog.character.Beebo.angry.0": "How annoying."
     }
 }

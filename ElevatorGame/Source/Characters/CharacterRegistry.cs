@@ -126,6 +126,22 @@ public static class CharacterRegistry
                 WalkSpeed = 16,
                 AngryIconPosition = new(-4, -12)
             },
+            new CharacterDef
+            {
+                Name = "Beebo",
+                SpritePath = "graphics/characters/Beebo",
+                WalkSpeed = 6,
+                EnterPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Beebo.enter.0")),
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Beebo.exit.0")),
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Beebo.angry.0")),
+                ],
+                AngryIconPosition = new(-13, -69),
+            },
         ];
 
         foreach (var characterDef in _characterDefs)
