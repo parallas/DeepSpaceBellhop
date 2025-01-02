@@ -100,6 +100,13 @@ public static class CharacterRegistry
                 AngryIconPosition = new(-13, -40),
                 Flags = CharacterDef.CharacterFlag.Slimy
             },
+            new CharacterDef
+            {
+                Name = "Benbo",
+                SpritePath = "graphics/characters/Benbo",
+                WalkSpeed = 16,
+                AngryIconPosition = new(-4, -12)
+            },
         ];
 
         foreach (var characterDef in _characterDefs)

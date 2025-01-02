@@ -16,7 +16,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 10,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob"],
+                CharacterIds = ["Benbo"],
                 StartCharacterCount = 1,
                 StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.intro"))
             },
