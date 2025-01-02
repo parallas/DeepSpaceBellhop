@@ -129,3 +129,6 @@ UpgradeLog*.XML
 **.dylib
 FmodElevatorGame/**/.*
 !Engine/FmodForFoxes.Desktop.pdb
+
+dotnet-install.sh
+dotnet-install.ps1

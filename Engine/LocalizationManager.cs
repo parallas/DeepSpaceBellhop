@@ -46,7 +46,8 @@ public static class LocalizationManager
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReadCommentHandling = JsonCommentHandling.Skip,
         WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        TypeInfoResolver = LanguageSettingsSourceGenContext.Default,
     };
 
     public static async Task ReloadAsync()
@@ -68,7 +69,7 @@ public static class LocalizationManager
             {
                 var text = await File.ReadAllTextAsync(fullPath);
 
-                LanguageSettings data = JsonSerializer.Deserialize<LanguageSettings>(text, SerializerOptions);
+                LanguageSettings data = (LanguageSettings)JsonSerializer.Deserialize(text, typeof(LanguageSettings), SerializerOptions);
                 data.Identifier = Path.GetFileNameWithoutExtension(fullPath);
                 data.Name ??= data.Identifier;
 

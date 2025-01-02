@@ -14,3 +14,9 @@ public class LanguageSettings(string identifier)
 
     public string Fallback { get; set; }
 }
+
+[JsonSerializable(typeof(LanguageSettings))]
+[JsonSerializable(typeof(Dictionary<string, string>))]
+internal partial class LanguageSettingsSourceGenContext : JsonSerializerContext
+{
+}

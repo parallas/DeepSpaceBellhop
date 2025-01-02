@@ -26,6 +26,7 @@ public static class SaveManager
 #else
         WriteIndented = false,
 #endif
+        TypeInfoResolver = SaveDataSourceGenContext.Default,
     };
 
     public static void DeleteFile()
