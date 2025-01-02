@@ -83,9 +83,11 @@ public class CharacterActor
             {
                 // Turn around
                 _turnAroundCooldown = Random.Shared.Next(60, 300 + 1);
-                if (_currentAnimation == _animBack)
-                    _turnAroundCooldown /= 4;
+
                 TurnAround();
+
+                if (_currentAnimation == _animFront)
+                    _turnAroundCooldown = 30;
             }
         }
 
@@ -202,6 +204,8 @@ public class CharacterActor
 
     public IEnumerator GetOffElevatorBegin(bool isAngry)
     {
+        PlayAnimation(_animBack);
+
         OffsetXTarget = 0;
         while (MathUtil.RoundToInt(_offsetX) != 0)
         {
