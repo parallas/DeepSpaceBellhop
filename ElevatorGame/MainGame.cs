@@ -188,6 +188,10 @@ public class MainGame : Game
 
         LocalizationManager.CurrentLanguage = data.LanguagePreference;
 
+        DayRegistry.Init();
+
+        CharacterRegistry.Init();
+
         Coroutines.TryRun("load_day_start", StartDay(data.Day), out _);
     }
 

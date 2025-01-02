@@ -20,13 +20,13 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/BlueAxolotl",
                 WalkSpeed = 10,
                 EnterPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Blueulet.enter.0"))
+                    new(LocalizationManager.Get("dialog.character.Blueulet.enter.0"))
                 ],
                 ExitPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Blueulet.exit.0"))
+                    new(LocalizationManager.Get("dialog.character.Blueulet.exit.0"))
                 ],
                 AngryPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Blueulet.angry.0"))
+                    new(LocalizationManager.Get("dialog.character.Blueulet.angry.0"))
                 ],
                 AngryIconPosition = new(-13, -72),
                 Flags = CharacterDef.CharacterFlag.Clumsy
@@ -37,13 +37,13 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/GreenAxolotl",
                 WalkSpeed = 6,
                 EnterPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Greenulet.enter.0"))
+                    new(LocalizationManager.Get("dialog.character.Greenulet.enter.0"))
                 ],
                 ExitPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Greenulet.exit.0"))
+                    new(LocalizationManager.Get("dialog.character.Greenulet.exit.0"))
                 ],
                 AngryPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Greenulet.angry.0"))
+                    new(LocalizationManager.Get("dialog.character.Greenulet.angry.0"))
                 ],
                 AngryIconPosition = new(-13, -69),
             },
@@ -53,16 +53,16 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/EmalynCat",
                 WalkSpeed = 6,
                 EnterPhrases = [
-                    new(LocalizationManager.Get("character.dialog.EmalynCat.enter.0")),
-                    new(LocalizationManager.Get("character.dialog.EmalynCat.enter.1")),
+                    new(LocalizationManager.Get("dialog.character.EmalynCat.enter.0")),
+                    new(LocalizationManager.Get("dialog.character.EmalynCat.enter.1")),
                 ],
                 ExitPhrases = [
-                    new(LocalizationManager.Get("character.dialog.EmalynCat.exit.0")),
-                    new(LocalizationManager.Get("character.dialog.EmalynCat.exit.1")),
+                    new(LocalizationManager.Get("dialog.character.EmalynCat.exit.0")),
+                    new(LocalizationManager.Get("dialog.character.EmalynCat.exit.1")),
                 ],
                 AngryPhrases = [
-                    new(LocalizationManager.Get("character.dialog.EmalynCat.angry.0")),
-                    new(LocalizationManager.Get("character.dialog.EmalynCat.angry.1")),
+                    new(LocalizationManager.Get("dialog.character.EmalynCat.angry.0")),
+                    new(LocalizationManager.Get("dialog.character.EmalynCat.angry.1")),
                 ],
                 AngryIconPosition = new(-10, -46),
             },
@@ -80,15 +80,15 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Robot",
                 WalkSpeed = 6,
                 EnterPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Robot.enter.0")),
-                    new(LocalizationManager.Get("character.dialog.Robot.enter.1")),
+                    new(LocalizationManager.Get("dialog.character.Robot.enter.0")),
+                    new(LocalizationManager.Get("dialog.character.Robot.enter.1")),
                 ],
                 ExitPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Robot.exit.0")),
-                    new(LocalizationManager.Get("character.dialog.Robot.exit.1")),
+                    new(LocalizationManager.Get("dialog.character.Robot.exit.0")),
+                    new(LocalizationManager.Get("dialog.character.Robot.exit.1")),
                 ],
                 AngryPhrases = [
-                    new(LocalizationManager.Get("character.dialog.Robot.angry.0")),
+                    new(LocalizationManager.Get("dialog.character.Robot.angry.0")),
                 ],
                 AngryIconPosition = new(-6, -39),
             },
