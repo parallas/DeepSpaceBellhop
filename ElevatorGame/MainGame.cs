@@ -332,10 +332,16 @@ public class MainGame : Game
         CameraPosition = MathUtil.ExpDecay(CameraPosition, CameraPositionTarget, 8f, 1f / 60f);
         Camera.Update();
 
+        float darkOverlayOpacityTarget = 0;
         if(EndOfDaySequence)
         {
-            _darkOverlayOpacity = MathUtil.Approach(_darkOverlayOpacity, 1, 0.1f);
+            darkOverlayOpacityTarget = 1f;
         }
+        else if ((float)(CharacterManager.CharactersFinished + CharacterManager.CharactersInPlay.Count) / CompletionRequirement >= 0.8f)
+        {
+            darkOverlayOpacityTarget = 0.5f;
+        }
+        _darkOverlayOpacity = MathUtil.ExpDecay(_darkOverlayOpacity, darkOverlayOpacityTarget, 2f, 1f/60f);
         _darkOverlaySprite.Color = Color.White * _darkOverlayOpacity;
 
         if (CurrentDay == 0 && CurrentFloor == 1 && _buttonHintVisible)
@@ -404,10 +410,7 @@ public class MainGame : Game
 
         CharacterManager.DrawMain(spriteBatch);
 
-        if(EndOfDaySequence)
-        {
-            _darkOverlaySprite.Draw(spriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 0));
-        }
+        _darkOverlaySprite.Draw(spriteBatch, Camera.GetParallaxPosition(Vector2.Zero, 0));
     }
 
     private void DrawUI(SpriteBatch spriteBatch)
