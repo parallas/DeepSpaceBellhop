@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="MixerGroup" id="{f3b66c3a-fe3f-45da-b6e8-8de8e5d872d7}">
+		<property name="name">
+			<value>Phone Sounds</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{9b55a965-df56-4110-8400-ef28f90a5e82}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{24780c2f-6d25-4368-ab0d-12c0b0a543cc}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{3a677079-439b-4f25-8bb1-96546f4756b0}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{9b55a965-df56-4110-8400-ef28f90a5e82}">
+		<relationship name="effects">
+			<destination>{47064681-9902-4321-b5ff-31e46a834c22}</destination>
+			<destination>{bf32d746-31cb-4ad0-aee3-60f1fb965fe1}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{24780c2f-6d25-4368-ab0d-12c0b0a543cc}" />
+	<object class="GainEffect" id="{47064681-9902-4321-b5ff-31e46a834c22}">
+		<property name="gain">
+			<value>-6</value>
+		</property>
+	</object>
+	<object class="MixerBusFader" id="{bf32d746-31cb-4ad0-aee3-60f1fb965fe1}" />
+</objects>
