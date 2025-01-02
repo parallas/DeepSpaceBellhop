@@ -32,6 +32,7 @@ public static class Keybindings
     public static MappedInput Pause { get; } = new FallbackMappedInput(
     [
         new MappedInput.Keyboard(Keys.Escape),
+        new MappedInput.Keyboard(Keys.C),
 
         new MappedInput.GamePad(Buttons.Start, PlayerIndex.One),
     ]);
