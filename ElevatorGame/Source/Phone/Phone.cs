@@ -30,6 +30,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     private AnimatedSprite _buttonsSpriteAnim;
     private AnimatedSprite _batterySpriteAnim;
     private AnimatedSprite _emoticonRowSpriteAnim;
+    private AnimatedSprite _idleSpriteAnim;
 
     private RenderTarget2D _screenRenderTarget;
     
@@ -112,6 +113,14 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 true
             )
             .CreateAnimatedSprite("Tag");
+
+        // Idle
+        _idleSpriteAnim = ContentLoader.Load<AsepriteFile>("graphics/phone/ScreenSprites")!
+            .CreateSpriteSheet(
+                MainGame.Graphics.GraphicsDevice,
+                true
+            )
+            .CreateAnimatedSprite("Idle");
 
         // blinking light
         var dotFile = ContentLoader.Load<AsepriteFile>("graphics/phone/Dot")!;
@@ -315,6 +324,11 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
                 _emoticonRowSpriteAnim.Color = mainColor;
                 _emoticonRowSpriteAnim.Draw(spriteBatch, new Vector2(1, 8 + _orders[^1].Position.Y));
             }
+            if (_orders is { Count: <= 0 })
+            {
+                _idleSpriteAnim.Color = mainColor;
+                _idleSpriteAnim.Draw(spriteBatch, new Vector2(0, -8));
+            }
         }
         spriteBatch.End();
         MainGame.Graphics.GraphicsDevice.Reset();
@@ -456,6 +470,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public IEnumerator Open(bool shiftCam, bool changeCanOpen = true)
     {
+        _idleSpriteAnim.SetFrame(Random.Shared.Next(_idleSpriteAnim.FrameCount));
         if (_isOpen)
         {
             MainGame.Coroutines.Stop("phone_show");
