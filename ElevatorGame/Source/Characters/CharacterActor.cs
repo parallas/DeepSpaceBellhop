@@ -17,6 +17,7 @@ public class CharacterActor
     public int Patience { get; set; }
     public int InitialPatience { get; private set; }
     public bool DrawAngryIcon { get; set; }
+    public bool CanRandomlyTurnAround { get; set; }
 
     public int FloorTargetDirection => Math.Sign(FloorNumberTarget - FloorNumberCurrent);
 
@@ -33,10 +34,10 @@ public class CharacterActor
     private AnimatedSprite _angryIcon;
     private bool _isInElevator;
     private float _currentWalkSpeed;
+    private int _turnAroundCooldown;
 
     private int _targetDepth;
     private float _renderDepth;
-
     public const int StandingRoomSize = 85;
 
     private void PlayAnimation(AnimatedSprite animation)
@@ -74,6 +75,20 @@ public class CharacterActor
 
     public void Update(GameTime gameTime)
     {
+        if (_turnAroundCooldown > 0)
+            _turnAroundCooldown--;
+        if (CanRandomlyTurnAround && _turnAroundCooldown <= 0)
+        {
+            if (Random.Shared.Next(MathUtil.CeilToInt(240 * (1f - (Def.WalkSpeed / 30) + 0.2f))) == 0)
+            {
+                // Turn around
+                _turnAroundCooldown = Random.Shared.Next(60, 300 + 1);
+                if (_currentAnimation == _animBack)
+                    _turnAroundCooldown /= 4;
+                TurnAround();
+            }
+        }
+
         _currentAnimation.Update(1f/60f);
         _angryIcon.Update(1f/60f);
 

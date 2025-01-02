@@ -45,10 +45,12 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     {
         foreach (var characterActor in _leavingList)
         {
+            characterActor.CanRandomlyTurnAround = false;
             characterActor.Update(gameTime);
         }
         foreach (var characterActor in _waitList)
         {
+            characterActor.CanRandomlyTurnAround = false;
             characterActor.Update(gameTime);
         }
         foreach (var characterActor in _cabList)
@@ -67,16 +69,12 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                     CharacterActor.StandingRoomSize);
             }
 
-            if (Random.Shared.Next(240) == 0)
-            {
-                // Turn around
-                characterActor.TurnAround();
-            }
-
+            characterActor.CanRandomlyTurnAround = true;
             characterActor.Update(gameTime);
         }
         foreach (var characterActor in _movingList)
         {
+            characterActor.CanRandomlyTurnAround = false;
             characterActor.Update(gameTime);
         }
     }
