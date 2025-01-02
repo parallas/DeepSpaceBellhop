@@ -177,15 +177,19 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
         int bottomPaddingRows = 4;
         var scrollTargetMax = MathHelper.Max(0, (_orders.Count + (_orders.Count > 4 ? 1 : 0) - bottomPaddingRows) * 6);
-        if (ScrollTarget > scrollTargetMax)
+        if (_isOpen && CanOpen)
         {
-            PlayEmoticonReaction();
-            _audioBump.Start();
-        }
-        if (ScrollTarget < 0 && !_isTalking)
-        {
-            PlayFaceReaction();
-            _audioBump.Start();
+            if (ScrollTarget > scrollTargetMax)
+            {
+                PlayEmoticonReaction();
+                _audioBump.Start();
+            }
+
+            if (ScrollTarget < 0 && !_isTalking)
+            {
+                PlayFaceReaction();
+                _audioBump.Start();
+            }
         }
         ScrollTarget = MathHelper.Clamp(ScrollTarget, 0, scrollTargetMax);
 

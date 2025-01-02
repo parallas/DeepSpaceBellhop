@@ -101,7 +101,7 @@
 			<value>pitch</value>
 		</property>
 		<property name="amount">
-			<value>7.5</value>
+			<value>1.5</value>
 		</property>
 	</object>
 	<object class="MixerBusEffectChain" id="{bbd40d1f-7275-41a4-8063-6d5399514f56}">
@@ -111,6 +111,9 @@
 	</object>
 	<object class="MixerBusPanner" id="{01d0efa7-7cf0-4544-ba91-eba77e05ee83}" />
 	<object class="MultiSound" id="{9929e10e-53f2-42fe-a06e-7fbff398386d}">
+		<property name="playlistMode">
+			<value>1</value>
+		</property>
 		<relationship name="sounds">
 			<destination>{53804000-0283-4604-b828-c20e492e278e}</destination>
 			<destination>{2893e857-8807-4376-90d6-3c9b5236a2e6}</destination>
