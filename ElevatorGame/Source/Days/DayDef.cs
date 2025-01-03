@@ -11,4 +11,5 @@ public struct DayDef()
     public required string[] CharacterIds { get; set; }
     public required int StartCharacterCount { get; set; }
     public DialogDef StartDialog { get; set; }
+    public bool PunishMistakes { get; set; }
 }

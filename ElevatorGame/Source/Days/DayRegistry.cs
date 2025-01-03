@@ -18,7 +18,8 @@ public static class DayRegistry
                 CompletionRequirement = 10,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat"],
                 StartCharacterCount = 1,
-                StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.intro"))
+                StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.intro")),
+                PunishMistakes = false
             },
             new DayDef
             {
@@ -27,7 +28,8 @@ public static class DayRegistry
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 25,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "Robot", "Slime", "ShroomKing"],
-                StartCharacterCount = 2
+                StartCharacterCount = 2,
+                PunishMistakes = false
             },
             new DayDef
             {
@@ -36,7 +38,8 @@ public static class DayRegistry
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "Robot", "Slime", "ShroomKing"],
-                StartCharacterCount = 3
+                StartCharacterCount = 3,
+                PunishMistakes = true
             },
             new DayDef
             {
@@ -45,7 +48,8 @@ public static class DayRegistry
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "Robot", "Slime", "ShroomKing"],
-                StartCharacterCount = 3
+                StartCharacterCount = 3,
+                PunishMistakes = true
             },
         ];
     }
