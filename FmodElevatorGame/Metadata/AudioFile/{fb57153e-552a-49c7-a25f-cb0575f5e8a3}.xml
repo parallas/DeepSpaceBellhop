@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{05d19fc9-8292-4d44-a0cc-b500a142fd42}">
+	<object class="AudioFile" id="{fb57153e-552a-49c7-a25f-cb0575f5e8a3}">
 		<property name="assetPath">
-			<value>Phone/Jingle.ogg</value>
+			<value>Dialog.ogg</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>
@@ -11,7 +11,7 @@
 			<value>2</value>
 		</property>
 		<property name="length">
-			<value>1.3839229024943311</value>
+			<value>0.85936507936507933</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{8cc827c7-cb66-4dda-b72c-48429909c1e5}</destination>

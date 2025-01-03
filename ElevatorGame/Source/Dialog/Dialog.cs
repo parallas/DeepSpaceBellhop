@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using AsepriteDotNet.Aseprite;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,7 +13,7 @@ using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source.Dialog;
 
-public class Dialog()
+public class Dialog() : IDisposable
 {
     public enum DisplayMethod
     {
@@ -40,12 +41,30 @@ public class Dialog()
     private readonly List<char> _charBuffer = [];
     private readonly List<int> _glyphBuffer = [];
 
+    private EventDescription _audioTalkDescription;
+    private EventDescription _audioTalkEndDescription;
+    private EventInstance _audioContinue;
+
     public void LoadContent()
     {
         _glyphSprite = ContentLoader.Load<AsepriteFile>("graphics/Glyphs")
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false)
             .CreateAnimatedSprite("Tag");
         _glyphSprite.Speed = 0;
+
+        _audioTalkDescription = StudioSystem.GetEvent("event:/SFX/Dialog/Talk");
+        _audioTalkEndDescription = StudioSystem.GetEvent("event:/SFX/Dialog/TalkEnd");
+        _audioContinue = StudioSystem.GetEvent("event:/SFX/Dialog/Continue").CreateInstance();
+    }
+
+    public void UnloadContent()
+    {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        _audioContinue?.Dispose();
     }
 
     public IEnumerator Display(Page[] pages, DisplayMethod displayMethod)
@@ -77,6 +96,7 @@ public class Dialog()
             StringReader reader = new(page.Content);
 
             int ch = -1;
+            int index = 0;
             while ((ch = reader.Read()) != -1)
             {
                 _charBuffer.Add((char)ch);
@@ -85,6 +105,7 @@ public class Dialog()
 
                 if(ch != ' ')
                 {
+                    PlayTalkSound();
                     if(Keybindings.Confirm.IsDown)
                     {
                         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.FastForward;
@@ -96,7 +117,10 @@ public class Dialog()
                         yield return page.CharInterval;
                     }
                 }
+                index++;
             }
+
+            PlayTalkEndSound();
 
             _awaitingConfirmation = true;
             MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Dialog;
@@ -104,6 +128,7 @@ public class Dialog()
             {
                 yield return null;
             }
+            _audioContinue.Start();
             _awaitingConfirmation = false;
 
             _charBuffer.Clear();
@@ -122,6 +147,8 @@ public class Dialog()
             {
                 _glyphBuffer.Add(Random.Shared.Next(_glyphSprite.FrameCount));
 
+                PlayTalkSound();
+
                 if(Keybindings.Confirm.IsDown)
                 {
                     MainGame.Cursor.CursorSprite = Cursor.CursorSprites.FastForward;
@@ -134,12 +161,15 @@ public class Dialog()
                 }
             }
 
+            PlayTalkEndSound();
+
             _awaitingConfirmation = true;
             MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Dialog;
             while (!Keybindings.Confirm.Pressed)
             {
                 yield return null;
             }
+            _audioContinue.Start();
             _awaitingConfirmation = false;
 
             _glyphBuffer.Clear();
@@ -222,5 +252,19 @@ public class Dialog()
                 x += w;
             }
         }
+    }
+
+    private void PlayTalkSound()
+    {
+        var sound = _audioTalkDescription.CreateInstance();
+        sound.Start();
+        sound.Dispose();
+    }
+
+    private void PlayTalkEndSound()
+    {
+        var sound = _audioTalkEndDescription.CreateInstance();
+        sound.Start();
+        sound.Dispose();
     }
 }

@@ -70,6 +70,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     private EventInstance _audioJingle;
     private EventInstance _audioHurt;
     private EventInstance _audioHeal;
+    private EventInstance _audioCorrect;
 
     public void LoadContent()
     {
@@ -163,6 +164,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _audioJingle = StudioSystem.GetEvent("event:/SFX/UI/Phone/Jingle").CreateInstance();
         _audioHurt = StudioSystem.GetEvent("event:/SFX/UI/Phone/Hurt").CreateInstance();
         _audioHeal = StudioSystem.GetEvent("event:/SFX/UI/Phone/Heal").CreateInstance();
+        _audioCorrect = StudioSystem.GetEvent("event:/SFX/UI/Phone/Correct").CreateInstance();
     }
     
     public void UnloadContent()
@@ -180,6 +182,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _audioJingle?.Dispose();
         _audioHurt?.Dispose();
         _audioHeal?.Dispose();
+        _audioCorrect?.Dispose();
     }
 
     public void Update(GameTime gameTime)
@@ -569,6 +572,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     public void HighlightOrder(CharacterActor characterActor)
     {
         SetFace(4); // Lucky Cat
+
+        _audioCorrect.Start();
 
         var index = _orders.FindIndex(order =>
             order.FloorNumber == characterActor.FloorNumberCurrent &&
