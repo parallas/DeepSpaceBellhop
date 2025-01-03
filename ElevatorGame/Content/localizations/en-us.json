@@ -1,7 +1,7 @@
 {
     "name": "English (US)",
     "values": {
-        "dialog.phone.tutorial.intro": "Your job is to pick up passengers and take them to their destination.<PAGE>My screen will show you everybody who has called the elevator.<PAGE>Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!<PAGE>Good luck!",
+        "dialog.phone.tutorial.intro": "Your job is to pick up guests and take them to their destination.<PAGE>My screen will show you everybody who has called the elevator.<PAGE>Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!<PAGE>Good luck!",
         "dialog.phone.tutorial.end_of_day": "Day complete - time to go home!<PAGE>Return to the Ground Floor to clock out.",
 
         "dialog.character.Blueulet.enter.0": "Can you take me to this floor?",
