@@ -16,7 +16,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 10,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat"],
                 StartCharacterCount = 1,
                 StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.intro"))
             },
@@ -26,7 +26,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 25,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "ShroomKing"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "Robot", "Slime", "ShroomKing"],
                 StartCharacterCount = 2
             },
             new DayDef
@@ -35,7 +35,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat", "ShroomKing"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "Robot", "Slime", "ShroomKing"],
                 StartCharacterCount = 3
             },
             new DayDef
@@ -44,7 +44,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 60,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Robot", "Slime", "EmalynCat", "ShroomKing"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "Robot", "Slime", "ShroomKing"],
                 StartCharacterCount = 3
             },
         ];
