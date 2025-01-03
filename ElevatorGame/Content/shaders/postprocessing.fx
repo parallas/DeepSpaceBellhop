@@ -55,8 +55,16 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
     float2 finalUv = lerp(uv, uv + voronoi1, WobbleInfluence);
     float4 col = tex2D(SpriteTextureSampler, finalUv).rgba * input.Color.rgba;
+
+    float3 yiq = FCCYIQFromSRGB(col.rgb);
+    float2x2 rotMatrix = float2x2(
+        cos(GameTime), -sin(GameTime),
+        sin(GameTime), cos(GameTime)
+    );
+    yiq.yz = mul(rotMatrix, yiq.yz);
+    float3 rgb = SRGBFromFCCYIQ(yiq);
     
-    return col;
+    return float4(rgb, col.a);
 }
 
 technique SpriteDrawing
