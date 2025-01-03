@@ -63,8 +63,9 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     );
     yiq.yz = mul(rotMatrix, yiq.yz);
     float3 rgb = SRGBFromFCCYIQ(yiq);
+    float3 rgbLerped = lerp(col.rgb, rgb, WobbleInfluence);
     
-    return float4(rgb, col.a);
+    return float4(rgbLerped, col.a);
 }
 
 technique SpriteDrawing
