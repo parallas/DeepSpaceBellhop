@@ -221,7 +221,7 @@ public class CharacterActor
         _currentWalkSpeed = MathUtil.CeilToInt(Def.WalkSpeed * 0.5f);
         _squashStretchOffset = -0.1f;
         PlayAnimation(_animBack);
-        int newX = MathUtil.FloorToInt((Random.Shared.Next(2) - 0.5f) * 2 * 85);
+        int newX = MathUtil.FloorToInt((Random.Shared.Next(2) - 0.5f) * 2 * 100);
         OffsetXTarget = newX;
         while (MathUtil.RoundToInt(_offsetX) != OffsetXTarget)
         {
