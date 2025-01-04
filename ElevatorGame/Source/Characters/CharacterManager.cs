@@ -150,12 +150,10 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             if (isPatienceOut)
             {
                 phone.SimulateBatteryChange(-3);
-                yield return phone.Open(false, false);
             }
             else if (MainGame.CurrentHealth < 8) // this check prevents the unecessary opening from happening at full health
             {
                 phone.SimulateBatteryChange(+1);
-                yield return phone.Open(false, false);
             }
 
             // Use angry phrases if patience is <= 0
@@ -174,13 +172,11 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             {
                 MainGame.ChangeHealth(-3);
                 yield return 60;
-                yield return phone.Close(false, false);
             }
             else if (MainGame.CurrentHealth < 8)
             {
                 MainGame.ChangeHealth(+1);
                 yield return 60;
-                yield return phone.Close(false, false);
             }
 
             MainGame.Coroutines.TryRun(
