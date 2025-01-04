@@ -187,7 +187,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public void Update(GameTime gameTime)
     {
-        _dockedPhonePos = new Vector2(202, 77);
+        _dockedPhonePos = new Vector2(190, 68);
         _openPhonePos = new Vector2(202 - _offset, 8);
 
         _nudgeOffset = MathUtil.ExpDecay(_nudgeOffset, 0, 8f, 1f / 60f);
