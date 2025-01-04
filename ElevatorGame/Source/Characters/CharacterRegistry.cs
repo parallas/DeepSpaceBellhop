@@ -149,6 +149,22 @@ public static class CharacterRegistry
                 WalkSpeed = 8,
                 AngryIconPosition = new(-15, -76),
             },
+            new CharacterDef
+            {
+                Name = "JellyfishGirl",
+                SpritePath = "graphics/characters/JellyfishGirl",
+                WalkSpeed = 4,
+                EnterPhrases = [
+                    new(LocalizationManager.Get("dialog.character.JellyfishGirl.enter.0")),
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("dialog.character.JellyfishGirl.exit.0")),
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("dialog.character.JellyfishGirl.angry.0")),
+                ],
+                AngryIconPosition = new(-13, -64),
+            },
         ];
 
         foreach (var characterDef in _characterDefs)

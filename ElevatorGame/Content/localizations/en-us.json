@@ -34,6 +34,10 @@
 
         "dialog.character.Beebo.enter.0": "Floor $floorNumDest please.",
         "dialog.character.Beebo.exit.0": "...<PAGE>Thanks.",
-        "dialog.character.Beebo.angry.0": "How annoying."
+        "dialog.character.Beebo.angry.0": "How annoying.",
+
+        "dialog.character.JellyfishGirl.enter.0": "You take me to floor $floorNumDest, oui?",
+        "dialog.character.JellyfishGirl.exit.0": "Merci! Merci!",
+        "dialog.character.JellyfishGirl.angry.0": "Bonne nuit..."
     }
 }
