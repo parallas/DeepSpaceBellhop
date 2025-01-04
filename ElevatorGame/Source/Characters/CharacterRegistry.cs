@@ -142,6 +142,13 @@ public static class CharacterRegistry
                 ],
                 AngryIconPosition = new(-13, -69),
             },
+            new CharacterDef
+            {
+                Name = "Hourglass",
+                SpritePath = "graphics/characters/Hourglass",
+                WalkSpeed = 8,
+                AngryIconPosition = new(-15, -76),
+            },
         ];
 
         foreach (var characterDef in _characterDefs)
