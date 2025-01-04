@@ -188,6 +188,22 @@ public static class CharacterRegistry
                 ],
                 AngryIconPosition = new(-11, -49),
             },
+            new CharacterDef
+            {
+                Name = "Alieno",
+                SpritePath = "graphics/characters/Alieno",
+                WalkSpeed = 4,
+                EnterPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Alieno.enter.0")),
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Alieno.exit.0")),
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Alieno.angry.0")),
+                ],
+                AngryIconPosition = new(-8, -46),
+            },
         ];
 
         foreach (var characterDef in _characterDefs)

@@ -17,6 +17,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     private readonly List<CharacterActor> _cabList = [];
     private readonly List<CharacterActor> _leavingList = [];
 
+    private bool _eventfulTurn = false;
+
     public List<CharacterActor> CharactersInPlay =>
         _waitList.Concat(_movingList).Concat(_cabList).ToList();
 
@@ -108,6 +110,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     public IEnumerator EndOfTurnSequence()
     {
+        _eventfulTurn = false;
+
         yield return LeaveAtFloorSequence();
 
         foreach (var characterActor in _cabList)
@@ -122,6 +126,13 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         yield return SubtractPatienceOfWaiting();
 
         yield return SpawnMoreCharacters();
+
+        if (MainGame.PunishMistakes && !_eventfulTurn)
+        {
+            phone.SimulateBatteryChange(-1);
+            yield return 20;
+            MainGame.ChangeHealth(-1);
+        }
     }
 
     private IEnumerator LeaveAtFloorSequence()
@@ -187,6 +198,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                 }), out _);
 
             CharactersFinished++;
+            _eventfulTurn = true;
         }
     }
 
@@ -223,6 +235,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             yield return characterActor.GetInElevatorEnd();
             _movingList.Remove(characterActor);
             _cabList.Add(characterActor);
+
+            _eventfulTurn = true;
         }
     }
 

@@ -37,8 +37,9 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno"],
                 StartCharacterCount = 3,
+                StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.punish")),
                 PunishMistakes = true
             },
             new DayDef
@@ -47,7 +48,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 60,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno"],
                 StartCharacterCount = 3,
                 PunishMistakes = true
             },

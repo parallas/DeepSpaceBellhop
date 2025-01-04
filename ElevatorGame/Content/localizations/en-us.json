@@ -3,6 +3,7 @@
     "values": {
         "dialog.phone.tutorial.intro": "Your job is to pick up guests and take them to their destination.<PAGE>My screen will show you everybody who has called the elevator.<PAGE>Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!<PAGE>Good luck!",
         "dialog.phone.tutorial.end_of_day": "Day complete - time to go home!<PAGE>Return to the Ground Floor to clock out.",
+        "dialog.phone.tutorial.punish": "Hey there! Due to the ever growing popularity of this hotel, you need to be more careful each turn.<PAGE>I'll lose battery whenever you make mistakes.",
 
         "dialog.character.Blueulet.enter.0": "Can you take me to this floor?",
         "dialog.character.Blueulet.exit.0": "Thank you.",
@@ -38,6 +39,10 @@
 
         "dialog.character.JellyfishGirl.enter.0": "You take me to floor $floorNumDest, oui?",
         "dialog.character.JellyfishGirl.exit.0": "Merci! Merci!",
-        "dialog.character.JellyfishGirl.angry.0": "Bonne nuit..."
+        "dialog.character.JellyfishGirl.angry.0": "Bonne nuit...",
+
+        "dialog.character.Alieno.enter.0": "Yo.",
+        "dialog.character.Alieno.exit.0": "See ya.",
+        "dialog.character.Alieno.angry.0": "Not cool..."
     }
 }

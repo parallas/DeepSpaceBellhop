@@ -56,6 +56,7 @@ public class MainGame : Game
     public static string[] CharacterIdsPool => DayRegistry.Days[CurrentDay].CharacterIds;
     public static int StartCharacterCount => DayRegistry.Days[CurrentDay].StartCharacterCount;
     public static int MaxCountPerSpawn => DayRegistry.Days[CurrentDay].MaxCountPerSpawn;
+    public static bool PunishMistakes => DayRegistry.Days[CurrentDay].PunishMistakes;
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
 
@@ -478,14 +479,6 @@ public class MainGame : Game
         CurrentMenu = Menus.TurnTransition;
         Cursor.CursorSprite = Cursor.CursorSprites.Wait;
 
-        yield return CharacterManager.EndOfTurnSequence();
-
-        _phone.CanOpen = true;
-        Coroutines.Stop("phone_show");
-        Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
-
-        yield return null;
-
         if (CharacterManager.CharactersFinished >= DayRegistry.Days[CurrentDay].CompletionRequirement)
         {
             // Advance to the next day
@@ -518,6 +511,16 @@ public class MainGame : Game
             {
                 Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
             }
+        }
+        else
+        {
+            yield return CharacterManager.EndOfTurnSequence();
+
+            _phone.CanOpen = true;
+            Coroutines.Stop("phone_show");
+            Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
+
+            yield return null;
         }
         CurrentMenu = Menus.None;
         Cursor.CursorSprite = Cursor.CursorSprites.Default;
