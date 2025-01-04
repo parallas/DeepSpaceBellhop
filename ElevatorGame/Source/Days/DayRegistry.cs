@@ -27,7 +27,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 25,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon"],
                 StartCharacterCount = 2,
                 PunishMistakes = false
             },
@@ -37,7 +37,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box"],
                 StartCharacterCount = 3,
                 PunishMistakes = true
             },
@@ -47,7 +47,7 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 60,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass"],
+                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box"],
                 StartCharacterCount = 3,
                 PunishMistakes = true
             },

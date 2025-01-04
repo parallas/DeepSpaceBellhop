@@ -165,6 +165,29 @@ public static class CharacterRegistry
                 ],
                 AngryIconPosition = new(-13, -64),
             },
+            new CharacterDef
+            {
+                Name = "SeaDragon",
+                SpritePath = "graphics/characters/SeaDragon",
+                WalkSpeed = 6,
+                AngryIconPosition = new(-12, -58),
+            },
+            new CharacterDef
+            {
+                Name = "Box",
+                SpritePath = "graphics/characters/Box",
+                WalkSpeed = 4,
+                EnterPhrases = [
+                    new("..."),
+                ],
+                ExitPhrases = [
+                    new("..."),
+                ],
+                AngryPhrases = [
+                    new("..."),
+                ],
+                AngryIconPosition = new(-11, -49),
+            },
         ];
 
         foreach (var characterDef in _characterDefs)
