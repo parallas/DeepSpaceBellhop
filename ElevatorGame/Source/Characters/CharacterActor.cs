@@ -58,7 +58,7 @@ public class CharacterActor
         _animBack = spriteSheet.CreateAnimatedSprite("Back");
         _animAngry = spriteSheet.CreateAnimatedSprite("Angry");
 
-        _angryIcon = ContentLoader.Load<AsepriteFile>("graphics/Anger")
+        _angryIcon = ContentLoader.Load<AsepriteFile>("graphics/Anger")!
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false)
             .CreateAnimatedSprite("Tag");
         _angryIcon.Origin = Vector2.One * 7 - Def.AngryIconPosition;
