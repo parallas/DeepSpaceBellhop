@@ -134,3 +134,6 @@ dotnet-install.sh
 dotnet-install.ps1
 
 *.so
+*.so.5
+*.so.56
+*.so.13
