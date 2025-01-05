@@ -281,6 +281,11 @@ public class MainGame : Game
         _roomRenderer = new RoomRenderer();
         _roomRenderer.LoadContent();
         _roomRenderer.SetDefinition(_roomDefs[0]);
+
+        // Load Music01
+        var musicInstance = StudioSystem.GetEvent("event:/Music/Music01").CreateInstance();
+        musicInstance.Start();
+        musicInstance.Dispose();
     }
 
     protected override void UnloadContent()
@@ -486,10 +491,26 @@ public class MainGame : Game
         CurrentMenu = Menus.TurnTransition;
         Cursor.CursorSprite = Cursor.CursorSprites.Wait;
 
+        if (CharacterManager.CharactersFinished < DayRegistry.Days[CurrentDay].CompletionRequirement)
+        {
+            yield return CharacterManager.EndOfTurnSequence();
+
+            _wobbleTurns--;
+            _hueShiftTurns--;
+
+            _phone.CanOpen = true;
+            Coroutines.Stop("phone_show");
+            Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
+
+            yield return null;
+        }
+
         if (CharacterManager.CharactersFinished >= DayRegistry.Days[CurrentDay].CompletionRequirement)
         {
             // Advance to the next day
-            // Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
+            
+            _wobbleTurns = 0;
+            _hueShiftTurns = 0;
 
             if(!EndOfDaySequence)
             {
@@ -519,19 +540,7 @@ public class MainGame : Game
                 Coroutines.TryRun("main_day_advance", AdvanceDay(), out _);
             }
         }
-        else
-        {
-            yield return CharacterManager.EndOfTurnSequence();
 
-            _wobbleTurns--;
-            _hueShiftTurns--;
-
-            _phone.CanOpen = true;
-            Coroutines.Stop("phone_show");
-            Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
-
-            yield return null;
-        }
         CurrentMenu = Menus.None;
         Cursor.CursorSprite = Cursor.CursorSprites.Default;
 
