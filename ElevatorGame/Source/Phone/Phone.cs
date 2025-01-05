@@ -561,7 +561,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         };
         _orders.Add(newOrder);
 
-        _orders.Sort((a, b) => a.FloorNumber.CompareTo(b.FloorNumber));
+        _orders.Sort((a, b) => -a.FloorNumber.CompareTo(b.FloorNumber));
         for (var i = 0; i < _orders.Count; i++)
         {
             _orders[i].TargetPosition = new Vector2(0, i * 6);
