@@ -19,8 +19,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     private bool _eventfulTurn = false;
 
-    public List<CharacterActor> CharactersInPlay =>
-        _waitList.Concat(_movingList).Concat(_cabList).ToList();
+    public List<CharacterActor> CharactersInPlay = new List<CharacterActor>();
 
     public int CharactersFinished { get; private set; }
 
@@ -78,6 +77,12 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         {
             characterActor.CanRandomlyTurnAround = false;
             characterActor.Update(gameTime);
+        }
+
+        var cache = _waitList.Concat(_movingList).Concat(_cabList).ToList();
+        if (!cache.ToHashSet().SetEquals(CharactersInPlay))
+        {
+            CharactersInPlay = cache;
         }
     }
 

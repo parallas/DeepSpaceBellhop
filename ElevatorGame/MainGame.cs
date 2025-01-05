@@ -137,6 +137,7 @@ public class MainGame : Game
     private static Vector2 _lastMouseViewPos;
     private static Vector2 _lastMouseWorldPos;
 
+    private bool _showDevTools;
     private IntPtr _renderPipelineTextureId;
 
     public MainGame(bool useSteamworks)
@@ -471,30 +472,106 @@ public class MainGame : Game
         {
             ImGui.BeginMainMenuBar();
             {
-                if (ImGui.Button("TEST"))
+                if (ImGui.Button("Dev Tools"))
                 {
+                    _showDevTools = !_showDevTools;
+                }
 
+                if (ImGui.BeginMenu("Load Day"))
+                {
+                    for (int i = 0; i < DayRegistry.Days.Length; i++)
+                    {
+                        if (ImGui.MenuItem($"Day {i + 1}"))
+                        {
+                            Coroutines.TryRun("main_day_advance", SetDay(i), out _);
+                        }
+                    }
+                    ImGui.EndMenu();
                 }
             }
             ImGui.EndMainMenuBar();
 
-            var viewport = ImGui.GetMainViewport();
-            ImGui.SetNextWindowPos(viewport.WorkPos);
-            ImGui.SetNextWindowSize(viewport.WorkSize);
-            ImGui.SetNextWindowViewport(viewport.ID);
-            ImGui.Begin("Dev Tools", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+            if (_showDevTools)
             {
-                int targetDay = CurrentDay;
-                if (ImGui.Combo("Day", ref targetDay, DayRegistry.Days.Select((d, i) => $"{i + 1}").ToArray(),
-                        DayRegistry.Days.Length))
+                // var viewport = ImGui.GetMainViewport();
+                // ImGui.SetNextWindowPos(viewport.WorkPos);
+                // ImGui.SetNextWindowSize(viewport.WorkSize);
+                // ImGui.SetNextWindowViewport(viewport.ID);
+                // ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f); // No corner rounding on the window
+                // ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f); // No border around the window
+                // ImGui.Begin("Dev Tools", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+                ImGui.Begin("Dev Tools");
                 {
-                    Coroutines.TryRun("main_day_advance", SetDay(targetDay), out _);
-                }
+                    if (ImGui.CollapsingHeader("Characters"))
+                    {
+                        ImGui.BeginTable("CharactersTable", 5, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Sortable);
+                        {
+                            ImGui.TableSetupColumn("Name");
+                            ImGui.TableSetupColumn("Current Floor");
+                            ImGui.TableSetupColumn("Target Floor");
+                            ImGui.TableSetupColumn("Initial Patience");
+                            ImGui.TableSetupColumn("Patience");
+                            ImGui.TableHeadersRow();
 
-                ImGui.Image(_renderPipelineTextureId,
-                    new System.Numerics.Vector2(RenderPipeline.RenderTarget.Width, RenderPipeline.RenderTarget.Height));
+                            var sortSpecs = ImGui.TableGetSortSpecs();
+                            if (sortSpecs is {})
+                            {
+                                int sortDir = sortSpecs.Specs.SortDirection == ImGuiSortDirection.Ascending ? 1 : -1;
+                                var specs = sortSpecs.Specs;
+                                switch (specs.ColumnIndex)
+                                {
+                                    case 0:
+                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                            sortDir * string.Compare(a.Def.Name, b.Def.Name,
+                                                StringComparison.InvariantCultureIgnoreCase));
+                                        break;
+                                    case 1:
+                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                            sortDir * a.FloorNumberCurrent.CompareTo(b.FloorNumberCurrent));
+                                        break;
+                                    case 2:
+                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                            sortDir * a.FloorNumberTarget.CompareTo(b.FloorNumberTarget));
+                                        break;
+                                    case 3:
+                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                            sortDir * a.InitialPatience.CompareTo(b.InitialPatience));
+                                        break;
+                                    case 4:
+                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                            sortDir * a.Patience.CompareTo(b.Patience));
+                                        break;
+                                }
+                                sortSpecs.SpecsDirty = false;
+                            }
+
+                            foreach (var character in CharacterManager.CharactersInPlay)
+                            {
+                                ImGui.TableNextRow();
+                                ImGui.TableNextColumn();
+                                ImGui.Text(character.Def.Name);
+                                ImGui.TableNextColumn();
+                                ImGui.Text($"{character.FloorNumberCurrent}");
+                                ImGui.TableNextColumn();
+                                ImGui.Text($"{character.FloorNumberTarget}");
+                                ImGui.TableNextColumn();
+                                ImGui.Text($"{character.InitialPatience}");
+                                ImGui.TableNextColumn();
+                                ImGui.Text($"{character.Patience}");
+                            }
+                        }
+                        ImGui.EndTable();
+                    }
+
+                    if (ImGui.CollapsingHeader("Preview"))
+                    {
+                        ImGui.Image(_renderPipelineTextureId,
+                            new System.Numerics.Vector2(RenderPipeline.RenderTarget.Width,
+                                RenderPipeline.RenderTarget.Height));
+                    }
+                }
+                ImGui.End();
             }
-            ImGui.End();
         }
         GuiRenderer.EndLayout();
     }
