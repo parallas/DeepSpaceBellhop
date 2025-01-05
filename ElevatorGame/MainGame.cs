@@ -16,10 +16,12 @@ using Engine.Display;
 using FMOD;
 using FmodForFoxes;
 using FmodForFoxes.Studio;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite;
+using MonoGame.ImGuiNet;
 using Elevator = ElevatorGame.Source.Elevator;
 using Phone = ElevatorGame.Source.Phone;
 using Dialog = ElevatorGame.Source.Dialog;
@@ -30,6 +32,8 @@ public class MainGame : Game
 {
     public static GraphicsDeviceManager Graphics { get; set; }
     public static SpriteBatch SpriteBatch { get; set; }
+    public static ImGuiRenderer GuiRenderer { get; private set; }
+    public bool ShowDebug { get; private set; }
     public static readonly Point RenderBufferSize = new Point(240, 135);
 
     public static long Step { get; private set; }
@@ -145,6 +149,7 @@ public class MainGame : Game
     protected override void Initialize()
     {
         RenderPipeline.Init(RenderBufferSize);
+        GuiRenderer = new ImGuiRenderer(this);
 
         Window.AllowUserResizing = true;
 
@@ -208,6 +213,7 @@ public class MainGame : Game
     protected override void LoadContent()
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
+        GuiRenderer.RebuildFontAtlas();
 
         // NOTE: You HAVE TO init fmod in the Initialize().
         // Otherwise, it may not work on some platforms.
@@ -313,6 +319,12 @@ public class MainGame : Game
         // Update Input
         UpdateInput(gameTime);
 
+        if (InputManager.GetPressed(Keys.F3))
+        {
+            ShowDebug = !ShowDebug;
+            IsMouseVisible = ShowDebug;
+        }
+
         if (Keybindings.Pause.Pressed)
         {
             _pauseManager.Pause();
@@ -412,6 +424,8 @@ public class MainGame : Game
 
         base.Draw(gameTime);
 
+        if (ShowDebug) DrawImGui(gameTime);
+
         Frame++;
     }
 
@@ -473,6 +487,19 @@ public class MainGame : Game
         _dayTransition.Draw(spriteBatch);
     }
 
+    private void DrawImGui(GameTime gameTime)
+    {
+        GuiRenderer.BeginLayout(gameTime);
+        ImGui.Begin("Dev Tools");
+        int targetDay = CurrentDay;
+        if (ImGui.Combo("Day", ref targetDay, DayRegistry.Days.Select((d, i) => $"{i + 1}").ToArray(), DayRegistry.Days.Length))
+        {
+            Coroutines.TryRun("main_day_advance", SetDay(targetDay), out _);
+        }
+        ImGui.End();
+        GuiRenderer.EndLayout();
+    }
+
     private void OnChangeFloorNumber(int floorNumber)
     {
         CurrentFloor = floorNumber;
@@ -508,7 +535,7 @@ public class MainGame : Game
         if (CharacterManager.CharactersFinished >= DayRegistry.Days[CurrentDay].CompletionRequirement)
         {
             // Advance to the next day
-            
+
             _wobbleTurns = 0;
             _hueShiftTurns = 0;
 

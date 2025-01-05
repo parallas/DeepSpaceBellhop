@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="FmodForFoxes" Version="3.2.0" />
+      <PackageReference Include="Jarodwr.MonoGameImGuiNet" Version="1.0.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
     </ItemGroup>
 
