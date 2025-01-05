@@ -14,6 +14,7 @@ public static class RenderPipeline
     private static RenderTarget2D _gameWithUiRt;
     private static RenderTarget2D _postProcessRt;
     private static RenderTarget2D _renderTarget;
+    public static RenderTarget2D RenderTarget => _renderTarget;
 
     private static GraphicsDevice _graphics;
 

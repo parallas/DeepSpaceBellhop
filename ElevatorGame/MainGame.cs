@@ -137,6 +137,8 @@ public class MainGame : Game
     private static Vector2 _lastMouseViewPos;
     private static Vector2 _lastMouseWorldPos;
 
+    private IntPtr _renderPipelineTextureId;
+
     public MainGame(bool useSteamworks)
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -150,6 +152,7 @@ public class MainGame : Game
     {
         RenderPipeline.Init(RenderBufferSize);
         GuiRenderer = new ImGuiRenderer(this);
+        _renderPipelineTextureId = GuiRenderer.BindTexture(RenderPipeline.RenderTarget);
 
         Window.AllowUserResizing = true;
 
@@ -460,6 +463,42 @@ public class MainGame : Game
         Cursor.Draw(spriteBatch);
     }
 
+    private void DrawImGui(GameTime gameTime)
+    {
+        _renderPipelineTextureId = GuiRenderer.BindTexture(RenderPipeline.RenderTarget);
+
+        GuiRenderer.BeginLayout(gameTime);
+        {
+            ImGui.BeginMainMenuBar();
+            {
+                if (ImGui.Button("TEST"))
+                {
+
+                }
+            }
+            ImGui.EndMainMenuBar();
+
+            var viewport = ImGui.GetMainViewport();
+            ImGui.SetNextWindowPos(viewport.WorkPos);
+            ImGui.SetNextWindowSize(viewport.WorkSize);
+            ImGui.SetNextWindowViewport(viewport.ID);
+            ImGui.Begin("Dev Tools", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+            {
+                int targetDay = CurrentDay;
+                if (ImGui.Combo("Day", ref targetDay, DayRegistry.Days.Select((d, i) => $"{i + 1}").ToArray(),
+                        DayRegistry.Days.Length))
+                {
+                    Coroutines.TryRun("main_day_advance", SetDay(targetDay), out _);
+                }
+
+                ImGui.Image(_renderPipelineTextureId,
+                    new System.Numerics.Vector2(RenderPipeline.RenderTarget.Width, RenderPipeline.RenderTarget.Height));
+            }
+            ImGui.End();
+        }
+        GuiRenderer.EndLayout();
+    }
+
     private void DrawScreenTransition(SpriteBatch spriteBatch)
     {
         // left
@@ -485,19 +524,6 @@ public class MainGame : Game
         );
 
         _dayTransition.Draw(spriteBatch);
-    }
-
-    private void DrawImGui(GameTime gameTime)
-    {
-        GuiRenderer.BeginLayout(gameTime);
-        ImGui.Begin("Dev Tools");
-        int targetDay = CurrentDay;
-        if (ImGui.Combo("Day", ref targetDay, DayRegistry.Days.Select((d, i) => $"{i + 1}").ToArray(), DayRegistry.Days.Length))
-        {
-            Coroutines.TryRun("main_day_advance", SetDay(targetDay), out _);
-        }
-        ImGui.End();
-        GuiRenderer.EndLayout();
     }
 
     private void OnChangeFloorNumber(int floorNumber)
