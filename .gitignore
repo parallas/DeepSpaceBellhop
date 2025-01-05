@@ -132,3 +132,5 @@ FmodElevatorGame/**/.*
 
 dotnet-install.sh
 dotnet-install.ps1
+
+*.so
