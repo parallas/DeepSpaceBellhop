@@ -3,6 +3,7 @@
     "values": {
         "dialog.phone.tutorial.intro": "Your job is to pick up guests and take them to their destination.<PAGE>My screen will show you everybody who has called the elevator.<PAGE>Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!<PAGE>Good luck!",
         "dialog.phone.tutorial.end_of_day": "Day complete - time to go home!<PAGE>Return to the Ground Floor to clock out.",
+        "dialog.phone.tutorial.character_effects": "Certain guests might respond strangely to being taken in the wrong direction.<PAGE>Rest assured that any strange side effects will most likely wear off within a few turns!",
         "dialog.phone.tutorial.punish": "Hey there! Due to the ever growing popularity of this hotel, you need to be more careful each turn.<PAGE>I'll lose battery whenever you make mistakes.",
 
         "dialog.character.Blueulet.enter.0": "Can you take me to this floor?",

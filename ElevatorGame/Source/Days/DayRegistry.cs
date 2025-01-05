@@ -29,6 +29,7 @@ public static class DayRegistry
                 CompletionRequirement = 25,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon"],
                 StartCharacterCount = 2,
+                StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.character_effects")),
                 PunishMistakes = false
             },
             new DayDef

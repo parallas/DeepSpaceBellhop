@@ -10,6 +10,7 @@
 Texture2D SpriteTexture;
 float GameTime;
 float WobbleInfluence;
+float HueShiftInfluence;
 
 sampler2D SpriteTextureSampler = sampler_state
 {
@@ -63,7 +64,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     );
     yiq.yz = mul(rotMatrix, yiq.yz);
     float3 rgb = SRGBFromFCCYIQ(yiq);
-    float3 rgbLerped = lerp(col.rgb, rgb, WobbleInfluence);
+    float3 rgbLerped = lerp(col.rgb, rgb, HueShiftInfluence);
     
     return float4(rgbLerped, col.a);
 }

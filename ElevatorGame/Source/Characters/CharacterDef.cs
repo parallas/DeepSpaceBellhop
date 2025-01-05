@@ -9,9 +9,11 @@ public struct CharacterDef()
     [Flags]
     public enum CharacterFlag
     {
-        None,
-        Slimy,
-        Clumsy,
+        None = 0,
+        Slimy = 1,
+        Clumsy = 2,
+        Toxic = 4,
+        Psychedelic = 8,
     }
 
     public required string Name { get; set; }

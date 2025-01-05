@@ -325,6 +325,11 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         SetState(Elevator.ElevatorStates.Stopping);
     }
 
+    public int GetComboDirection()
+    {
+        return _comboDirection;
+    }
+
     public void SetComboDirection(int direction)
     {
         _comboDirection = Math.Sign(direction);

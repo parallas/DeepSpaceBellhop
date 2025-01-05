@@ -62,6 +62,11 @@ public class MainGame : Game
 
     public static float GrayscaleCoeff { get; set; } = 1;
     public static float GrayscaleCoeffTarget { get; set; } = 1;
+    public static float WobbleInfluence { get; set; } = 0;
+    public static float HueShiftInfleunce { get; set; } = 0;
+
+    private static int _wobbleTurns = 0;
+    private static int _hueShiftTurns = 0;
 
     public static Rectangle ScreenBounds { get; private set; }
     public static Cursor Cursor { get; private set; }
@@ -116,6 +121,7 @@ public class MainGame : Game
     private EffectParameter _elevatorGrayscaleIntensity;
     private EffectParameter _ppGameTime;
     private EffectParameter _ppWobbleInfluence;
+    private EffectParameter _ppHueShiftInfluence;
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
@@ -224,7 +230,7 @@ public class MainGame : Game
         _dialog = new();
         _dialog.LoadContent();
 
-        CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog);
+        CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog, _elevator);
         // CharacterManager.Init();
         CharacterManager.LoadContent();
 
@@ -252,6 +258,7 @@ public class MainGame : Game
         _postProcessingEffects =
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
+        _ppHueShiftInfluence = _postProcessingEffects.Parameters["HueShiftInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
 
         _dayTransition.LoadContent();
@@ -516,6 +523,9 @@ public class MainGame : Game
         {
             yield return CharacterManager.EndOfTurnSequence();
 
+            _wobbleTurns--;
+            _hueShiftTurns--;
+
             _phone.CanOpen = true;
             Coroutines.Stop("phone_show");
             Coroutines.TryRun("phone_hide", _phone.Close(false), out _);
@@ -579,7 +589,7 @@ public class MainGame : Game
         _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
         _phone = new(_elevator);
         _ticketManager = new(_elevator);
-        CharacterManager = new(_phone, _ticketManager, _dialog);
+        CharacterManager = new(_phone, _ticketManager, _dialog, _elevator);
 
         CurrentFloor = 1;
         _dialog.LoadContent();
@@ -681,14 +691,31 @@ public class MainGame : Game
     {
         GrayscaleCoeffTarget = 1;
         GrayscaleCoeff = 1;
+        WobbleInfluence = 0;
+        HueShiftInfleunce = 0;
+        _wobbleTurns = 0;
+        _hueShiftTurns = 0;
     }
 
     private void UpdateShaderProperties()
     {
         GrayscaleCoeff = MathUtil.ExpDecay(GrayscaleCoeff, GrayscaleCoeffTarget, 8, 1f / 60f);
+        WobbleInfluence = MathUtil.ExpDecay(WobbleInfluence, _wobbleTurns > 0 ? 1 : 0, 8, 1f / 60f);
+        HueShiftInfleunce = MathUtil.ExpDecay(HueShiftInfleunce, _hueShiftTurns > 0 ? 1 : 0, 8, 1f / 60f);
         _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
-        _ppWobbleInfluence.SetValue(0);
+        _ppWobbleInfluence.SetValue(WobbleInfluence);
+        _ppHueShiftInfluence.SetValue(HueShiftInfleunce);
         _ppGameTime.SetValue(Frame / 60f);
+    }
+
+    public static void StartEffectWobble()
+    {
+        _wobbleTurns = 5;
+    }
+
+    public static void StartEffectHueShift()
+    {
+        _hueShiftTurns = 5;
     }
 
     private void HandleToggleFullscreen()

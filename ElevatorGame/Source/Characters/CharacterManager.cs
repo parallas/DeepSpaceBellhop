@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ElevatorGame.Source.Characters;
 
-public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Dialog.Dialog dialog)
+public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Dialog.Dialog dialog, Elevator.Elevator elevator)
 {
     private readonly List<CharacterActor> _waitList = [];
     private readonly List<CharacterActor> _movingList = [];
@@ -132,6 +132,20 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             phone.SimulateBatteryChange(-1);
             yield return 20;
             MainGame.ChangeHealth(-1);
+        }
+
+        foreach (CharacterActor characterActor in _cabList)
+        {
+            if (characterActor.FloorTargetDirection == elevator.GetComboDirection()) continue;
+            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Toxic))
+            {
+                MainGame.StartEffectWobble();
+            }
+
+            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Psychedelic))
+            {
+                MainGame.StartEffectHueShift();
+            }
         }
     }
 

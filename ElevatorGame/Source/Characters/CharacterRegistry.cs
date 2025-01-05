@@ -118,6 +118,7 @@ public static class CharacterRegistry
                     new(LocalizationManager.Get("dialog.character.ShroomKing.angry.1")),
                 ],
                 AngryIconPosition = new(-13, -74),
+                Flags = CharacterDef.CharacterFlag.Toxic
             },
             new CharacterDef
             {
@@ -148,6 +149,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Hourglass",
                 WalkSpeed = 8,
                 AngryIconPosition = new(-15, -76),
+                Flags = CharacterDef.CharacterFlag.Psychedelic
             },
             new CharacterDef
             {
