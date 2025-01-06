@@ -169,6 +169,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                 characterActor.Patience = 1;
             }
 
+            MainGame.Coroutines.Stop($"character_get_in_elevator_{characterActor.CharacterId}");
             _cabList.Remove(characterActor);
             index--;
             _movingList.Add(characterActor);
