@@ -154,7 +154,9 @@ public class MainGame : Game
     {
         RenderPipeline.Init(RenderBufferSize);
         GuiRenderer = new ImGuiRenderer(this);
-        _renderPipelineTextureId = GuiRenderer.BindTexture(RenderPipeline.RenderTarget);
+        #if DEBUG
+        ShowDebug = true;
+        #endif
 
         Window.AllowUserResizing = true;
 
