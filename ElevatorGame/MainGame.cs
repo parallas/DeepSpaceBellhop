@@ -332,12 +332,6 @@ public class MainGame : Game
         // Update Input
         UpdateInput(gameTime);
 
-        if (InputManager.GetPressed(Keys.F3))
-        {
-            ShowDebug = !ShowDebug;
-            IsMouseVisible = ShowDebug;
-        }
-
         if (Keybindings.Pause.Pressed)
         {
             _pauseManager.Pause();
@@ -967,6 +961,12 @@ public class MainGame : Game
     [Conditional("DEBUG")]
     private void DebugUpdate()
     {
+        if (InputManager.GetPressed(Keys.F3))
+        {
+            ShowDebug = !ShowDebug;
+            IsMouseVisible = ShowDebug;
+        }
+
         if (InputManager.GetPressed(Keys.Y))
         {
             Coroutines.Stop("main_day_advance");
