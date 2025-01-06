@@ -722,7 +722,7 @@ public class MainGame : Game
         CurrentMenu = Menus.None;
         Cursor.CursorSprite = Cursor.CursorSprites.Default;
 
-        if (CharacterManager.CacheCharactersInPlay.Count == 0)
+        if (CharacterManager.CharactersInPlay.Count == 0)
             CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
     }
 
