@@ -15,13 +15,4 @@
 			}
 		}
 	}
-	"run process"
-	{
-		"install"
-		{
-			"hasrunkey"     "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\dotnet\\Setup\\InstalledVersions\\x64\\sharedfx\\Microsoft.NETCore.App\\8.0.11"
-			"process 1"     "%INSTALLDIR%\\dotnet-installscript-win.bat"
-			"nocleanup"     "1"
-		}
-	}
 }
