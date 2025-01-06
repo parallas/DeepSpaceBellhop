@@ -138,6 +138,7 @@ public class MainGame : Game
     private static Vector2 _lastMouseWorldPos;
 
     private bool _showDevTools;
+    private bool _showCharacterList;
     private IntPtr _renderPipelineTextureId;
 
     public MainGame(bool useSteamworks)
@@ -491,6 +492,7 @@ public class MainGame : Game
 
                 if (ImGui.BeginMenu("Characters"))
                 {
+                    ImGui.Checkbox("Show List", ref _showCharacterList);
                     if (ImGui.Button("Clear Characters"))
                     {
                         CharacterManager.ClearCharacters();
@@ -515,20 +517,11 @@ public class MainGame : Game
             }
             ImGui.EndMainMenuBar();
 
-            if (_showDevTools)
+            if (_showCharacterList)
             {
-                // var viewport = ImGui.GetMainViewport();
-                // ImGui.SetNextWindowPos(viewport.WorkPos);
-                // ImGui.SetNextWindowSize(viewport.WorkSize);
-                // ImGui.SetNextWindowViewport(viewport.ID);
-                // ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f); // No corner rounding on the window
-                // ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f); // No border around the window
-                // ImGui.Begin("Dev Tools", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-                ImGui.Begin("Dev Tools");
+                ImGui.Begin("Character List");
                 {
-                    if (ImGui.CollapsingHeader("Characters"))
-                    {
-                        ImGui.BeginTable("CharactersTable", 5, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Sortable);
+                    ImGui.BeginTable("CharactersTable", 5, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Sortable);
                         {
                             ImGui.TableSetupColumn("Name");
                             ImGui.TableSetupColumn("Current Floor");
@@ -585,8 +578,21 @@ public class MainGame : Game
                             }
                         }
                         ImGui.EndTable();
-                    }
+                }
+                ImGui.End();
+            }
 
+            if (_showDevTools)
+            {
+                // var viewport = ImGui.GetMainViewport();
+                // ImGui.SetNextWindowPos(viewport.WorkPos);
+                // ImGui.SetNextWindowSize(viewport.WorkSize);
+                // ImGui.SetNextWindowViewport(viewport.ID);
+                // ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f); // No corner rounding on the window
+                // ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f); // No border around the window
+                // ImGui.Begin("Dev Tools", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+                ImGui.Begin("Dev Tools");
+                {
                     if (ImGui.CollapsingHeader("Preview"))
                     {
                         ImGui.Image(_renderPipelineTextureId,
