@@ -11,7 +11,14 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "linux": {
+                "options": {
+                    "env": {
+                        "MGFXC_WINE_PATH": "/home/bs/.wine"
+                    }
+                }
+            }
         },
         {
             "label": "publish",

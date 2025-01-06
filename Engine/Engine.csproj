@@ -59,10 +59,22 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
 
-      <None Update="libfmodL.so.13">
+      <None Update="libfmodL.so">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="libfsbankL.so.13">
+      <None Update="libfmod.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfmodstudioL.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfmodstudio.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfsbankL.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="libfsbank.so">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="libfsbvorbis.so">

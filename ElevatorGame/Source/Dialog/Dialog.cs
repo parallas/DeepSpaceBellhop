@@ -47,7 +47,7 @@ public class Dialog() : IDisposable
 
     public void LoadContent()
     {
-        _glyphSprite = ContentLoader.Load<AsepriteFile>("graphics/Glyphs")
+        _glyphSprite = ContentLoader.Load<AsepriteFile>("graphics/glyphs")
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, false)
             .CreateAnimatedSprite("Tag");
         _glyphSprite.Speed = 0;
