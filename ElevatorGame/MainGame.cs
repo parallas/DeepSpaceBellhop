@@ -68,9 +68,11 @@ public class MainGame : Game
     public static float GrayscaleCoeffTarget { get; set; } = 1;
     public static float WobbleInfluence { get; set; } = 0;
     public static float HueShiftInfleunce { get; set; } = 0;
+    public static float FlippyInfluence { get; set; } = 0;
 
     private static int _wobbleTurns = 0;
     private static int _hueShiftTurns = 0;
+    private static int _flippyTurns = 0;
 
     public static Rectangle ScreenBounds { get; private set; }
     public static Cursor Cursor { get; private set; }
@@ -126,6 +128,7 @@ public class MainGame : Game
     private EffectParameter _ppGameTime;
     private EffectParameter _ppWobbleInfluence;
     private EffectParameter _ppHueShiftInfluence;
+    private EffectParameter _ppFlippyInfluence;
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
@@ -273,6 +276,7 @@ public class MainGame : Game
             Content.Load<Effect>("shaders/postprocessing")!;
         _ppWobbleInfluence = _postProcessingEffects.Parameters["WobbleInfluence"];
         _ppHueShiftInfluence = _postProcessingEffects.Parameters["HueShiftInfluence"];
+        _ppFlippyInfluence = _postProcessingEffects.Parameters["FlippyInfluence"];
         _ppGameTime = _postProcessingEffects.Parameters["GameTime"];
 
         _dayTransition.LoadContent();
@@ -610,6 +614,10 @@ public class MainGame : Game
                         {
                             StartEffectHueShift();
                         }
+                        if (ImGui.Button("Flippy"))
+                        {
+                            StartEffectFlippy();
+                        }
                     }
                     if (ImGui.CollapsingHeader("Preview"))
                     {
@@ -675,6 +683,7 @@ public class MainGame : Game
 
             _wobbleTurns--;
             _hueShiftTurns--;
+            _flippyTurns--;
 
             _phone.CanOpen = true;
             Coroutines.Stop("phone_show");
@@ -884,6 +893,7 @@ public class MainGame : Game
         // HueShiftInfleunce = 0;
         _wobbleTurns = 0;
         _hueShiftTurns = 0;
+        _flippyTurns = 0;
     }
 
     private void UpdateShaderProperties()
@@ -891,9 +901,11 @@ public class MainGame : Game
         GrayscaleCoeff = MathUtil.ExpDecay(GrayscaleCoeff, GrayscaleCoeffTarget, 8, 1f / 60f);
         WobbleInfluence = MathUtil.ExpDecay(WobbleInfluence, _wobbleTurns > 0 ? 1 : 0, 8, 1f / 60f);
         HueShiftInfleunce = MathUtil.ExpDecay(HueShiftInfleunce, _hueShiftTurns > 0 ? 1 : 0, 8, 1f / 60f);
+        FlippyInfluence = MathUtil.ExpDecay(FlippyInfluence, _flippyTurns > 0 ? 1 : 0, 8, 1f / 60f);
         _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
         _ppWobbleInfluence.SetValue(WobbleInfluence);
         _ppHueShiftInfluence.SetValue(HueShiftInfleunce);
+        _ppFlippyInfluence.SetValue(FlippyInfluence);
         _ppGameTime.SetValue(Frame / 60f);
     }
 
@@ -905,6 +917,11 @@ public class MainGame : Game
     public static void StartEffectHueShift()
     {
         _hueShiftTurns = 5;
+    }
+
+    public static void StartEffectFlippy()
+    {
+        _flippyTurns = 3;
     }
 
     private void HandleToggleFullscreen()

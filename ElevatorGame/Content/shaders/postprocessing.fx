@@ -11,6 +11,7 @@ Texture2D SpriteTexture;
 float GameTime;
 float WobbleInfluence;
 float HueShiftInfluence;
+float FlippyInfluence;
 
 sampler2D SpriteTextureSampler = sampler_state
 {
@@ -50,7 +51,8 @@ float3 SRGBFromFCCYIQ(float3 yiq)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float2 uv = input.TextureCoordinates;
+    float2 inputUv = input.TextureCoordinates;
+    float2 uv = lerp(inputUv, float2(inputUv.x, 1 - inputUv.y), FlippyInfluence);
 	
     float voronoi1 = voronoi3D_float(float3(uv, GameTime / 10), 5).x * 0.02;
 

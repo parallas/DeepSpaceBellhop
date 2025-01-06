@@ -206,6 +206,23 @@ public static class CharacterRegistry
                 ],
                 AngryIconPosition = new(-8, -46),
             },
+            new CharacterDef
+            {
+                Name = "Flippy",
+                SpritePath = "graphics/characters/Flippy",
+                WalkSpeed = 4,
+                EnterPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Flippy.enter.0")),
+                ],
+                ExitPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Flippy.exit.0")),
+                ],
+                AngryPhrases = [
+                    new(LocalizationManager.Get("dialog.character.Flippy.angry.0")),
+                ],
+                AngryIconPosition = new(-9, -51),
+                Flags = CharacterDef.CharacterFlag.Clumsy | CharacterDef.CharacterFlag.Flippy
+            },
         ];
 
         foreach (var characterDef in _characterDefs)

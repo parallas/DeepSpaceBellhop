@@ -17,6 +17,7 @@ public class CharacterActor
     public int Patience { get; set; }
     public int InitialPatience { get; private set; }
     public bool DrawAngryIcon { get; set; }
+    public bool ForceDrawAngryAnim { get; set; }
     public bool CanRandomlyTurnAround { get; set; }
 
     public int FloorTargetDirection => Math.Sign(FloorNumberTarget - FloorNumberCurrent);
@@ -104,6 +105,8 @@ public class CharacterActor
 
     public void Draw(SpriteBatch spriteBatch, int index = 0)
     {
+        if (ForceDrawAngryAnim) PlayAnimation(_animAngry);
+
         if (!_isInElevator && FloorNumberCurrent != MainGame.CurrentFloor) return;
 
         var depthInterpolated = MathUtil.InverseLerp01(8, 0, index);
@@ -200,6 +203,8 @@ public class CharacterActor
         _squashStretchOffset = -0.1f;
 
         PlayAnimation(_animBack);
+
+        CanRandomlyTurnAround = true;
     }
 
     public IEnumerator GetOffElevatorBegin(bool isAngry)

@@ -14,6 +14,7 @@ public struct CharacterDef()
         Clumsy = 2,
         Toxic = 4,
         Psychedelic = 8,
+        Flippy = 16,
     }
 
     public required string Name { get; set; }

@@ -44,6 +44,10 @@
 
         "dialog.character.Alieno.enter.0": "Yo.",
         "dialog.character.Alieno.exit.0": "See ya.",
-        "dialog.character.Alieno.angry.0": "Not cool..."
+        "dialog.character.Alieno.angry.0": "Not cool...",
+
+        "dialog.character.Flippy.enter.0": "Up or down, I can't decide! Take me here, I love this ride!",
+        "dialog.character.Flippy.exit.0": "Yahoo! That was fun! Anywho, I gotta run!",
+        "dialog.character.Flippy.angry.0": "I'm not having fun anymore..."
     }
 }

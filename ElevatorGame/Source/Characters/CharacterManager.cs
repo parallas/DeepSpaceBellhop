@@ -71,7 +71,6 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                     CharacterActor.StandingRoomSize);
             }
 
-            characterActor.CanRandomlyTurnAround = true;
             characterActor.Update(gameTime);
         }
         foreach (var characterActor in _movingList)
@@ -143,15 +142,28 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         foreach (CharacterActor characterActor in _cabList)
         {
             if (characterActor.FloorTargetDirection == elevator.GetComboDirection()) continue;
+            bool appliedEffect = false;
             if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Toxic))
             {
                 MainGame.StartEffectWobble();
+                appliedEffect = true;
             }
 
             if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Psychedelic))
             {
                 MainGame.StartEffectHueShift();
+                appliedEffect = true;
             }
+
+            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Flippy))
+            {
+                MainGame.StartEffectFlippy();
+                appliedEffect = true;
+            }
+
+            if (!appliedEffect) continue;
+            characterActor.ForceDrawAngryAnim = true;
+            characterActor.CanRandomlyTurnAround = false;
         }
     }
 
@@ -169,6 +181,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                 characterActor.DrawAngryIcon = false;
                 characterActor.Patience = 1;
             }
+
+            characterActor.ForceDrawAngryAnim = false;
 
             MainGame.Coroutines.Stop($"character_get_in_elevator_{characterActor.CharacterId}");
             _cabList.Remove(characterActor);
