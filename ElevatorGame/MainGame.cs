@@ -156,6 +156,7 @@ public class MainGame : Game
         GuiRenderer = new ImGuiRenderer(this);
         #if DEBUG
         ShowDebug = true;
+        IsMouseVisible = true;
         #endif
 
         Window.AllowUserResizing = true;
