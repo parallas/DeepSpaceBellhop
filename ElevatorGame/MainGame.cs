@@ -488,6 +488,30 @@ public class MainGame : Game
                     }
                     ImGui.EndMenu();
                 }
+
+                if (ImGui.BeginMenu("Characters"))
+                {
+                    if (ImGui.Button("Clear Characters"))
+                    {
+                        CharacterManager.ClearCharacters();
+                    }
+                    if (ImGui.Button("Spawn Random"))
+                    {
+                        CharacterManager.SpawnMultipleRandomCharacters(1);
+                    }
+                    if (ImGui.BeginMenu("Spawn Character"))
+                    {
+                        foreach (var characterDef in CharacterRegistry.CharacterTable)
+                        {
+                            if (ImGui.MenuItem(characterDef.Key, "", false, CharacterManager.CharactersInPlay.All(c => c.Def.Name != characterDef.Key)))
+                            {
+                                CharacterManager.SpawnCharacter(characterDef.Value);
+                            }
+                        }
+                        ImGui.EndMenu();
+                    }
+                    ImGui.EndMenu();
+                }
             }
             ImGui.EndMainMenuBar();
 
