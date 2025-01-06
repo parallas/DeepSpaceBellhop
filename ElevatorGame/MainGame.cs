@@ -593,6 +593,21 @@ public class MainGame : Game
                 // ImGui.Begin("Dev Tools", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
                 ImGui.Begin("Dev Tools");
                 {
+                    if (ImGui.CollapsingHeader("Effects"))
+                    {
+                        if (ImGui.Button("Reset"))
+                        {
+                            ResetShaderProperties();
+                        }
+                        if (ImGui.Button("Wobble"))
+                        {
+                            StartEffectWobble();
+                        }
+                        if (ImGui.Button("Hue Shift"))
+                        {
+                            StartEffectHueShift();
+                        }
+                    }
                     if (ImGui.CollapsingHeader("Preview"))
                     {
                         ImGui.Image(_renderPipelineTextureId,
@@ -725,6 +740,7 @@ public class MainGame : Game
 
     private IEnumerator SetDay(int day)
     {
+        ResetShaderProperties();
         CurrentMenu = Menus.DayTransition;
 
         yield return FadeToBlack();
@@ -810,6 +826,7 @@ public class MainGame : Game
 
     private IEnumerator FadeToBlack()
     {
+        ResetShaderProperties();
         _fadeoutProgress = 0;
         while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.01f))
         {
@@ -859,9 +876,9 @@ public class MainGame : Game
     private void ResetShaderProperties()
     {
         GrayscaleCoeffTarget = 1;
-        GrayscaleCoeff = 1;
-        WobbleInfluence = 0;
-        HueShiftInfleunce = 0;
+        // GrayscaleCoeff = 1;
+        // WobbleInfluence = 0;
+        // HueShiftInfleunce = 0;
         _wobbleTurns = 0;
         _hueShiftTurns = 0;
     }
