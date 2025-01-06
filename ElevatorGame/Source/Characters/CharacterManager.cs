@@ -269,7 +269,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
             MainGame.Coroutines.TryRun("phone_show", phone.Open(false, false), out _);
 
-            phone.SimulateBatteryChange(-1);
+            phone.SimulateBatteryChange(-2);
             yield return phone.CancelOrder(characterActor.CharacterId);
             _waitList.Remove(characterActor);
             i--;
@@ -280,7 +280,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         {
             phone.ScrollToTop();
             yield return 60;
-            MainGame.ChangeHealth(-orderFailedCount);
+            MainGame.ChangeHealth(-orderFailedCount * 2);
 
             CharactersFinished += orderFailedCount;
             yield return 30;
