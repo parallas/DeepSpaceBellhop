@@ -373,7 +373,7 @@ public class MainGame : Game
         {
             darkOverlayOpacityTarget = 1f;
         }
-        else if ((float)(CharacterManager.CharactersFinished + CharacterManager.CharactersInPlay.Count) / CompletionRequirement >= 0.8f)
+        else if ((float)(CharacterManager.CharactersFinished + CharacterManager.CacheCharactersInPlay.Count) / CompletionRequirement >= 0.8f)
         {
             darkOverlayOpacityTarget = 0.5f;
         }
@@ -508,7 +508,7 @@ public class MainGame : Game
                     {
                         foreach (var characterDef in CharacterRegistry.CharacterTable)
                         {
-                            if (ImGui.MenuItem(characterDef.Key, "", false, CharacterManager.CharactersInPlay.All(c => c.Def.Name != characterDef.Key)))
+                            if (ImGui.MenuItem(characterDef.Key, "", false, CharacterManager.CacheCharactersInPlay.All(c => c.Def.Name != characterDef.Key)))
                             {
                                 CharacterManager.SpawnCharacter(characterDef.Value);
                             }
@@ -541,31 +541,31 @@ public class MainGame : Game
                                 switch (specs.ColumnIndex)
                                 {
                                     case 0:
-                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
                                             sortDir * string.Compare(a.Def.Name, b.Def.Name,
                                                 StringComparison.InvariantCultureIgnoreCase));
                                         break;
                                     case 1:
-                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
                                             sortDir * a.FloorNumberCurrent.CompareTo(b.FloorNumberCurrent));
                                         break;
                                     case 2:
-                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
                                             sortDir * a.FloorNumberTarget.CompareTo(b.FloorNumberTarget));
                                         break;
                                     case 3:
-                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
                                             sortDir * a.InitialPatience.CompareTo(b.InitialPatience));
                                         break;
                                     case 4:
-                                        CharacterManager.CharactersInPlay.Sort((a, b) =>
+                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
                                             sortDir * a.Patience.CompareTo(b.Patience));
                                         break;
                                 }
                                 sortSpecs.SpecsDirty = false;
                             }
 
-                            foreach (var character in CharacterManager.CharactersInPlay)
+                            foreach (var character in CharacterManager.CacheCharactersInPlay)
                             {
                                 ImGui.TableNextRow();
                                 ImGui.TableNextColumn();
@@ -722,7 +722,7 @@ public class MainGame : Game
         CurrentMenu = Menus.None;
         Cursor.CursorSprite = Cursor.CursorSprites.Default;
 
-        if (CharacterManager.CharactersInPlay.Count == 0)
+        if (CharacterManager.CacheCharactersInPlay.Count == 0)
             CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
     }
 

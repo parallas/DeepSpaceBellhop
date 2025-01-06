@@ -19,7 +19,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     private bool _eventfulTurn = false;
 
-    public List<CharacterActor> CharactersInPlay = new List<CharacterActor>();
+    public List<CharacterActor> CacheCharactersInPlay = new List<CharacterActor>();
+    public List<CharacterActor> CharactersInPlay => _waitList.Concat(_movingList).Concat(_cabList).ToList();
 
     public int CharactersFinished { get; private set; }
 
@@ -79,10 +80,10 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             characterActor.Update(gameTime);
         }
 
-        var cache = _waitList.Concat(_movingList).Concat(_cabList).ToList();
-        if (!cache.ToHashSet().SetEquals(CharactersInPlay))
+        var cache = CharactersInPlay;
+        if (!cache.ToHashSet().SetEquals(CacheCharactersInPlay))
         {
-            CharactersInPlay = cache;
+            CacheCharactersInPlay = cache;
         }
     }
 
