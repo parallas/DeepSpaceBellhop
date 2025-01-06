@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{bffc9aa0-3e77-4e1e-8c56-2ef5ade92602}">
 		<property name="name">
-			<value>Music01</value>
+			<value>Day3</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -75,6 +75,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{cc226d43-51b1-4f69-a216-f3d2dbac6e7c}">
+		<relationship name="modulators">
+			<destination>{245e6e23-2ad4-46b2-a9a7-75f84d7ae9cf}</destination>
+		</relationship>
 		<relationship name="effectChain">
 			<destination>{3d7ca3bc-2c9a-4ab8-bc5b-58433d5f4d32}</destination>
 		</relationship>
@@ -96,7 +99,7 @@
 			<value>48</value>
 		</property>
 		<relationship name="audioFile">
-			<destination>{f1729875-01d5-4fef-bb6c-077aedddae05}</destination>
+			<destination>{e4299b39-e2ee-4d41-a7a8-6087a435f536}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{ae1a01ec-adc9-42bf-9e35-75ca4533ef19}">
@@ -126,6 +129,20 @@
 		<relationship name="markerTrack">
 			<destination>{ec8a2040-6564-4def-8aca-75824527c24f}</destination>
 		</relationship>
+	</object>
+	<object class="ADSRModulator" id="{245e6e23-2ad4-46b2-a9a7-75f84d7ae9cf}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>volume</value>
+		</property>
+		<property name="initialValue">
+			<value>-80</value>
+		</property>
+		<property name="attackTime">
+			<value>0</value>
+		</property>
+		<property name="finalValue">
+			<value>-80</value>
+		</property>
 	</object>
 	<object class="MixerBusEffectChain" id="{3d7ca3bc-2c9a-4ab8-bc5b-58433d5f4d32}">
 		<relationship name="effects">

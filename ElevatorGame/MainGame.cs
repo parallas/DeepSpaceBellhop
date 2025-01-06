@@ -144,6 +144,8 @@ public class MainGame : Game
     private bool _showCharacterList;
     private IntPtr _renderPipelineTextureId;
 
+    private EventInstance _musicInstance;
+
     public MainGame(bool useSteamworks)
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -300,15 +302,14 @@ public class MainGame : Game
         _roomRenderer.LoadContent();
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
-        // Load Music01
-        var musicInstance = StudioSystem.GetEvent("event:/Music/Music01").CreateInstance();
-        musicInstance.Start();
-        musicInstance.Dispose();
+        // Load Music
+        PlayMusic($"event:/Music/Day{SaveManager.SaveData.Day + 1}");
     }
 
     protected override void UnloadContent()
     {
         FmodManager.Unload();
+        _musicInstance.Dispose();
 
         _elevator.UnloadContent();
         _phone.UnloadContent();
@@ -745,6 +746,14 @@ public class MainGame : Game
         CurrentHealth = Math.Clamp(CurrentHealth + change, 0, 8);
     }
 
+    private void PlayMusic(string musicEventPath)
+    {
+        _musicInstance?.Stop(false);
+        _musicInstance?.Dispose();
+        _musicInstance = StudioSystem.GetEvent(musicEventPath).CreateInstance();
+        _musicInstance.Start();
+    }
+
     private IEnumerator AdvanceDay()
     {
         yield return SetDay(CurrentDay + 1);
@@ -754,6 +763,8 @@ public class MainGame : Game
     {
         ResetShaderProperties();
         CurrentMenu = Menus.DayTransition;
+
+        _musicInstance.Stop(false);
 
         yield return FadeToBlack();
 
@@ -808,6 +819,8 @@ public class MainGame : Game
         yield return FadeFromBlack();
         CurrentMenu = Menus.None;
         Coroutines.StopAll();
+
+        PlayMusic($"event:/Music/Day{day + 1}");
 
         yield return StartDay(day);
     }
