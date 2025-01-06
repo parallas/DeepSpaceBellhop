@@ -25,6 +25,7 @@ public class Doors : IDisposable
     private EventInstance _audioDoorOpen;
     private EventInstance _audioDoorClose;
 
+    private bool _isOpen = true;
     private float _doorOpenedness;
 
     public Doors(Elevator elevator, AsepriteFile elevatorInteriorFile)
@@ -56,6 +57,15 @@ public class Doors : IDisposable
     public void UnloadContent()
     {
         Dispose();
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        int target = _isOpen ? 47 : 0;
+        int speed = _isOpen ? 4 : 10;
+        _doorOpenedness = MathUtil.ExpDecay(_doorOpenedness, target, speed, 1f / 60f);
+        if (MathUtil.Approximately(_doorOpenedness, target, 1))
+            _doorOpenedness = target;
     }
 
     public void Draw(SpriteBatch spriteBatch, int floorTop)
@@ -110,33 +120,21 @@ public class Doors : IDisposable
     private IEnumerator OpenDoors()
     {
         _audioDoorOpen.Start();
-        while(_doorOpenedness < 46)
+        _isOpen = true;
+        while(_doorOpenedness < 30)
         {
-            _doorOpenedness = MathUtil.ExpDecay(
-                _doorOpenedness,
-                47f,
-                4,
-                1/60f
-            );
             yield return null;
         }
-        _doorOpenedness = 47;
     }
 
     private IEnumerator CloseDoors()
     {
         _audioDoorClose.Start();
+        _isOpen = false;
         while(_doorOpenedness > 1)
         {
-            _doorOpenedness = MathUtil.ExpDecay(
-                _doorOpenedness,
-                0,
-                10,
-                1/60f
-            );
             yield return null;
         }
-        _doorOpenedness = 0;
 
         _elevator.SetState(Elevator.ElevatorStates.Moving);
     }

@@ -251,7 +251,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             yield return dialog.Display(DialogParser.ParseCharacterDialog(pages, characterActor), displayMethod);
             yield return phone.RemoveOrder(characterActor);
 
-            yield return characterActor.GetInElevatorEnd();
+            MainGame.Coroutines.TryRun($"character_get_in_elevator_{characterActor.CharacterId}",
+                characterActor.GetInElevatorEnd(), out _);
             _movingList.Remove(characterActor);
             _cabList.Add(characterActor);
 
@@ -404,6 +405,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         _cabList.Clear();
         _leavingList.Clear();
         phone.ForceClearOrders();
+        ticketManager.ForceClearTickets();
     }
 
     public void ForceCompleteDay()

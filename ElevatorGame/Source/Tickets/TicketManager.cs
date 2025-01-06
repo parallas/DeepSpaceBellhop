@@ -229,4 +229,9 @@ public class TicketManager(Elevator.Elevator elevator)
         eventInstance.Start();
         eventInstance.Dispose();
     }
+
+    public void ForceClearTickets()
+    {
+        _tickets.Clear();
+    }
 }
