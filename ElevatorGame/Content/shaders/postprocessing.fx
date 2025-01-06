@@ -54,19 +54,19 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	
     float voronoi1 = voronoi3D_float(float3(uv, GameTime / 10), 5).x * 0.02;
 
-    float2 finalUv = lerp(uv, uv + voronoi1, WobbleInfluence);
-    float4 col = tex2D(SpriteTextureSampler, finalUv).rgba * input.Color.rgba;
+    float2 final_uv = lerp(uv, uv + voronoi1, WobbleInfluence);
+    float4 col = tex2D(SpriteTextureSampler, final_uv).rgba * input.Color.rgba;
 
     float3 yiq = FCCYIQFromSRGB(col.rgb);
-    float2x2 rotMatrix = float2x2(
+    float2x2 rot_matrix = float2x2(
         cos(GameTime), -sin(GameTime),
         sin(GameTime), cos(GameTime)
     );
-    yiq.yz = mul(rotMatrix, yiq.yz);
+    yiq.yz = mul(rot_matrix, yiq.yz);
     float3 rgb = SRGBFromFCCYIQ(yiq);
-    float3 rgbLerped = lerp(col.rgb, rgb, HueShiftInfluence);
-    
-    return float4(rgbLerped, col.a);
+    float3 rgb_lerped = lerp(col.rgb, rgb, HueShiftInfluence);
+
+    return float4(rgb_lerped, col.a);
 }
 
 technique SpriteDrawing
