@@ -19,13 +19,19 @@ public static class Keybindings
     public static MappedInput Confirm { get; } = new FallbackMappedInput(
     [
         new MappedInput.Keyboard(Keys.Z),
-        new MappedInput.Keyboard(Keys.X),
         new MappedInput.Keyboard(Keys.Space),
         new MappedInput.Keyboard(Keys.Enter),
 
         new MappedInput.Mouse(MouseButtons.LeftButton),
 
         new MappedInput.GamePad(Buttons.A, PlayerIndex.One),
+    ]);
+
+    public static MappedInput GoBack { get; } = new FallbackMappedInput(
+    [
+        new MappedInput.Keyboard(Keys.X),
+        new MappedInput.Keyboard(Keys.Escape),
+
         new MappedInput.GamePad(Buttons.B, PlayerIndex.One),
     ]);
 
@@ -60,7 +66,6 @@ public static class Keybindings
         new MappedInput.Keyboard(Keys.Right),
         new MappedInput.Keyboard(Keys.D),
 
-        new MappedInput.GamePad(Buttons.LeftThumbstickRight, PlayerIndex.One),
         new MappedInput.GamePad(Buttons.DPadRight, PlayerIndex.One),
     ]);
 
@@ -69,7 +74,6 @@ public static class Keybindings
         new MappedInput.Keyboard(Keys.Left),
         new MappedInput.Keyboard(Keys.A),
 
-        new MappedInput.GamePad(Buttons.LeftThumbstickLeft, PlayerIndex.One),
         new MappedInput.GamePad(Buttons.DPadLeft, PlayerIndex.One),
     ]);
 }
