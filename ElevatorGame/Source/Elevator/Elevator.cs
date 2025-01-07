@@ -13,7 +13,7 @@ using MonoGame.Aseprite.Utils;
 
 namespace ElevatorGame.Source.Elevator;
 
-public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTurnSequence) : IDisposable
+public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTurnSequence, Func<IEnumerator> onCrashed) : IDisposable
 {
     public const int ParallaxDoors = 35;
     public const int ParallaxWalls = 25;
@@ -323,8 +323,11 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
     private IEnumerator CrashSequence()
     {
         MainGame.Cursor.CursorSprite = Cursor.CursorSprites.Wait;
+
+        yield return onCrashed?.Invoke();
+
         yield return 60;
-        SetState(Elevator.ElevatorStates.Stopping);
+        SetState(ElevatorStates.Stopping);
     }
 
     public int GetComboDirection()

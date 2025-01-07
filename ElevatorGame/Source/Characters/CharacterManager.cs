@@ -134,6 +134,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
         if (MainGame.PunishMistakes && !_eventfulTurn)
         {
+            MainGame.HasMadeMistake = true;
+
             phone.SimulateBatteryChange(-1);
             yield return 20;
             MainGame.ChangeHealth(-1);
@@ -254,6 +256,11 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             _waitList.Remove(characterActor);
             _movingList.Add(characterActor);
             phone.HighlightOrder(characterActor);
+
+            if (_cabList.Count >= 9)
+            {
+                SteamManager.UnlockAchievement("10_PEOPLE");
+            }
 
             TicketActor.TicketFlags flags = TicketActor.TicketFlags.None;
             if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Slimy))

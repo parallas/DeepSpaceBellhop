@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Steamworks;
+using System.Linq;
 
 namespace Engine;
 
@@ -63,6 +64,14 @@ public static class SteamManager
         Console.WriteLine($"[Steamworks/ERROR]: {message ?? ""}");
     }
 
+    public static IEnumerable<(string, bool)> GetAchievements()
+    {
+        if(!IsSteamRunning) return [];
+
+        return from a in SteamUserStats.Achievements
+               select (a.Identifier, a.State);
+    }
+
     public static void SetStat(string name, int value)
     {
         if (!IsSteamRunning) return;
@@ -114,12 +123,23 @@ public static class SteamManager
 
     public static bool AchievementIsUnlocked(string id)
     {
+        if (!IsSteamRunning) return false;
+
         return SteamUserStats.Achievements.First(a => a.Identifier == id).State;
     }
 
     public static void UnlockAchievement(string id, bool apply = true)
     {
+        if (!IsSteamRunning) return;
+
         SteamUserStats.Achievements.First(a => a.Identifier == id).Trigger(apply);
+    }
+
+    public static void ClearAchievement(string id)
+    {
+        if (!IsSteamRunning) return;
+
+        SteamUserStats.Achievements.First(a => a.Identifier == id).Clear();
     }
 
     [Conditional("DEBUG")]
