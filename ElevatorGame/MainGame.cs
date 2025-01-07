@@ -521,65 +521,65 @@ public class MainGame : Game
 
             if (_showCharacterList)
             {
-                ImGui.Begin("Character List");
+                ImGui.Begin("Character List", ImGuiWindowFlags.NoFocusOnAppearing);
                 {
                     ImGui.BeginTable("CharactersTable", 5, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Sortable);
+                    {
+                        ImGui.TableSetupColumn("Name");
+                        ImGui.TableSetupColumn("Current Floor");
+                        ImGui.TableSetupColumn("Target Floor");
+                        ImGui.TableSetupColumn("Initial Patience");
+                        ImGui.TableSetupColumn("Patience");
+                        ImGui.TableHeadersRow();
+
+                        var sortSpecs = ImGui.TableGetSortSpecs();
+                        if (sortSpecs is {})
                         {
-                            ImGui.TableSetupColumn("Name");
-                            ImGui.TableSetupColumn("Current Floor");
-                            ImGui.TableSetupColumn("Target Floor");
-                            ImGui.TableSetupColumn("Initial Patience");
-                            ImGui.TableSetupColumn("Patience");
-                            ImGui.TableHeadersRow();
-
-                            var sortSpecs = ImGui.TableGetSortSpecs();
-                            if (sortSpecs is {})
+                            int sortDir = sortSpecs.Specs.SortDirection == ImGuiSortDirection.Ascending ? 1 : -1;
+                            var specs = sortSpecs.Specs;
+                            switch (specs.ColumnIndex)
                             {
-                                int sortDir = sortSpecs.Specs.SortDirection == ImGuiSortDirection.Ascending ? 1 : -1;
-                                var specs = sortSpecs.Specs;
-                                switch (specs.ColumnIndex)
-                                {
-                                    case 0:
-                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
-                                            sortDir * string.Compare(a.Def.Name, b.Def.Name,
-                                                StringComparison.InvariantCultureIgnoreCase));
-                                        break;
-                                    case 1:
-                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
-                                            sortDir * a.FloorNumberCurrent.CompareTo(b.FloorNumberCurrent));
-                                        break;
-                                    case 2:
-                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
-                                            sortDir * a.FloorNumberTarget.CompareTo(b.FloorNumberTarget));
-                                        break;
-                                    case 3:
-                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
-                                            sortDir * a.InitialPatience.CompareTo(b.InitialPatience));
-                                        break;
-                                    case 4:
-                                        CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
-                                            sortDir * a.Patience.CompareTo(b.Patience));
-                                        break;
-                                }
-                                sortSpecs.SpecsDirty = false;
+                                case 0:
+                                    CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
+                                        sortDir * string.Compare(a.Def.Name, b.Def.Name,
+                                            StringComparison.InvariantCultureIgnoreCase));
+                                    break;
+                                case 1:
+                                    CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
+                                        sortDir * a.FloorNumberCurrent.CompareTo(b.FloorNumberCurrent));
+                                    break;
+                                case 2:
+                                    CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
+                                        sortDir * a.FloorNumberTarget.CompareTo(b.FloorNumberTarget));
+                                    break;
+                                case 3:
+                                    CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
+                                        sortDir * a.InitialPatience.CompareTo(b.InitialPatience));
+                                    break;
+                                case 4:
+                                    CharacterManager.CacheCharactersInPlay.Sort((a, b) =>
+                                        sortDir * a.Patience.CompareTo(b.Patience));
+                                    break;
                             }
-
-                            foreach (var character in CharacterManager.CacheCharactersInPlay)
-                            {
-                                ImGui.TableNextRow();
-                                ImGui.TableNextColumn();
-                                ImGui.Text(character.Def.Name);
-                                ImGui.TableNextColumn();
-                                ImGui.Text($"{character.FloorNumberCurrent}");
-                                ImGui.TableNextColumn();
-                                ImGui.Text($"{character.FloorNumberTarget}");
-                                ImGui.TableNextColumn();
-                                ImGui.Text($"{character.InitialPatience}");
-                                ImGui.TableNextColumn();
-                                ImGui.Text($"{character.Patience}");
-                            }
+                            sortSpecs.SpecsDirty = false;
                         }
-                        ImGui.EndTable();
+
+                        foreach (var character in CharacterManager.CacheCharactersInPlay)
+                        {
+                            ImGui.TableNextRow();
+                            ImGui.TableNextColumn();
+                            ImGui.Text(character.Def.Name);
+                            ImGui.TableNextColumn();
+                            ImGui.Text($"{character.FloorNumberCurrent}");
+                            ImGui.TableNextColumn();
+                            ImGui.Text($"{character.FloorNumberTarget}");
+                            ImGui.TableNextColumn();
+                            ImGui.Text($"{character.InitialPatience}");
+                            ImGui.TableNextColumn();
+                            ImGui.Text($"{character.Patience}");
+                        }
+                    }
+                    ImGui.EndTable();
                 }
                 ImGui.End();
             }
