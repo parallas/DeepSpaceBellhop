@@ -71,3 +71,5 @@ If you wish to compile the game yourself, there are some components required to 
 There are two build scripts for different operating systems, with `build.bat` being made for Windows, and `build.sh` for Linux or Mac OS.
 
 To make a build, run the corresponding build script in the repository's root folder. The script will output a build for each supported platform (if on Linux or MacOS, it also creates a matching zip folder for each)
+
+After the script completes, builds are located at `./ElevatorGame/bin/Release/net8.0/`.
