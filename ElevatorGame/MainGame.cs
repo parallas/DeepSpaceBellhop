@@ -830,7 +830,7 @@ public class MainGame : Game
         EndOfDaySequence = false;
         _darkOverlayOpacity = 0;
 
-        if(!HasMadeMistake && CurrentDay == 2)
+        if(!HasMadeMistake && CurrentDay == 2 && day == 3)
         {
             SteamManager.UnlockAchievement("DAY_3_FLAWLESS");
         }
