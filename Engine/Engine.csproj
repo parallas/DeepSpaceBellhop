@@ -19,104 +19,216 @@
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
     </ItemGroup>
 
-    <ItemGroup>
+    <Choose>
       <!-- OSX -->
-      <None Update="libsteam_api.dylib">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
+          $(DefineConstants), '^(.*;)*OSX(;.*)*$'))">
+        <ItemGroup>
+          <None Update="libsteam_api.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
 
-      <None Update="libfmod.dylib">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfmodL.dylib">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfmodstudio.dylib">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfmodstudioL.dylib">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+          <None Update="libfmod.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodL.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudio.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudioL.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+        </ItemGroup>
+      </When>
 
       <!-- Windows -->
-      <None Update="steam_api64.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+      <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
+          $(DefineConstants), '^(.*;)*WINDOWS(;.*)*$'))">
+        <ItemGroup>
+          <None Update="steam_api64.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          </None>
 
-      <None Update="fmod.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="fmodL.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="fmodstudio.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="fmodstudioL.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+          <None Update="fmod.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="fmodL.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="fmodstudio.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="fmodstudioL.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+        </ItemGroup>
+      </When>
 
       <!-- Linux -->
-      <None Update="libsteam_api.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
+          $(DefineConstants), '^(.*;)*LINUX(;.*)*$'))">
+        <ItemGroup>
+          <None Update="libsteam_api.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
 
-      <None Update="libfmodL.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfmod.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfmodstudioL.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfmodstudio.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfsbankL.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfsbank.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libfsbvorbis.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libicudata.so.56">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libicui18n.so.56">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libicuuc.so.56">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libopus.so">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5Core.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5DBus.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5Gui.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5Widgets.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5XcbQpa.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5Xml.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="libQt5Network.so.5">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+          <None Update="libfmodL.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmod.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudioL.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudio.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfsbankL.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfsbank.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfsbvorbis.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libicudata.so.56">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libicui18n.so.56">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libicuuc.so.56">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libopus.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Core.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5DBus.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Gui.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Widgets.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5XcbQpa.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Xml.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Network.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+        </ItemGroup>
+      </When>
 
-    </ItemGroup>
+      <Otherwise>
+        <ItemGroup>
+          <None Update="libsteam_api.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+
+          <None Update="libfmod.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodL.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudio.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudioL.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+
+          <None Update="steam_api64.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          </None>
+
+          <None Update="fmod.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="fmodL.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="fmodstudio.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="fmodstudioL.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+
+          <None Update="libsteam_api.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+
+          <None Update="libfmodL.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmod.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudioL.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfmodstudio.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfsbankL.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfsbank.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libfsbvorbis.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libicudata.so.56">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libicui18n.so.56">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libicuuc.so.56">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libopus.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Core.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5DBus.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Gui.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Widgets.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5XcbQpa.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Xml.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+          <None Update="libQt5Network.so.5">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </None>
+        </ItemGroup>
+
+      </Otherwise>
+    </Choose>
 
     <Choose>
       <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
