@@ -597,21 +597,48 @@ public class MainGame : Game
                 {
                     if (ImGui.CollapsingHeader("Effects"))
                     {
-                        if (ImGui.Button("Reset"))
+                        bool allEffects = _wobbleTurns > 0 && _hueShiftTurns > 0 && _flippyTurns > 0;
+                        bool wobbleEffect = _wobbleTurns > 0;
+                        bool hueShiftEffect = _hueShiftTurns > 0;
+                        bool flippyEffect = _flippyTurns > 0;
+
+                        if (ImGui.Checkbox("All Effects", ref allEffects))
                         {
-                            ResetShaderProperties();
+                            wobbleEffect = allEffects;
+                            hueShiftEffect = allEffects;
+                            flippyEffect = allEffects;
+                            StartEffectWobble();
+                            StartEffectHueShift();
+                            StartEffectFlippy();
                         }
-                        if (ImGui.Button("Wobble"))
+
+                        ImGui.Separator();
+
+                        if (ImGui.Checkbox("Wobble", ref wobbleEffect) && wobbleEffect)
                         {
                             StartEffectWobble();
                         }
-                        if (ImGui.Button("Hue Shift"))
+                        if (!wobbleEffect && _wobbleTurns > 0)
+                        {
+                            _wobbleTurns = 0;
+                        }
+
+                        if (ImGui.Checkbox("Hue Shift", ref hueShiftEffect) && hueShiftEffect)
                         {
                             StartEffectHueShift();
                         }
-                        if (ImGui.Button("Flippy"))
+                        if (!hueShiftEffect && _hueShiftTurns > 0)
+                        {
+                            _hueShiftTurns = 0;
+                        }
+
+                        if (ImGui.Checkbox("Flippy", ref flippyEffect) && flippyEffect)
                         {
                             StartEffectFlippy();
+                        }
+                        if (!flippyEffect && _flippyTurns > 0)
+                        {
+                            _flippyTurns = 0;
                         }
                     }
                     if (ImGui.CollapsingHeader("Preview"))
