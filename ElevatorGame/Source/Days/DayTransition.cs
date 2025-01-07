@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using AsepriteDotNet.Aseprite;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Aseprite;
@@ -107,7 +108,12 @@ public class DayTransition
         }
 
         yield return 30;
-        ;
+
+        var moveEvent = StudioSystem.GetEvent("event:/SFX/UI/Transition/Move").CreateInstance();
+        moveEvent.SetParameterValue("Velocity", 0.5f);
+        moveEvent.Start();
+        moveEvent.Dispose();
+
         // Start moving dot
         _arrowSprite.Transparency = 1;
         _floorDotAnimSprite.Play(1);
