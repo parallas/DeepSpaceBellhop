@@ -14,7 +14,7 @@ sh ./zip.sh linux
 
 echo "Begin building WINDOWS"
 rm -rf "./ElevatorGame/bin/Release/net8.0/win-x64"
-dotnet publish ElevatorGame -c Release -r win-x64 -p:ExtraDefineConstants=WINDOWS -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained false
+dotnet publish ElevatorGame -c Release -r win-x64 -p:ExtraDefineConstants=WINDOWS -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained true
 rm -rf "./ElevatorGame/bin/Release/net8.0/win-x64/publish"
 cp "./SteamAssets/installscripts/installscript.vdf" "./ElevatorGame/bin/Release/net8.0/win-x64"
 sh ./zip.sh win
