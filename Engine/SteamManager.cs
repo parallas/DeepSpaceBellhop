@@ -7,8 +7,6 @@ public static class SteamManager
 {
     public static uint steam_appid { get; private set; } = 480;
 
-    public static AppId AppID => (AppId)steam_appid;
-
     public static bool IsSteamRunning { get; private set; }
 
     public static void Initialize(uint appid)
@@ -19,7 +17,7 @@ public static class SteamManager
 
         try
         {
-            SteamClient.Init(AppID);
+            SteamClient.Init(appid);
             SteamUtils.OverlayNotificationPosition = NotificationPosition.BottomRight;
             IsSteamRunning = true;
             InitializeCallbacks();
