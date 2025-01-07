@@ -100,6 +100,8 @@ public class MainGame : Game
 
     public bool UseSteamworks { get; }
 
+    public static bool HasMadeMistake { get; set; }
+
     private Elevator.Elevator _elevator;
     private Phone.Phone _phone;
     private Dialog.Dialog _dialog;
@@ -237,7 +239,7 @@ public class MainGame : Game
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
 
-        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
+        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence, ElevatorCrashed);
         _elevator.LoadContent();
 
         _phone = new(_elevator);
@@ -516,6 +518,30 @@ public class MainGame : Game
                     }
                     ImGui.EndMenu();
                 }
+
+                if (SteamManager.IsSteamRunning)
+                {
+                    if (ImGui.BeginMenu("Steam"))
+                    {
+                        if (ImGui.BeginMenu("Achievements"))
+                        {
+                            var achievements = SteamManager.GetAchievements();
+                            foreach (var achievement in achievements)
+                            {
+                                bool enabled = achievement.Item2;
+                                if (ImGui.Checkbox(achievement.Item1, ref enabled))
+                                {
+                                    if(enabled)
+                                        SteamManager.UnlockAchievement(achievement.Item1);
+                                    else
+                                        SteamManager.ClearAchievement(achievement.Item1);
+                                }
+                            }
+                            ImGui.EndMenu();
+                        }
+                        ImGui.EndMenu();
+                    }
+                }
             }
             ImGui.EndMainMenuBar();
 
@@ -757,6 +783,18 @@ public class MainGame : Game
             CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
     }
 
+    private IEnumerator ElevatorCrashed()
+    {
+        if (PunishMistakes)
+        {
+            HasMadeMistake = true;
+
+            _phone.SimulateBatteryChange(-1);
+            yield return 20;
+            ChangeHealth(-1);
+        }
+    }
+
     public void SimulateBatteryChange(int newValue)
     {
         _phone.SimulateBatteryChange(newValue);
@@ -792,6 +830,13 @@ public class MainGame : Game
         EndOfDaySequence = false;
         _darkOverlayOpacity = 0;
 
+        if(!HasMadeMistake && CurrentDay == 2)
+        {
+            SteamManager.UnlockAchievement("DAY_3_FLAWLESS");
+        }
+
+        HasMadeMistake = false;
+
         yield return 60;
 
         yield return _dayTransition.TransitionToNextDay(day + 1);
@@ -815,7 +860,7 @@ public class MainGame : Game
         // CharacterManager.UnloadContent();
 
         _dialog = new();
-        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence);
+        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence, ElevatorCrashed);
         _phone = new(_elevator);
         _ticketManager = new(_elevator);
         CharacterManager = new(_phone, _ticketManager, _dialog, _elevator);
@@ -1003,16 +1048,6 @@ public class MainGame : Game
         if (InputManager.GetPressed(Keys.T))
         {
             CharacterManager.ForceCompleteDay();
-        }
-
-        if (InputManager.GetPressed(Keys.J))
-        {
-            SteamManager.UnlockAchievement("EFFICIENT");
-        }
-
-        if (InputManager.GetPressed(Keys.K))
-        {
-            SteamManager.ResetAllStatsAndAchievements();
         }
     }
 }
