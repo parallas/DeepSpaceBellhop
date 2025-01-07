@@ -4,6 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <PlatformTarget>anycpu</PlatformTarget>
+
+        <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -113,24 +115,23 @@
       <None Update="libQt5Network.so.5">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Facepunch.Steamworks.Posix.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Facepunch.Steamworks.Posix.pdb">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
 
     </ItemGroup>
 
     <Choose>
-      <When Condition="'$(OS)' == 'Windows_NT'">
+      <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
+         $(DefineConstants), '^(.*;)*WINDOWS(;.*)*$'))">
         <ItemGroup>
-          <Reference Include="Facepunch.Steamworks.Win64" HintPath="Facepunch.Steamworks.Win64.dll" SpecificVersion="False" />
+          <Reference Include="Facepunch.Steamworks.Win64" SpecificVersion="False">
+            <HintPath>Facepunch.Steamworks.Win64.dll</HintPath>
+          </Reference>
         </ItemGroup>
       </When>
       <Otherwise>
         <ItemGroup>
-          <Reference Include="Facepunch.Steamworks.Posix" HintPath="Facepunch.Steamworks.Posix.dll" SpecificVersion="False" />
+          <Reference Include="Facepunch.Steamworks.Posix" SpecificVersion="False">
+            <HintPath>Facepunch.Steamworks.Posix.dll</HintPath>
+          </Reference>
         </ItemGroup>
       </Otherwise>
     </Choose>
