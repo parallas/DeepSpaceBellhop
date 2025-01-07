@@ -977,5 +977,15 @@ public class MainGame : Game
         {
             CharacterManager.ForceCompleteDay();
         }
+
+        if (InputManager.GetPressed(Keys.J))
+        {
+            SteamManager.UnlockAchievement("EFFICIENT");
+        }
+
+        if (InputManager.GetPressed(Keys.K))
+        {
+            SteamManager.ResetAllStatsAndAchievements();
+        }
     }
 }

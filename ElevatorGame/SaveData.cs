@@ -8,9 +8,18 @@ public class SaveData()
 {
     public int Day { get; set; }
 
+    public string LanguagePreference { get; set; } = "en-us";
+
+    public uint Achievements { get; set; }
+
     public List<RoomDef> Rooms { get; set; } = [];
 
-    public string LanguagePreference { get; set; } = "en-us";
+    [Flags]
+    public enum AchievementFlags : uint
+    {
+        None = 0b0,
+        Efficient = 0b1,
+    }
 }
 
 // SOURCE GENERATION
