@@ -334,17 +334,19 @@ public class MainGame : Game
         // Update Input
         UpdateInput(gameTime);
 
-        if (Keybindings.Pause.Pressed)
-        {
-            _pauseManager.Pause();
-        }
-        _pauseManager.Update(gameTime);
-
         HandleToggleFullscreen();
 
         DebugUpdate();
 
         SteamManager.Update();
+
+        // main menu check
+
+        if (Keybindings.Pause.Pressed)
+        {
+            _pauseManager.Pause();
+        }
+        _pauseManager.Update(gameTime);
 
         if (_pauseManager.IsPaused)
         {
