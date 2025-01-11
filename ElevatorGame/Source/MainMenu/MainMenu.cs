@@ -14,6 +14,8 @@ public class MainMenu
     private AnimatedSprite _bgSprite;
     private AnimatedSprite _logoSprite;
 
+    public Action ExitGame { get; set; }
+
     public void LoadContent()
     {
         _buttons.AddRange([
@@ -137,6 +139,6 @@ public class MainMenu
 
     private void OnButtonQuit()
     {
-
+        ExitGame?.Invoke();
     }
 }

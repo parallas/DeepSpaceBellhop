@@ -19,6 +19,8 @@ public static class SaveManager
     private static string _filePath = Path.Combine(FileLocations.ProgramPath, "save.json");
     private static SaveData saveData;
 
+    private static bool _saving;
+
     public static JsonSerializerOptions SerializerOptions => new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -45,6 +47,14 @@ public static class SaveManager
         {
             saveData = new();
             OnLoad?.Invoke(ref saveData);
+
+            File.WriteAllText(
+                _filePath,
+                JsonSerializer.Serialize(
+                    SaveData,
+                    SerializerOptions
+                )
+            );
             return;
         }
 

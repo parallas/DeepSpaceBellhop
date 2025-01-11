@@ -12,6 +12,7 @@ public class PauseManager
 {
     public bool IsPaused { get; private set; }
     public Action ExitGame { get; set; }
+    public Action OpenMainMenu { get; set; }
 
     private float _opacity;
 
@@ -73,7 +74,7 @@ public class PauseManager
             SetSelectedButton,
             () =>
             {
-
+                OpenMainMenu?.Invoke();
             }
         );
         _mainMenuButton.LoadContent();

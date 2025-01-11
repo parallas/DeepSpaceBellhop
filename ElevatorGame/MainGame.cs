@@ -119,7 +119,7 @@ public class MainGame : Game
 
     private TicketManager _ticketManager;
 
-    private List<RoomDef> _roomDefs = [];
+    private static List<RoomDef> _roomDefs = [];
     private RoomRenderer _roomRenderer;
 
     private Sprite _yetiIdle;
@@ -145,7 +145,7 @@ public class MainGame : Game
 
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
-    private static readonly PauseManager _pauseManager = new();
+    private static PauseManager _pauseManager = new();
 
     private static MainMenu? _mainMenu = new();
 
@@ -300,12 +300,14 @@ public class MainGame : Game
         _dayTransition.LoadContent();
 
         _pauseManager.ExitGame = Exit;
+        _pauseManager.OpenMainMenu = CreateMainMenu;
         _pauseManager.LoadContent();
 
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
 
+        _mainMenu.ExitGame = Exit;
         _mainMenu?.LoadContent();
 
         if (SaveManager.SaveData.Rooms.Count == 0)
@@ -766,6 +768,33 @@ public class MainGame : Game
 
         _mainMenu = null;
         CurrentMenu = Menus.None;
+
+        if (SaveManager.SaveData.Rooms.Count == 0)
+        {
+            for (int i = 0; i < 99; i++)
+            {
+                var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
+                _roomDefs.Add(newRoomDef);
+            }
+        }
+    }
+
+    private void CreateMainMenu()
+    {
+        if (GameState == GameStates.MainMenu)
+            return;
+
+        _mainMenu = new()
+        {
+            ExitGame = Exit,
+        };
+        _mainMenu.LoadContent();
+        CurrentMenu = Menus.MainMenu;
+        GameState = GameStates.MainMenu;
+
+        SaveManager.Save();
+
+        CleanupAndReinitialize();
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -914,6 +943,30 @@ public class MainGame : Game
 
         SaveManager.Save();
 
+        CleanupAndReinitialize();
+
+        _roomRenderer.SetDefinition(_roomDefs[0]);
+        _roomRenderer.PreRender(SpriteBatch);
+
+        yield return FadeFromBlack();
+        CurrentMenu = Menus.None;
+        Coroutines.StopAll();
+
+        PlayMusic($"event:/Music/Day{day + 1}");
+
+        yield return StartDay(day);
+    }
+
+    private void CleanupAndReinitialize()
+    {
+        _pauseManager.UnloadContent();
+        _pauseManager = new()
+        {
+            ExitGame = Exit,
+            OpenMainMenu = CreateMainMenu
+        };
+        _pauseManager.LoadContent();
+
         _elevator.Dispose();
         _phone.Dispose();
         // _dialog.UnloadContent();
@@ -938,18 +991,7 @@ public class MainGame : Game
         Camera.Position = Vector2.Zero;
         ResetShaderProperties();
 
-        _roomRenderer.SetDefinition(_roomDefs[0]);
-        _roomRenderer.PreRender(SpriteBatch);
-
         GC.Collect();
-
-        yield return FadeFromBlack();
-        CurrentMenu = Menus.None;
-        Coroutines.StopAll();
-
-        PlayMusic($"event:/Music/Day{day + 1}");
-
-        yield return StartDay(day);
     }
 
     private IEnumerator StartDay(int dayIndex)
