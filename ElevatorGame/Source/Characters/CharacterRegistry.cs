@@ -125,6 +125,9 @@ public static class CharacterRegistry
                 Name = "Benbo",
                 SpritePath = "graphics/characters/Benbo",
                 WalkSpeed = 16,
+                EnterPhrases = [new(LocalizationManager.Get("dialog.character.Benbo.enter.0"))],
+                ExitPhrases = [new(LocalizationManager.Get("dialog.character.Benbo.exit.0"))],
+                AngryPhrases = [new(LocalizationManager.Get("dialog.character.Benbo.angry.0"))],
                 AngryIconPosition = new(-4, -12)
             },
             new CharacterDef

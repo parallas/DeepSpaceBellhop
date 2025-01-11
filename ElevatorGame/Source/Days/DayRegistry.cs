@@ -27,7 +27,11 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 20,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon"],
+                CharacterIds =
+                [
+                    "Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime",
+                    "ShroomKing", "Hourglass", "SeaDragon"
+                ],
                 StartCharacterCount = 2,
                 StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.character_effects")),
                 PunishMistakes = false
@@ -38,7 +42,14 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 20,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy"],
+                CharacterIds =
+                [
+                    "Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime",
+                    "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy"
+                ],
+                SpecialCharacters = [
+                    new() {CharacterName = "Benbo", ChanceToSpawn = 20, MinSpawnCompletionPercent = 20, MaxSpawnCompletionPercent = 60},
+                ],
                 StartCharacterCount = 3,
                 StartDialog = new(LocalizationManager.Get("dialog.phone.tutorial.punish")),
                 PunishMistakes = true
@@ -49,7 +60,15 @@ public static class DayRegistry
                 OrderSpawnChancePerTurn = 60,
                 MaxCountPerSpawn = 2,
                 CompletionRequirement = 30,
-                CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime", "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy"],
+                CharacterIds =
+                [
+                    "Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime",
+                    "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy"
+                ],
+                SpecialCharacters = [
+                    new() {CharacterName = "Benbo", ChanceToSpawn = 20, MinSpawnCompletionPercent = 20, MaxSpawnCompletionPercent = 60},
+                    new() {CharacterName = "EggBuddy", ChanceToSpawn = 20, MinSpawnCompletionPercent = 20, MaxSpawnCompletionPercent = 80},
+                ],
                 StartCharacterCount = 3,
                 PunishMistakes = true
             },
