@@ -51,6 +51,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClCompile Include="Content\shaders\keijiro_common.hlsl" />
+    <ClCompile Include="Content\shaders\keijiro_simplex3d.hlsl" />
     <ClCompile Include="Content\shaders\postprocessing.fx" />
     <ClCompile Include="Content\shaders\roomrender.fx" />
     <ClCompile Include="Content\shaders\voronoi.hlsl" />

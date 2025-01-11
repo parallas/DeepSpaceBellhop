@@ -19,6 +19,7 @@ sampler2D SpriteTextureSampler = sampler_state
 };
 
 #include "voronoi.hlsl"
+#include "keijiro_simplex3d.hlsl"
 
 struct VertexShaderOutput
 {
@@ -53,8 +54,9 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float2 inputUv = input.TextureCoordinates;
     float2 uv = lerp(inputUv, float2(inputUv.x, 1 - inputUv.y), FlippyInfluence);
-	
-    float voronoi1 = voronoi3D_float(float3(uv, GameTime / 10), 5).x * 0.02;
+
+    float2 pixelUv = uv * float2(240, 135);
+    float2 voronoi1 = (SimplexNoiseGrad(float3(pixelUv * 0.05, GameTime / 3)).rg * 0.003) - 0.0015;
 
     float2 final_uv = lerp(uv, uv + voronoi1, WobbleInfluence);
     float4 col = tex2D(SpriteTextureSampler, final_uv).rgba * input.Color.rgba;
@@ -68,7 +70,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 rgb = SRGBFromFCCYIQ(yiq);
     float3 rgb_lerped = lerp(col.rgb, rgb, HueShiftInfluence);
 
-    return float4(rgb_lerped, col.a);
+    return float4(rgb_lerped, 1);
 }
 
 technique SpriteDrawing

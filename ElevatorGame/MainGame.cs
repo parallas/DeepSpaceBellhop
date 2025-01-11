@@ -1038,11 +1038,11 @@ public class MainGame : Game
         WobbleInfluence = MathUtil.ExpDecay(WobbleInfluence, _wobbleTurns > 0 ? 1 : 0, 8, 1f / 60f);
         HueShiftInfleunce = MathUtil.ExpDecay(HueShiftInfleunce, _hueShiftTurns > 0 ? 1 : 0, 8, 1f / 60f);
         FlippyInfluence = MathUtil.ExpDecay(FlippyInfluence, _flippyTurns > 0 ? 1 : 0, 8, 1f / 60f);
-        _elevatorGrayscaleIntensity.SetValue(GrayscaleCoeff);
-        _ppWobbleInfluence.SetValue(WobbleInfluence);
-        _ppHueShiftInfluence.SetValue(HueShiftInfleunce);
-        _ppFlippyInfluence.SetValue(FlippyInfluence);
-        _ppGameTime.SetValue(Frame / 60f);
+        _elevatorGrayscaleIntensity?.SetValue(GrayscaleCoeff);
+        _ppWobbleInfluence?.SetValue(WobbleInfluence);
+        _ppHueShiftInfluence?.SetValue(HueShiftInfleunce);
+        _ppFlippyInfluence?.SetValue(FlippyInfluence);
+        _ppGameTime?.SetValue(Frame / 60f);
     }
 
     public static void StartEffectWobble()
