@@ -22,28 +22,28 @@ public class MainMenu
                 langToken: "ui.main_menu.continue",
                 index: 0,
                 setSelectedButton: SetSelectedButton,
-                onClick: () => {}
+                onClick: OnButtonContinue
             ),
             new(
                 position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 20),
                 langToken: "ui.main_menu.new_game",
                 index: 1,
                 setSelectedButton: SetSelectedButton,
-                onClick: () => {}
+                onClick: OnButtonNewGame
             ),
             new(
                 position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 10),
                 langToken: "ui.main_menu.settings",
                 index: 2,
                 setSelectedButton: SetSelectedButton,
-                onClick: () => {}
+                onClick: OnButtonSettings
             ),
             new(
                 position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16),
                 langToken: "ui.main_menu.quit",
                 index: 3,
                 setSelectedButton: SetSelectedButton,
-                onClick: () => {}
+                onClick: OnButtonQuit
             ),
         ]);
 
@@ -112,5 +112,31 @@ public class MainMenu
     private void SetSelectedButton(int buttonIndex)
     {
         _selectedButton = buttonIndex;
+    }
+
+    private void OnButtonContinue()
+    {
+        SaveManager.Load();
+        MainGame.CloseMainMenu();
+        MainGame.GameState = MainGame.GameStates.Gameplay;
+    }
+
+    private void OnButtonNewGame()
+    {
+        SaveManager.DeleteFile();
+        SaveManager.Load();
+        MainGame.CloseMainMenu();
+        // MainGame.GameState = MainGame.GameStates.Intro;
+        MainGame.GameState = MainGame.GameStates.Gameplay;
+    }
+
+    private void OnButtonSettings()
+    {
+
+    }
+
+    private void OnButtonQuit()
+    {
+
     }
 }

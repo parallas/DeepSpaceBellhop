@@ -235,6 +235,7 @@ public class MainGame : Game
 
         CharacterRegistry.Init();
 
+        Coroutines.Stop("load_day_start");
         Coroutines.TryRun("load_day_start", StartDay(data.Day), out _);
     }
 
@@ -320,7 +321,7 @@ public class MainGame : Game
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
         // Load Music
-        PlayMusic($"event:/Music/Day{SaveManager.SaveData.Day + 1}");
+        PlayMusic($"event:/Music/Day1");
     }
 
     protected override void UnloadContent()
@@ -368,7 +369,7 @@ public class MainGame : Game
             return;
         }
 
-        if (Keybindings.Pause.Pressed)
+        if (Keybindings.Pause.Pressed && CurrentMenu != Menus.DayTransition)
         {
             _pauseManager.Pause();
         }
@@ -758,8 +759,11 @@ public class MainGame : Game
         _dayTransition.Draw(spriteBatch);
     }
 
-    private void OnCloseMainMenu()
+    public static void CloseMainMenu()
     {
+        if (GameState != GameStates.MainMenu)
+            return;
+
         _mainMenu = null;
         CurrentMenu = Menus.None;
     }
