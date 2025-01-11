@@ -9,6 +9,8 @@ public static class SaveManager
 {
     public static SaveData SaveData => saveData;
 
+    public static bool SaveFileExists => File.Exists(_filePath);
+
     public delegate void SaveDataEvent(ref SaveData? saveData);
 
     public static event SaveDataEvent OnSave;
@@ -31,7 +33,7 @@ public static class SaveManager
 
     public static void DeleteFile()
     {
-        if (File.Exists(_filePath))
+        if (SaveFileExists)
         {
             File.Delete(_filePath);
         }
@@ -39,7 +41,7 @@ public static class SaveManager
 
     public static void Load()
     {
-        if (!File.Exists(_filePath))
+        if (!SaveFileExists)
         {
             saveData = new();
             OnLoad?.Invoke(ref saveData);
