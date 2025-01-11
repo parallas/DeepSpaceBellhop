@@ -18,6 +18,16 @@
                         "MGFXC_WINE_PATH": "/home/bs/.wine"
                     }
                 }
+            },
+            "windows": {
+                "args": [
+                    "build",
+                    "${workspaceFolder}/ElevatorGame.sln",
+                    "-c:Debug",
+                    "/property:ExtraDefineConstants=WINDOWS",
+                    "/property:GenerateFullPaths=true",
+                    "/consoleloggerparameters:NoSummary;ForceNoAlign"
+                ]
             }
         },
         {
