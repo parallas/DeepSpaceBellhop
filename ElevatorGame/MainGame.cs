@@ -25,6 +25,7 @@ using MonoGame.ImGuiNet;
 using Elevator = ElevatorGame.Source.Elevator;
 using Phone = ElevatorGame.Source.Phone;
 using Dialog = ElevatorGame.Source.Dialog;
+using ElevatorGame.Source.MainMenu;
 
 namespace ElevatorGame;
 
@@ -89,9 +90,19 @@ public class MainGame : Game
         Tickets,
         DayTransition,
         TurnTransition,
+        MainMenu,
     }
 
-    public static Menus CurrentMenu { get; set; }
+    public static Menus CurrentMenu { get; set; } = Menus.MainMenu;
+
+    public enum GameStates
+    {
+        Gameplay,
+        MainMenu,
+        Intro,
+    }
+
+    public static GameStates GameState { get; set; } = GameStates.MainMenu;
 
     public bool EndOfDaySequence { get; private set; }
 
@@ -135,6 +146,8 @@ public class MainGame : Game
     public static readonly Rectangle GameBounds = new(8, 8, 240, 135);
 
     private static readonly PauseManager _pauseManager = new();
+
+    private static MainMenu? _mainMenu = new();
 
     private readonly DayTransition _dayTransition = new DayTransition();
     private float _fadeoutProgress;
@@ -292,6 +305,8 @@ public class MainGame : Game
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
 
+        _mainMenu?.LoadContent();
+
         if (SaveManager.SaveData.Rooms.Count == 0)
         {
             for (int i = 0; i < 99; i++)
@@ -340,7 +355,18 @@ public class MainGame : Game
 
         SteamManager.Update();
 
-        // main menu check
+        if (GameState == GameStates.MainMenu)
+        {
+            _mainMenu?.Update();
+            base.Update(gameTime);
+            return;
+        }
+        else if (GameState == GameStates.Intro)
+        {
+            // intro animation
+            base.Update(gameTime);
+            return;
+        }
 
         if (Keybindings.Pause.Pressed)
         {
@@ -409,13 +435,23 @@ public class MainGame : Game
         _phone.PreRenderScreen(SpriteBatch);
         _dayTransition.PreDraw(SpriteBatch);
         _pauseManager.PreDraw(SpriteBatch);
+        _mainMenu?.PreDraw(SpriteBatch);
 
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
             GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Transform);
             {
-                DrawScene(SpriteBatch);
+                switch (GameState)
+                {
+                    case GameStates.Gameplay:
+                        DrawScene(SpriteBatch);
+                        break;
+                    case GameStates.MainMenu:
+                        break;
+                    case GameStates.Intro:
+                        break;
+                }
             }
             SpriteBatch.End();
         });
@@ -425,7 +461,20 @@ public class MainGame : Game
             GraphicsDevice.Clear(Color.Transparent);
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {
-                DrawUI(SpriteBatch);
+                switch (GameState)
+                {
+                    case GameStates.Gameplay:
+                        DrawUI(SpriteBatch);
+                        break;
+                    case GameStates.MainMenu:
+                        _mainMenu?.Draw(SpriteBatch);
+                        DrawScreenTransition(SpriteBatch);
+                        Cursor.Draw(SpriteBatch);
+                        break;
+                    case GameStates.Intro:
+                        // draw intro animation
+                        break;
+                }
             }
             SpriteBatch.End();
         });
@@ -484,7 +533,7 @@ public class MainGame : Game
                     _showDevTools = !_showDevTools;
                 }
 
-                if (ImGui.BeginMenu("Load Day"))
+                if (ImGui.BeginMenu("Load Day", enabled: GameState == GameStates.Gameplay))
                 {
                     for (int i = 0; i < DayRegistry.Days.Length; i++)
                     {
@@ -496,7 +545,7 @@ public class MainGame : Game
                     ImGui.EndMenu();
                 }
 
-                if (ImGui.BeginMenu("Characters"))
+                if (ImGui.BeginMenu("Characters", enabled: GameState == GameStates.Gameplay))
                 {
                     ImGui.Checkbox("Show List", ref _showCharacterList);
                     if (ImGui.Button("Clear Characters"))
@@ -707,6 +756,12 @@ public class MainGame : Game
         );
 
         _dayTransition.Draw(spriteBatch);
+    }
+
+    private void OnCloseMainMenu()
+    {
+        _mainMenu = null;
+        CurrentMenu = Menus.None;
     }
 
     private void OnChangeFloorNumber(int floorNumber)
