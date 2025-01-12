@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using AsepriteDotNet.Aseprite;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Aseprite;
@@ -74,7 +76,7 @@ public class PauseManager
             SetSelectedButton,
             () =>
             {
-                OpenMainMenu?.Invoke();
+                MainGame.Coroutines.TryRun("return_to_main_menu", ReturnToMainMenu(), out _);
             }
         );
         _mainMenuButton.LoadContent();
@@ -101,6 +103,7 @@ public class PauseManager
     public void Update(GameTime gameTime)
     {
         _transitionAlpha = MathUtil.ExpDecay(_transitionAlpha, IsPaused ? 1f : 0f, 8f, 1f / 60f);
+        StudioSystem.SetParameterValue("IsPaused", IsPaused ? 1f : 0f);
 
         if (!IsPaused)
             return;
@@ -157,5 +160,15 @@ public class PauseManager
     public void Resume()
     {
         IsPaused = false;
+    }
+
+    private IEnumerator ReturnToMainMenu()
+    {
+        yield return MainGame.FadeToBlack();
+        yield return 30;
+        OpenMainMenu?.Invoke();
+        IsPaused = false;
+        StudioSystem.SetParameterValue("IsPaused", 0f);
+        yield return MainGame.FadeFromBlack();
     }
 }
