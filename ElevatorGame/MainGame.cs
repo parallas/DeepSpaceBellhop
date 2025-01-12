@@ -110,7 +110,7 @@ public class MainGame : Game
     private static Point _actualWindowSize;
     private static bool _isFullscreen;
 
-    public bool UseSteamworks { get; }
+    public static bool UseSteamworks { get; private set; }
 
     public static bool HasMadeMistake { get; set; }
 
@@ -161,6 +161,8 @@ public class MainGame : Game
     private IntPtr _renderPipelineTextureId;
 
     private EventInstance? _musicInstance;
+
+    private float _previousMasterVolume;
 
     public MainGame(bool useSteamworks)
     {
@@ -238,6 +240,20 @@ public class MainGame : Game
 
         Coroutines.Stop("load_day_start");
         Coroutines.TryRun("load_day_start", StartDay(data.Day), out _);
+    }
+
+    private void OnSettingsSave(ref SettingsData settings)
+    {
+        settings.AudioMasterVolume = StudioSystem.GetParameterTargetValue("VolumeMaster");
+        settings.AudioMusicVolume = StudioSystem.GetParameterTargetValue("VolumeMusic");
+        settings.AudioSFXVolume = StudioSystem.GetParameterTargetValue("VolumeSounds");
+    }
+
+    private void OnSettingsLoad(ref SettingsData settings)
+    {
+        StudioSystem.SetParameterValue("VolumeMaster", settings.AudioMasterVolume);
+        StudioSystem.SetParameterValue("VolumeMusic", settings.AudioMusicVolume);
+        StudioSystem.SetParameterValue("VolumeSounds", settings.AudioSFXVolume);
     }
 
     protected override void LoadContent()
@@ -349,7 +365,8 @@ public class MainGame : Game
         if (GameState == GameStates.Gameplay)
             SaveManager.Save();
 
-        SteamManager.Cleanup();
+        if (UseSteamworks)
+            SteamManager.Cleanup();
     }
 
     protected override void Update(GameTime gameTime)
@@ -367,7 +384,8 @@ public class MainGame : Game
 
         DebugUpdate();
 
-        SteamManager.Update();
+        if (UseSteamworks)
+            SteamManager.Update();
 
         if (GameState == GameStates.MainMenu)
         {
@@ -584,7 +602,7 @@ public class MainGame : Game
                     ImGui.EndMenu();
                 }
 
-                if (SteamManager.IsSteamRunning)
+                if (UseSteamworks && SteamManager.IsSteamRunning)
                 {
                     if (ImGui.BeginMenu("Steam"))
                     {
@@ -772,6 +790,17 @@ public class MainGame : Game
         _dayTransition.Draw(spriteBatch);
     }
 
+    protected override void OnDeactivated(object sender, EventArgs args)
+    {
+        _previousMasterVolume = StudioSystem.GetParameterTargetValue("VolumeMaster");
+        StudioSystem.SetParameterValue("VolumeMaster", 0, true);
+    }
+
+    protected override void OnActivated(object sender, EventArgs args)
+    {
+        StudioSystem.SetParameterValue("VolumeMaster", _previousMasterVolume, true);
+    }
+
     public static void CloseMainMenu()
     {
         if (GameState != GameStates.MainMenu)
@@ -930,7 +959,7 @@ public class MainGame : Game
 
     private IEnumerator AdvanceDay()
     {
-        if (!HasMadeMistake && CurrentDay == 2)
+        if (UseSteamworks && !HasMadeMistake && CurrentDay == 2)
         {
             SteamManager.UnlockAchievement("DAY_3_FLAWLESS");
         }
