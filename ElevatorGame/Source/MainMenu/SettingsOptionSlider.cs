@@ -41,7 +41,7 @@ public class SettingsOptionSlider : SettingsOption<int>
         Max = maxValue;
         StepAmount = stepAmount;
         Index = index;
-        _bounds = new(SettingsMenu.DividerX + 40, 4 + Index * 10, width, 9);
+        _bounds = new(SettingsMenu.DividerX + 40, 2 + Index * 10, width, 9);
     }
 
     public override void LoadContent()

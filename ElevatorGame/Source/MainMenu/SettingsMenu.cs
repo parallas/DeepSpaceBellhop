@@ -206,7 +206,7 @@ public class SettingsMenu
                 bool isActiveTab = (int)_currentTab == i;
                 Vector2 tabTitlePos = new(
                     2 + (isActiveTab ? 1 : 0),
-                    2 + i * 10
+                    i * 10
                 );
 
                 // spriteBatch.DrawStringSpacesFix(

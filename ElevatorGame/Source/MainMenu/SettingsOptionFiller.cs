@@ -28,7 +28,7 @@ public class SettingsOptionFiller : SettingsOption<object>
             spriteBatch.DrawStringSpacesFix(
                 MainGame.FontBold,
                 LocalizationManager.Get(LangToken),
-                Vector2.UnitX * (SettingsMenu.DividerX - 4) + Vector2.UnitY * (4 + (Index * 10) - 2),
+                Vector2.UnitX * (SettingsMenu.DividerX - 4) + Vector2.UnitY * (Index * 10),
                 Color.White,
                 6
             );
@@ -36,7 +36,7 @@ public class SettingsOptionFiller : SettingsOption<object>
 
         spriteBatch.Draw(
             MainGame.PixelTexture,
-            new Rectangle(SettingsMenu.DividerX + 2 + MathUtil.RoundToInt(textWidth), 4 + 4 + Index * 10, 160 - MathUtil.RoundToInt(textWidth), 1),
+            new Rectangle(SettingsMenu.DividerX + 2 + MathUtil.RoundToInt(textWidth), 2 + 4 + Index * 10, 160 - MathUtil.RoundToInt(textWidth), 1),
             Color.White
         );
     }

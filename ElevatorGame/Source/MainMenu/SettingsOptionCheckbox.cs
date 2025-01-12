@@ -23,7 +23,7 @@ public class SettingsOptionCheckbox : SettingsOption<bool>
     public SettingsOptionCheckbox(int index)
     {
         Index = index;
-        _bounds = new(SettingsMenu.DividerX, 4 + Index * 10, 140, 9);
+        _bounds = new(SettingsMenu.DividerX, 2 + Index * 10, 140, 9);
         _boxBounds = new Rectangle(_bounds.Location + new Point(140 - 9, 0), new(9));
     }
 
