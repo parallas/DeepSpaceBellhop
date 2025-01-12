@@ -23,6 +23,7 @@ public class SaveData()
 [JsonSerializable(typeof(SaveData))]
 [JsonSerializable(typeof(RoomDef))]
 [JsonSerializable(typeof(List<RoomDef>))]
+[JsonSerializable(typeof(SettingsData))]
 // add additional serializable types here
 
 internal partial class SaveDataSourceGenContext : JsonSerializerContext;

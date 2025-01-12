@@ -107,8 +107,9 @@ public class MainGame : Game
 
     public bool EndOfDaySequence { get; private set; }
 
-    private static Point _actualWindowSize;
-    private static bool _isFullscreen;
+    private static Rectangle _actualWindowBounds;
+
+    public static bool IsFullscreen { get; private set; }
 
     public static bool UseSteamworks { get; private set; }
 
@@ -191,13 +192,18 @@ public class MainGame : Game
 
         Graphics.ApplyChanges();
 
-        _actualWindowSize = new(
-            Graphics.PreferredBackBufferWidth,
-            Graphics.PreferredBackBufferHeight
-        );
+        if (OperatingSystem.IsWindows())
+        {
+            SetFullscreen(
+                GraphicsDevice.DisplayMode.Width <= 1920 &&
+                GraphicsDevice.DisplayMode.Height <= 1080
+            );
+        }
 
         SaveManager.OnLoad += OnSaveDataLoad;
         SaveManager.OnSave += OnSaveDataSave;
+        SaveManager.OnLoadSettings += OnSettingsLoad;
+        SaveManager.OnSaveSettings += OnSettingsSave;
 
         SaveManager.Load();
 
@@ -211,6 +217,8 @@ public class MainGame : Game
         ContentLoader.Initialize(Content);
 
         FmodController.Init();
+
+        SaveManager.LoadSettings();
 
         DayRegistry.Init();
 
@@ -333,7 +341,8 @@ public class MainGame : Game
 
         _mainMenu.ExitGame = Exit;
         _mainMenu.StartGame = OnMainMenuStartGame;
-        _mainMenu?.LoadContent();
+        _mainMenu.OnChangeFullscreen = SetFullscreen;
+        _mainMenu.LoadContent();
 
         if (SaveManager.SaveData.Rooms.Count == 0)
         {
@@ -792,13 +801,19 @@ public class MainGame : Game
 
     protected override void OnDeactivated(object sender, EventArgs args)
     {
-        _previousMasterVolume = StudioSystem.GetParameterTargetValue("VolumeMaster");
-        StudioSystem.SetParameterValue("VolumeMaster", 0, true);
+        if (SaveManager.Settings?.AudioMuteWhenUnfocused ?? false)
+        {
+            _previousMasterVolume = StudioSystem.GetParameterTargetValue("VolumeMaster");
+            StudioSystem.SetParameterValue("VolumeMaster", 0, true);
+        }
     }
 
     protected override void OnActivated(object sender, EventArgs args)
     {
-        StudioSystem.SetParameterValue("VolumeMaster", _previousMasterVolume, true);
+        if (SaveManager.Settings?.AudioMuteWhenUnfocused ?? false)
+        {
+            StudioSystem.SetParameterValue("VolumeMaster", _previousMasterVolume, true);
+        }
     }
 
     public static void CloseMainMenu()
@@ -828,6 +843,7 @@ public class MainGame : Game
         {
             ExitGame = Exit,
             StartGame = OnMainMenuStartGame,
+            OnChangeFullscreen = SetFullscreen
         };
         _mainMenu.LoadContent();
         CurrentMenu = Menus.MainMenu;
@@ -1173,29 +1189,37 @@ public class MainGame : Game
 
     private void HandleToggleFullscreen()
     {
-        if(InputManager.GetPressed(Keys.F11) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (InputManager.GetPressed(Keys.F11) && OperatingSystem.IsWindows())
         {
-            if(_isFullscreen)
-            {
-                Graphics.PreferredBackBufferWidth = _actualWindowSize.X;
-                Graphics.PreferredBackBufferHeight = _actualWindowSize.Y;
-                Window.Position = new((GraphicsDevice.DisplayMode.Width - Graphics.PreferredBackBufferWidth) / 2, (GraphicsDevice.DisplayMode.Height - Graphics.PreferredBackBufferHeight) / 2);
-                Window.IsBorderless = false;
-                Graphics.ApplyChanges();
-            }
-            else
-            {
-                _actualWindowSize.X = Graphics.PreferredBackBufferWidth;
-                _actualWindowSize.Y = Graphics.PreferredBackBufferHeight;
-
-                Graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
-                Graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
-                Window.IsBorderless = true;
-                Graphics.ApplyChanges();
-            }
-
-            _isFullscreen = !_isFullscreen;
+            SetFullscreen(!IsFullscreen);
         }
+    }
+
+    private void SetFullscreen(bool fullscreen)
+    {
+        if (IsFullscreen == fullscreen) return;
+
+        if (!fullscreen)
+        {
+            Graphics.PreferredBackBufferWidth = _actualWindowBounds.Width;
+            Graphics.PreferredBackBufferHeight = _actualWindowBounds.Height;
+            Window.Position = _actualWindowBounds.Location;
+            Window.IsBorderless = false;
+            Graphics.ApplyChanges();
+        }
+        else
+        {
+            _actualWindowBounds = Window.ClientBounds;
+
+            Window.Position = Point.Zero;
+
+            Graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+            Graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+            Window.IsBorderless = true;
+            Graphics.ApplyChanges();
+        }
+
+        IsFullscreen = fullscreen;
     }
 
     [Conditional("DEBUG")]

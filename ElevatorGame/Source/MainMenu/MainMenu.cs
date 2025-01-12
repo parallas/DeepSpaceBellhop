@@ -16,6 +16,7 @@ public class MainMenu
 
     public Action ExitGame { get; set; }
     public Action StartGame { get; set; }
+    public Action<bool> OnChangeFullscreen { get; set; }
 
     private enum State
     {
@@ -151,7 +152,7 @@ public class MainMenu
 
     private void OnButtonNewGame()
     {
-        SaveManager.DeleteFile();
+        SaveManager.DeleteSaveFile();
         SaveManager.Load();
         MainGame.CloseMainMenu();
         // MainGame.GameState = MainGame.GameStates.Intro;
@@ -165,6 +166,7 @@ public class MainMenu
         _settings = new()
         {
             OnClose = OnSettingsClose,
+            OnChangeFullscreen = this.OnChangeFullscreen,
         };
         _settings.LoadContent();
     }
@@ -177,5 +179,6 @@ public class MainMenu
     private void OnSettingsClose()
     {
         _state = State.Title;
+        SaveManager.SaveSettings();
     }
 }

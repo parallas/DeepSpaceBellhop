@@ -67,7 +67,7 @@ public static class Keybindings
         new MappedInput.GamePad(Buttons.RightShoulder, PlayerIndex.One),
     ]);
 
-    public static FallbackMappedInput SettingsTabLast { get; } = new FallbackMappedInput(
+    public static FallbackMappedInput SettingsTabPrev { get; } = new FallbackMappedInput(
     [
         new MappedInput.Keyboard(Keys.Q),
         new MappedInput.Keyboard(Keys.OemOpenBrackets),

@@ -9,17 +9,26 @@ public static class SaveManager
 {
     public static SaveData SaveData => saveData;
 
-    public static bool SaveFileExists => File.Exists(_filePath);
+    public static bool SaveFileExists => File.Exists(_saveFilePath);
+
+    public static SettingsData Settings => settings;
+
+    public static bool SettingsFileExists => File.Exists(_settingsFilePath);
 
     public delegate void SaveDataEvent(ref SaveData? saveData);
+    public delegate void SettingsDataEvent(ref SettingsData? settings);
 
     public static event SaveDataEvent OnSave;
     public static event SaveDataEvent OnLoad;
 
-    private static string _filePath = Path.Combine(FileLocations.ProgramPath, "save.json");
+    public static event SettingsDataEvent OnSaveSettings;
+    public static event SettingsDataEvent OnLoadSettings;
+
+    private static readonly string _saveFilePath = Path.Combine(FileLocations.ProgramPath, "save.json");
     private static SaveData saveData;
 
-    private static bool _saving;
+    private static readonly string _settingsFilePath = Path.Combine(FileLocations.ProgramPath, "settings.json");
+    private static SettingsData settings;
 
     public static JsonSerializerOptions SerializerOptions => new()
     {
@@ -33,11 +42,19 @@ public static class SaveManager
         TypeInfoResolver = SaveDataSourceGenContext.Default,
     };
 
-    public static void DeleteFile()
+    public static void DeleteSaveFile()
     {
         if (SaveFileExists)
         {
-            File.Delete(_filePath);
+            File.Delete(_saveFilePath);
+        }
+    }
+
+    public static void DeleteSettingsFile()
+    {
+        if (SettingsFileExists)
+        {
+            File.Delete(_settingsFilePath);
         }
     }
 
@@ -49,7 +66,7 @@ public static class SaveManager
             OnLoad?.Invoke(ref saveData);
 
             File.WriteAllText(
-                _filePath,
+                _saveFilePath,
                 JsonSerializer.Serialize(
                     SaveData,
                     SerializerOptions
@@ -59,7 +76,7 @@ public static class SaveManager
         }
 
         saveData = JsonSerializer.Deserialize<SaveData>(
-            File.ReadAllText(_filePath),
+            File.ReadAllText(_saveFilePath),
             SerializerOptions
         );
 
@@ -71,9 +88,47 @@ public static class SaveManager
         OnSave?.Invoke(ref saveData);
 
         File.WriteAllText(
-            _filePath,
+            _saveFilePath,
             JsonSerializer.Serialize(
                 SaveData,
+                SerializerOptions
+            )
+        );
+    }
+
+    public static void LoadSettings()
+    {
+        if (!SettingsFileExists)
+        {
+            settings = new();
+            OnLoadSettings?.Invoke(ref settings);
+
+            File.WriteAllText(
+                _settingsFilePath,
+                JsonSerializer.Serialize(
+                    Settings,
+                    SerializerOptions
+                )
+            );
+            return;
+        }
+
+        settings = JsonSerializer.Deserialize<SettingsData>(
+            File.ReadAllText(_settingsFilePath),
+            SerializerOptions
+        );
+
+        OnLoadSettings?.Invoke(ref settings);
+    }
+
+    public static void SaveSettings()
+    {
+        OnSaveSettings?.Invoke(ref settings);
+
+        File.WriteAllText(
+            _settingsFilePath,
+            JsonSerializer.Serialize(
+                Settings,
                 SerializerOptions
             )
         );

@@ -11,6 +11,8 @@ public class SettingsMenu
 
     public Action OnClose { get; set; }
 
+    public Action<bool> OnChangeFullscreen { get; set; }
+
     public static int DividerX { get; private set; } = 64;
 
     public enum SettingsTabs : int
@@ -33,49 +35,101 @@ public class SettingsMenu
 
     private List<SettingsTab> _tabs = [];
 
+    private bool _isDirty;
+
+    private bool _isUsingGamePad;
+
     public void LoadContent()
     {
         _renderTarget = new(MainGame.Graphics.GraphicsDevice, MainGame.GameBounds.Width, MainGame.GameBounds.Height);
 
+        SaveManager.LoadSettings();
+
         _tabs = [
-            new SettingsTab {
+            new SettingsTab
+            {
                 TitleLangToken = GetTabLangToken("audio"),
                 Options = [
-                    new SettingsOptionSlider(index: 0, width: 96, minValue: 0, maxValue: 100, stepAmount: 10) {
-                        GetValue = ()
-                            => MathUtil.FloorToInt(StudioSystem.GetParameterTargetValue("VolumeMaster") * 100),
-                        SetValue = (value)
-                            => StudioSystem.SetParameterValue("VolumeMaster", value / 100f),
+                    SettingsOptionFiller.Create(index: 0, langToken: GetSectionLangToken("audio", "volume")),
+
+                    new SettingsOptionSlider(index: 1, width: 100, minValue: 0, maxValue: 100, stepAmount: 5)
+                    {
+                        GetValue = () => MathUtil.FloorToInt(StudioSystem.GetParameterTargetValue("VolumeMaster") * 100),
+                        SetValue = (value) =>
+                        {
+                            StudioSystem.SetParameterValue("VolumeMaster", value / 100f);
+                            _isDirty = true;
+                        },
                         LangToken = GetOptionLangToken("audio", "master_volume"),
                         SetSelected = GetOptionSelectedAction(tab: 0),
                     },
-                    new SettingsOptionSlider(index: 1, width: 96, minValue: 0, maxValue: 100, stepAmount: 10) {
-                        GetValue = ()
-                            => MathUtil.FloorToInt(StudioSystem.GetParameterTargetValue("VolumeMusic") * 100),
-                        SetValue = (value)
-                            => StudioSystem.SetParameterValue("VolumeMusic", value / 100f),
+
+                    new SettingsOptionSlider(index: 2, width: 100, minValue: 0, maxValue: 100, stepAmount: 5)
+                    {
+                        GetValue = () => MathUtil.FloorToInt(StudioSystem.GetParameterTargetValue("VolumeMusic") * 100),
+                        SetValue = (value) =>
+                        {
+                            StudioSystem.SetParameterValue("VolumeMusic", value / 100f);
+                            _isDirty = true;
+                        },
                         LangToken = GetOptionLangToken("audio", "music_volume"),
                         SetSelected = GetOptionSelectedAction(tab: 0),
                     },
-                    new SettingsOptionSlider(index: 2, width: 96, minValue: 0, maxValue: 100, stepAmount: 10) {
-                        GetValue = ()
-                            => MathUtil.FloorToInt(StudioSystem.GetParameterTargetValue("VolumeSounds") * 100),
-                        SetValue = (value)
-                            => StudioSystem.SetParameterValue("VolumeSounds", value / 100f),
+
+                    new SettingsOptionSlider(index: 3, width: 100, minValue: 0, maxValue: 100, stepAmount: 5)
+                    {
+                        GetValue = () => MathUtil.FloorToInt(StudioSystem.GetParameterTargetValue("VolumeSounds") * 100),
+                        SetValue = (value) =>
+                        {
+                            StudioSystem.SetParameterValue("VolumeSounds", value / 100f);
+                            _isDirty = true;
+                        },
                         LangToken = GetOptionLangToken("audio", "sfx_volume"),
+                        SetSelected = GetOptionSelectedAction(tab: 0),
+                    },
+
+                    new SettingsOptionCheckbox(index: 4)
+                    {
+                        GetValue = () => SaveManager.Settings.AudioMuteWhenUnfocused,
+                        SetValue = (value) =>
+                        {
+                            SaveManager.Settings.AudioMuteWhenUnfocused = value;
+                            _isDirty = true;
+                        },
+                        LangToken = GetOptionLangToken("audio", "mute_when_unfocused"),
                         SetSelected = GetOptionSelectedAction(tab: 0),
                     },
                 ],
             },
-            new SettingsTab {
+
+            new SettingsTab
+            {
                 TitleLangToken = GetTabLangToken("interface"),
                 Options = [],
             },
-            new SettingsTab {
+
+            new SettingsTab
+            {
                 TitleLangToken = GetTabLangToken("graphics"),
                 Options = [],
             }
         ];
+
+        if (OperatingSystem.IsWindows())
+        {
+            _tabs[2].Options.Add(SettingsOptionFiller.Create(
+                index: _tabs[2].Options.Count,
+                langToken: GetSectionLangToken("graphics", "windows")
+            ));
+
+            _tabs[2].Options.Add(new SettingsOptionCheckbox(index: _tabs[2].Options.Count)
+            {
+                SetValue = OnChangeFullscreen,
+                GetValue = () => MainGame.IsFullscreen,
+                LangToken = GetOptionLangToken("graphics", "fullscreen"),
+                SetSelected = GetOptionSelectedAction(tab: 2),
+            });
+        }
 
         foreach (var t in _tabs)
         {
@@ -99,7 +153,16 @@ public class SettingsMenu
 
         if (_closed) return;
 
-        int tabCycleDir = (Keybindings.SettingsTabNext.Pressed ? 1 : 0) - (Keybindings.SettingsTabLast.Pressed ? 1 : 0);
+        if (InputManager.GetAnyPressed(InputType.GamePad))
+        {
+            _isUsingGamePad = true;
+        }
+        if (InputManager.GetAnyPressed(InputType.Keyboard) || InputManager.GetAnyPressed(InputType.Mouse))
+        {
+            _isUsingGamePad = false;
+        }
+
+        int tabCycleDir = (Keybindings.SettingsTabNext.Pressed ? 1 : 0) - (Keybindings.SettingsTabPrev.Pressed ? 1 : 0);
         if (tabCycleDir != 0)
         {
             int tab = (int)_currentTab;
@@ -114,6 +177,15 @@ public class SettingsMenu
             int inputDir = (Keybindings.Down.Pressed ? 1 : 0) - (Keybindings.Up.Pressed ? 1 : 0);
             Tab.SetSelectedOption((Tab.SelectedOption + inputDir) % Tab.Options.Count);
             if (Tab.SelectedOption < 0) Tab.SetSelectedOption(Tab.Options.Count - 1);
+
+            if (inputDir != 0 && Tab.Options.Any(o => o is not SettingsOptionFiller))
+            {
+                while (Tab.Options[Tab.SelectedOption] is SettingsOptionFiller)
+                {
+                    Tab.SetSelectedOption((Tab.SelectedOption + inputDir) % Tab.Options.Count);
+                    if (Tab.SelectedOption < 0) Tab.SetSelectedOption(Tab.Options.Count - 1);
+                }
+            }
         }
 
         foreach (var o in Tab.Options)
@@ -127,13 +199,13 @@ public class SettingsMenu
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_renderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         {
-            MainGame.Graphics.GraphicsDevice.Clear(Color.Black * 0.5f);
+            MainGame.Graphics.GraphicsDevice.Clear(Color.Black * 0.75f);
 
             for (int i = 0; i < _tabs.Count; i++)
             {
                 bool isActiveTab = (int)_currentTab == i;
                 Vector2 tabTitlePos = new(
-                    2 + (isActiveTab ? 2 : 0),
+                    2 + (isActiveTab ? 1 : 0),
                     2 + i * 10
                 );
 
@@ -171,6 +243,21 @@ public class SettingsMenu
     {
         Tab.SetSelectedOption(0);
         _currentTab = tab;
+
+        int option = 0;
+        if (Tab.Options.Count != 0 && Tab.Options[0] is SettingsOptionFiller && Tab.Options.Any(o => o is not SettingsOptionFiller))
+        {
+            while (Tab.Options[option] is SettingsOptionFiller)
+            {
+                option++;
+                if (option >= Tab.Options.Count)
+                {
+                    option = 0;
+                    break;
+                }
+            }
+        }
+        Tab.SetSelectedOption(option);
     }
 
     private static string GetTabLangToken(string name)
@@ -183,6 +270,13 @@ public class SettingsMenu
     {
         const string prefix = "ui.settings.tab";
         const string infix = "option";
+        return $"{prefix}.{tab}.{infix}.{name}";
+    }
+
+    private static string GetSectionLangToken(string tab, string name)
+    {
+        const string prefix = "ui.settings.tab";
+        const string infix = "section";
         return $"{prefix}.{tab}.{infix}.{name}";
     }
 
