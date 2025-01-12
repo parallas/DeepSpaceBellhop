@@ -161,8 +161,6 @@ public class MainGame : Game
     private bool _showCharacterList;
     private IntPtr _renderPipelineTextureId;
 
-    private EventInstance? _musicInstance;
-
     private float _previousMasterVolume;
 
     private static bool _isUsingGamePad;
@@ -276,6 +274,11 @@ public class MainGame : Game
         // NOTE: You HAVE TO init fmod in the Initialize().
         // Otherwise, it may not work on some platforms.
         FmodController.LoadContent("audio/banks/Desktop", true, ["Master", "SFX", "Music"], ["Master"]);
+        MusicPlayer.RegisterEventGuid("MainMenu", "{3c9a1f7e-ccbd-4b36-b879-da149caab4c0}");
+        MusicPlayer.RegisterEventGuid("Day1", "{6cb39cba-ca9b-459e-ba30-e19398c5536d}");
+        MusicPlayer.RegisterEventGuid("Day2", "{1750806a-4d75-4285-8898-3c846fcbccf0}");
+        MusicPlayer.RegisterEventGuid("Day3", "{bffc9aa0-3e77-4e1e-8c56-2ef5ade92602}");
+        MusicPlayer.RegisterEventGuid("Day4", "{0db5b5ff-da7b-46a4-b2c6-8b39c311857f}");
 
         RenderPipeline.LoadContent(GraphicsDevice);
 
@@ -360,14 +363,13 @@ public class MainGame : Game
         _roomRenderer.LoadContent();
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
-        // Load Music
-        // PlayMusic($"event:/Music/Day1");
+        CreateMainMenu();
     }
 
     protected override void UnloadContent()
     {
         FmodManager.Unload();
-        _musicInstance?.Dispose();
+        MusicPlayer.UnloadContent();
 
         _elevator.UnloadContent();
         _phone.UnloadContent();
@@ -842,9 +844,6 @@ public class MainGame : Game
 
     private void CreateMainMenu()
     {
-        if (GameState == GameStates.MainMenu)
-            return;
-
         _mainMenu = new()
         {
             ExitGame = Exit,
@@ -861,7 +860,7 @@ public class MainGame : Game
         CleanupAndReinitialize();
         Coroutines.StopAll();
 
-        PlayMusic(null);
+        MusicPlayer.PlayMusic("MainMenu");
     }
 
     private void OnMainMenuStartGame()
@@ -968,17 +967,6 @@ public class MainGame : Game
         CurrentHealth = Math.Clamp(CurrentHealth + change, 0, 8);
     }
 
-    private void PlayMusic(string? musicEventPath)
-    {
-        _musicInstance?.Stop(false);
-        _musicInstance?.Dispose();
-
-        if (musicEventPath is null) return;
-
-        _musicInstance = StudioSystem.GetEvent(musicEventPath).CreateInstance();
-        _musicInstance.Start();
-    }
-
     private IEnumerator AdvanceDay()
     {
         if (UseSteamworks && !HasMadeMistake && CurrentDay == 2)
@@ -993,7 +981,7 @@ public class MainGame : Game
         ResetShaderProperties();
         CurrentMenu = Menus.DayTransition;
 
-        _musicInstance?.Stop(false);
+        MusicPlayer.StopMusic(false, true);
 
         if (!skipTransition)
         {
@@ -1039,7 +1027,7 @@ public class MainGame : Game
         CurrentMenu = Menus.None;
         Coroutines.StopAll();
 
-        PlayMusic($"event:/Music/Day{day + 1}");
+        MusicPlayer.PlayMusic($"Day{day + 1}");
 
         yield return StartDay(day);
     }
