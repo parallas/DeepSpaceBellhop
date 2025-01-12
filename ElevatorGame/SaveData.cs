@@ -10,16 +10,7 @@ public class SaveData()
 
     public string LanguagePreference { get; set; } = "en-us";
 
-    public uint Achievements { get; set; }
-
     public List<RoomDef> Rooms { get; set; } = [];
-
-    [Flags]
-    public enum AchievementFlags : uint
-    {
-        None = 0b0,
-        Efficient = 0b1,
-    }
 }
 
 // SOURCE GENERATION
