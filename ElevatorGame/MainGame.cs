@@ -165,6 +165,10 @@ public class MainGame : Game
 
     private float _previousMasterVolume;
 
+    private static bool _isUsingGamePad;
+
+    public static bool IsUsingGamePad => _isUsingGamePad;
+
     public MainGame(bool useSteamworks)
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -510,7 +514,8 @@ public class MainGame : Game
                     case GameStates.MainMenu:
                         _mainMenu?.Draw(SpriteBatch);
                         DrawScreenTransition(SpriteBatch);
-                        Cursor.Draw(SpriteBatch);
+                        if (!_isUsingGamePad)
+                            Cursor.Draw(SpriteBatch);
                         break;
                     case GameStates.Intro:
                         // draw intro animation
@@ -558,7 +563,8 @@ public class MainGame : Game
 
         DrawScreenTransition(spriteBatch);
 
-        Cursor.Draw(spriteBatch);
+        if (!_isUsingGamePad)
+            Cursor.Draw(spriteBatch);
     }
 
     private void DrawImGui(GameTime gameTime)
@@ -1130,6 +1136,14 @@ public class MainGame : Game
         InputManager.RefreshGamePadState();
         InputManager.UpdateTypingInput(gameTime);
         Cursor.Update();
+        if (InputManager.GetAnyPressed(InputType.GamePad))
+        {
+            _isUsingGamePad = true;
+        }
+        if (_lastMouseViewPos != Cursor.ViewPosition || InputManager.GetAnyPressed(InputType.Keyboard) || InputManager.GetAnyPressed(InputType.Mouse))
+        {
+            _isUsingGamePad = false;
+        }
         _lastMouseViewPos = Cursor.ViewPosition;
         _lastMouseWorldPos = Cursor.WorldPosition;
     }

@@ -2,6 +2,7 @@ using Engine;
 using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace ElevatorGame.Source.MainMenu;
 
@@ -13,7 +14,7 @@ public class SettingsMenu
 
     public Action<bool> OnChangeFullscreen { get; set; }
 
-    public static int DividerX { get; private set; } = 64;
+    public static int DividerX { get; private set; } = 72;
 
     public enum SettingsTabs : int
     {
@@ -34,10 +35,10 @@ public class SettingsMenu
     private bool _closed;
 
     private List<SettingsTab> _tabs = [];
+    private List<float> _tabOffsets = [];
+    private List<float> _tabOffsetTargets = [];
 
     private bool _isDirty;
-
-    private bool _isUsingGamePad;
 
     public void LoadContent()
     {
@@ -133,6 +134,9 @@ public class SettingsMenu
 
         foreach (var t in _tabs)
         {
+            _tabOffsets.Add(0);
+            _tabOffsetTargets.Add(0);
+
             foreach (var o in t.Options)
             {
                 o.LoadContent();
@@ -153,13 +157,14 @@ public class SettingsMenu
 
         if (_closed) return;
 
-        if (InputManager.GetAnyPressed(InputType.GamePad))
+        for (int i = 0; i < _tabs.Count; i++)
         {
-            _isUsingGamePad = true;
-        }
-        if (InputManager.GetAnyPressed(InputType.Keyboard) || InputManager.GetAnyPressed(InputType.Mouse))
-        {
-            _isUsingGamePad = false;
+            if (new Rectangle(0, (i == 0 ? 0 : 1) + i * 11, DividerX - 6, 11 + (i == 0 ? 1 : 0))
+                .Contains(MainGame.Cursor.ViewPosition) && InputManager.GetPressed(MouseButtons.LeftButton))
+            {
+                SetTab((SettingsTabs)i);
+                break;
+            }
         }
 
         int tabCycleDir = (Keybindings.SettingsTabNext.Pressed ? 1 : 0) - (Keybindings.SettingsTabPrev.Pressed ? 1 : 0);
@@ -188,6 +193,11 @@ public class SettingsMenu
             }
         }
 
+        for (int i = 0; i < _tabs.Count; i++)
+        {
+            _tabOffsets[i] = MathUtil.ExpDecay(_tabOffsets[i], _tabOffsetTargets[i], 12, 1f / 60f);
+        }
+
         foreach (var o in Tab.Options)
         {
             o.Update(Tab.SelectedOption == o.Index);
@@ -205,22 +215,37 @@ public class SettingsMenu
             {
                 bool isActiveTab = (int)_currentTab == i;
                 Vector2 tabTitlePos = new(
-                    2 + (isActiveTab ? 1 : 0),
-                    i * 10
+                    3,
+                    i * 11
                 );
+
+                var str = LocalizationManager.Get(_tabs[i].TitleLangToken);
 
                 // spriteBatch.DrawStringSpacesFix(
                 //     MainGame.FontBold,
-                //     LocalizationManager.Get(_tabs[i].TitleLangToken),
+                //     str,
                 //     tabTitlePos + Vector2.One,
                 //     Color.Black,
                 //     6
                 // );
+
+                if (isActiveTab)
+                {
+                    spriteBatch.Draw(
+                        MainGame.PixelTexture,
+                        new Rectangle(
+                            tabTitlePos.ToPoint() + new Point(-3, 1),
+                            new(DividerX - 6, 11)
+                        ),
+                        ColorUtil.CreateFromHex(0x404040)
+                    );
+                }
+
                 spriteBatch.DrawStringSpacesFix(
                     MainGame.FontBold,
-                    LocalizationManager.Get(_tabs[i].TitleLangToken),
-                    tabTitlePos,
-                    isActiveTab ? Color.Yellow : Color.White,
+                    str,
+                    tabTitlePos + Vector2.UnitX * _tabOffsets[i],
+                    isActiveTab ? ColorUtil.CreateFromHex(0xa7f6fd) : ColorUtil.CreateFromHex(0xa0a0a0),
                     6
                 );
             }
@@ -242,7 +267,12 @@ public class SettingsMenu
     public void SetTab(SettingsTabs tab)
     {
         Tab.SetSelectedOption(0);
+
+        _tabOffsetTargets[(int)_currentTab] = 0;
+
         _currentTab = tab;
+
+        _tabOffsetTargets[(int)_currentTab] = 3;
 
         int option = 0;
         if (Tab.Options.Count != 0 && Tab.Options[0] is SettingsOptionFiller && Tab.Options.Any(o => o is not SettingsOptionFiller))

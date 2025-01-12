@@ -71,7 +71,9 @@ public class SettingsOptionSlider : SettingsOption<int>
 
     public override void Update(bool isSelected)
     {
-        int inputDir = (Keybindings.Right.Pressed ? 1 : 0) - (Keybindings.Left.Pressed ? 1 : 0);
+        int inputDir =
+        ((Keybindings.Right.Pressed || InputManager.GetPressed(Buttons.LeftThumbstickRight)) ? 1 : 0)
+        - ((Keybindings.Left.Pressed || InputManager.GetPressed(Buttons.LeftThumbstickLeft)) ? 1 : 0);
 
         _visualValue = MathUtil.ExpDecay(_visualValue, GetValue(), _mouseSelecting ? 28 : 14, 1f / 60f);
         if (MathUtil.Approximately(_visualValue, GetValue(), 0.5f))

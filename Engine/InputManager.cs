@@ -179,7 +179,11 @@ public static class InputManager
                 foreach(var state in currentGamepadStates)
                 {
                     if(!state.IsConnected) continue;
-                    return state != GamePadState.Default;
+                    return
+                        state.Buttons != GamePadState.Default.Buttons ||
+                        state.DPad != GamePadState.Default.DPad ||
+                        state.ThumbSticks != GamePadState.Default.ThumbSticks ||
+                        state.Triggers != GamePadState.Default.Triggers;
                 }
                 return false;
             case InputType.Invalid:
