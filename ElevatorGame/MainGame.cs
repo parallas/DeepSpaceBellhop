@@ -220,8 +220,6 @@ public class MainGame : Game
 
         FmodController.Init();
 
-        SaveManager.LoadSettings();
-
         DayRegistry.Init();
 
         CharacterRegistry.Init();
@@ -276,6 +274,8 @@ public class MainGame : Game
         MusicPlayer.RegisterEventGuid("Day2", "{1750806a-4d75-4285-8898-3c846fcbccf0}");
         MusicPlayer.RegisterEventGuid("Day3", "{bffc9aa0-3e77-4e1e-8c56-2ef5ade92602}");
         MusicPlayer.RegisterEventGuid("Day4", "{0db5b5ff-da7b-46a4-b2c6-8b39c311857f}");
+
+        SaveManager.LoadSettings();
 
         RenderPipeline.LoadContent(GraphicsDevice);
 
