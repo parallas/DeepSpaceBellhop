@@ -20,4 +20,18 @@ public static class Extensions
     {
         return new Vector2(rectangle.X + rectangle.Width - 1, rectangle.Y);
     }
+
+    public static Rectangle Shift(this Rectangle rectangle, int x, int y)
+    {
+        rectangle.X += x;
+        rectangle.Y += y;
+        return rectangle;
+    }
+
+    public static Rectangle Shift(this Rectangle rectangle, Point offset)
+    {
+        rectangle.X += offset.X;
+        rectangle.Y += offset.Y;
+        return rectangle;
+    }
 }
