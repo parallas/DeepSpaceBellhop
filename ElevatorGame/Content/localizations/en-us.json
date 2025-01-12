@@ -6,6 +6,18 @@
         "ui.main_menu.settings": "Settings",
         "ui.main_menu.quit": "Quit",
 
+        "ui.settings": "Settings",
+
+        "ui.settings.tab.audio": "Audio",
+        "ui.settings.tab.audio.option.master_volume": "Master",
+        "ui.settings.tab.audio.option.music_volume": "Music",
+        "ui.settings.tab.audio.option.sfx_volume": "SFX",
+        "ui.settings.tab.audio.option.mute_when_unfocued": "Mute When Unfocused",
+
+        "ui.settings.tab.interface": "Interface",
+
+        "ui.settings.tab.graphics": "Graphics",
+
         "dialog.phone.tutorial.intro": "Your job is to pick up guests and take them to their destination.<PAGE>My screen will show you everybody who has called the elevator.<PAGE>Make sure to keep an eye on the battery meter. If it runs out, I'll shut down and you're out of a job!<PAGE>Good luck!",
         "dialog.phone.tutorial.end_of_day": "Day complete - time to go home!<PAGE>Return to the Ground Floor to clock out.",
         "dialog.phone.tutorial.character_effects": "Certain guests might respond strangely to being taken in the wrong direction.<PAGE>Rest assured that any strange side effects will most likely wear off within a few turns!",

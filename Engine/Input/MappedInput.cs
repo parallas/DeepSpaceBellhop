@@ -16,6 +16,8 @@ public abstract class MappedInput : IParsable<MappedInput>
 
     public class Keyboard(Keys key) : MappedInput
     {
+        public Keys Key => key;
+
         public override bool IsDown => InputManager.GetDown(key);
 
         public override bool Pressed => InputManager.GetPressed(key);
@@ -30,6 +32,8 @@ public abstract class MappedInput : IParsable<MappedInput>
 
     public class GamePad(Buttons button, PlayerIndex playerIndex) : MappedInput
     {
+        public Buttons Button => button;
+
         public override bool IsDown => InputManager.GetDown(button, playerIndex);
 
         public override bool Pressed => InputManager.GetPressed(button, playerIndex);
@@ -44,6 +48,8 @@ public abstract class MappedInput : IParsable<MappedInput>
 
     public class Mouse(MouseButtons mouseButton) : MappedInput
     {
+        public MouseButtons MouseButton => mouseButton;
+
         public override bool IsDown => InputManager.GetDown(mouseButton);
 
         public override bool Pressed => InputManager.GetPressed(mouseButton);

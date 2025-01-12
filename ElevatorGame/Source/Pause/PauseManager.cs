@@ -104,7 +104,7 @@ public class PauseManager
 
         if (!IsPaused)
             return;
-        if (_transitionAlpha > 0.5f && Keybindings.Pause.Pressed)
+        if (_transitionAlpha > 0.5f && (Keybindings.GoBack.Pressed || Keybindings.Pause.Pressed))
         {
             Resume();
         }

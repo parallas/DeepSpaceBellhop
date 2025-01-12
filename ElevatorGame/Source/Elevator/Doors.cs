@@ -78,6 +78,9 @@ public class Doors : IDisposable
 
     public void Dispose()
     {
+        MainGame.Coroutines.Stop("elevator_door_open");
+        MainGame.Coroutines.Stop("elevator_door_close");
+
         _audioDoorOpen?.Stop();
         _audioDoorClose?.Stop();
 
@@ -103,17 +106,17 @@ public class Doors : IDisposable
             new Rectangle((int)blackBarPosition2.X, (int)blackBarPosition2.Y, 240, 40), Color.White * (1 - (_doorOpenedness / 47f)));
     }
 
-    public CoroutineHandle Open()
+    public CoroutineHandle Open(int delay = 0)
     {
         MainGame.Coroutines.Stop("elevator_door_close");
-        MainGame.Coroutines.TryRun("elevator_door_open", OpenDoors(), 0, out var handle);
+        MainGame.Coroutines.TryRun("elevator_door_open", OpenDoors(), delay, out var handle);
         return handle;
     }
 
-    public CoroutineHandle Close()
+    public CoroutineHandle Close(int delay = 0)
     {
         MainGame.Coroutines.Stop("elevator_door_open");
-        MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), 0, out var handle);
+        MainGame.Coroutines.TryRun("elevator_door_close", CloseDoors(), delay, out var handle);
         return handle;
     }
 

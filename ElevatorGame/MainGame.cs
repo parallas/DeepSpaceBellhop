@@ -41,6 +41,7 @@ public class MainGame : Game
     public static long Frame { get; private set; }
 
     public static Texture2D PixelTexture { get; private set; }
+    public static Texture2D OutlineTexture { get; private set; }
 
     public static Camera Camera { get; } = new()
     {
@@ -159,7 +160,7 @@ public class MainGame : Game
     private bool _showCharacterList;
     private IntPtr _renderPipelineTextureId;
 
-    private EventInstance _musicInstance;
+    private EventInstance? _musicInstance;
 
     public MainGame(bool useSteamworks)
     {
@@ -253,6 +254,13 @@ public class MainGame : Game
         PixelTexture = new(GraphicsDevice, 1, 1);
         PixelTexture.SetData([Color.White]);
 
+        OutlineTexture = new(GraphicsDevice, 3, 3);
+        OutlineTexture.SetData([
+            Color.White,        Color.White,        Color.White,
+            Color.White,        Color.Transparent,  Color.White,
+            Color.White,        Color.White,        Color.White
+        ]);
+
         _elevator = new(OnChangeFloorNumber, EndOfTurnSequence, ElevatorCrashed);
         _elevator.LoadContent();
 
@@ -308,6 +316,7 @@ public class MainGame : Game
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
 
         _mainMenu.ExitGame = Exit;
+        _mainMenu.StartGame = OnMainMenuStartGame;
         _mainMenu?.LoadContent();
 
         if (SaveManager.SaveData.Rooms.Count == 0)
@@ -323,13 +332,13 @@ public class MainGame : Game
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
         // Load Music
-        PlayMusic($"event:/Music/Day1");
+        // PlayMusic($"event:/Music/Day1");
     }
 
     protected override void UnloadContent()
     {
         FmodManager.Unload();
-        _musicInstance.Dispose();
+        _musicInstance?.Dispose();
 
         _elevator.UnloadContent();
         _phone.UnloadContent();
@@ -337,7 +346,9 @@ public class MainGame : Game
 
     private void Game_Exiting(object sender, ExitingEventArgs e)
     {
-        SaveManager.Save();
+        if (GameState == GameStates.Gameplay)
+            SaveManager.Save();
+
         SteamManager.Cleanup();
     }
 
@@ -787,6 +798,7 @@ public class MainGame : Game
         _mainMenu = new()
         {
             ExitGame = Exit,
+            StartGame = OnMainMenuStartGame,
         };
         _mainMenu.LoadContent();
         CurrentMenu = Menus.MainMenu;
@@ -794,7 +806,17 @@ public class MainGame : Game
 
         SaveManager.Save();
 
+        CurrentDay = 0;
         CleanupAndReinitialize();
+        Coroutines.StopAll();
+
+        PlayMusic(null);
+    }
+
+    private void OnMainMenuStartGame()
+    {
+        Coroutines.StopAll();
+        Coroutines.TryRun("main_day_advance", SetDay(CurrentDay, skipTransition: true), out _);
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -895,46 +917,56 @@ public class MainGame : Game
         CurrentHealth = Math.Clamp(CurrentHealth + change, 0, 8);
     }
 
-    private void PlayMusic(string musicEventPath)
+    private void PlayMusic(string? musicEventPath)
     {
         _musicInstance?.Stop(false);
         _musicInstance?.Dispose();
+
+        if (musicEventPath is null) return;
+
         _musicInstance = StudioSystem.GetEvent(musicEventPath).CreateInstance();
         _musicInstance.Start();
     }
 
     private IEnumerator AdvanceDay()
     {
+        if (!HasMadeMistake && CurrentDay == 2)
+        {
+            SteamManager.UnlockAchievement("DAY_3_FLAWLESS");
+        }
         yield return SetDay(CurrentDay + 1);
     }
 
-    private IEnumerator SetDay(int day)
+    private IEnumerator SetDay(int day, bool skipTransition = false)
     {
         ResetShaderProperties();
         CurrentMenu = Menus.DayTransition;
 
-        _musicInstance.Stop(false);
+        _musicInstance?.Stop(false);
 
-        yield return FadeToBlack();
+        if (!skipTransition)
+        {
+            yield return FadeToBlack();
+        }
 
         EndOfDaySequence = false;
         _darkOverlayOpacity = 0;
 
-        if(!HasMadeMistake && CurrentDay == 2 && day == 3)
-        {
-            SteamManager.UnlockAchievement("DAY_3_FLAWLESS");
-        }
-
         HasMadeMistake = false;
 
-        yield return 60;
-
-        yield return _dayTransition.TransitionToNextDay(day + 1);
+        if (!skipTransition)
+        {
+            yield return 60;
+            yield return _dayTransition.TransitionToNextDay(day + 1);
+        }
 
         if (day >= DayRegistry.Days.Length || day < 0)
         {
             // End of the game
-            yield return FadeFromBlack();
+            if (!skipTransition)
+            {
+                yield return FadeFromBlack();
+            }
             yield break;
         }
 
@@ -948,7 +980,11 @@ public class MainGame : Game
         _roomRenderer.SetDefinition(_roomDefs[0]);
         _roomRenderer.PreRender(SpriteBatch);
 
-        yield return FadeFromBlack();
+        if (!skipTransition)
+        {
+            yield return FadeFromBlack();
+        }
+
         CurrentMenu = Menus.None;
         Coroutines.StopAll();
 

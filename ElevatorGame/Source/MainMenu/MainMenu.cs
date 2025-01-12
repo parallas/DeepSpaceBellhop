@@ -7,7 +7,7 @@ namespace ElevatorGame.Source.MainMenu;
 
 public class MainMenu
 {
-    private readonly List<MainMenuButton> _buttons = [];
+    private readonly List<MainMenuButton> _titleButtons = [];
 
     private int _selectedButton;
 
@@ -15,10 +15,21 @@ public class MainMenu
     private AnimatedSprite _logoSprite;
 
     public Action ExitGame { get; set; }
+    public Action StartGame { get; set; }
+
+    private enum State
+    {
+        Title,
+        Settings
+    }
+
+    private State _state = State.Title;
+
+    private SettingsMenu _settings;
 
     public void LoadContent()
     {
-        _buttons.AddRange([
+        _titleButtons.AddRange([
             new(
                 position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 30),
                 langToken: "ui.main_menu.continue",
@@ -38,7 +49,7 @@ public class MainMenu
                 langToken: "ui.main_menu.settings",
                 index: 2,
                 setSelectedButton: SetSelectedButton,
-                onClick: OnButtonSettings
+                onClick: OnButtonOpenSettings
             ),
             new(
                 position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16),
@@ -51,12 +62,10 @@ public class MainMenu
 
         if (!SaveManager.SaveFileExists)
         {
-            _buttons.RemoveAt(0);
-            for (int i = 0; i < _buttons.Count; i++)
-                _buttons[i].Index = i;
+            RemoveButton(0);
         }
 
-        foreach (var button in _buttons)
+        foreach (var button in _titleButtons)
         {
             button.LoadContent();
         }
@@ -80,22 +89,29 @@ public class MainMenu
         _bgSprite.Update(1f / 60f);
         _logoSprite.Update(1f / 60f);
 
-        for (int i = 0; i < _buttons.Count; i++)
+        if (_state == State.Title)
         {
-            _buttons[i].Update(i == _selectedButton);
+            for (int i = 0; i < _titleButtons.Count; i++)
+            {
+                _titleButtons[i].Update(i == _selectedButton);
+            }
+
+            int inputDir = (Keybindings.Down.Pressed ? 1 : 0) - (Keybindings.Up.Pressed ? 1 : 0);
+            _selectedButton = (_selectedButton + inputDir) % _titleButtons.Count;
+            if (_selectedButton < 0) _selectedButton = _titleButtons.Count - 1;
         }
 
-        int inputDir = (Keybindings.Down.Pressed ? 1 : 0) - (Keybindings.Up.Pressed ? 1 : 0);
-        if (_selectedButton < 0) _selectedButton = _buttons.Count - 1;
-        _selectedButton = (_selectedButton + inputDir) % _buttons.Count;
+        _settings?.Update();
     }
 
     public void PreDraw(SpriteBatch spriteBatch)
     {
-        for (int i = 0; i < _buttons.Count; i++)
+        for (int i = 0; i < _titleButtons.Count; i++)
         {
-            _buttons[i].PreDraw(spriteBatch, i == _selectedButton);
+            _titleButtons[i].PreDraw(spriteBatch, i == _selectedButton);
         }
+
+        _settings?.PreDraw(spriteBatch);
     }
 
     public void Draw(SpriteBatch spriteBatch)
@@ -105,10 +121,19 @@ public class MainMenu
         _bgSprite.Draw(spriteBatch, Vector2.Zero);
         _logoSprite.Draw(spriteBatch, new((MainGame.GameBounds.Width / 3) + 12, -12));
 
-        foreach (var b in _buttons)
+        foreach (var b in _titleButtons)
         {
             b.Draw(spriteBatch);
         }
+
+        _settings?.Draw(spriteBatch);
+    }
+
+    private void RemoveButton(int index)
+    {
+        _titleButtons.RemoveAt(index);
+        for (int i = 0; i < _titleButtons.Count; i++)
+            _titleButtons[i].Index = i;
     }
 
     private void SetSelectedButton(int buttonIndex)
@@ -121,6 +146,7 @@ public class MainMenu
         SaveManager.Load();
         MainGame.CloseMainMenu();
         MainGame.GameState = MainGame.GameStates.Gameplay;
+        StartGame?.Invoke();
     }
 
     private void OnButtonNewGame()
@@ -130,15 +156,26 @@ public class MainMenu
         MainGame.CloseMainMenu();
         // MainGame.GameState = MainGame.GameStates.Intro;
         MainGame.GameState = MainGame.GameStates.Gameplay;
+        StartGame?.Invoke();
     }
 
-    private void OnButtonSettings()
+    private void OnButtonOpenSettings()
     {
-
+        _state = State.Settings;
+        _settings = new()
+        {
+            OnClose = OnSettingsClose,
+        };
+        _settings.LoadContent();
     }
 
     private void OnButtonQuit()
     {
         ExitGame?.Invoke();
+    }
+
+    private void OnSettingsClose()
+    {
+        _state = State.Title;
     }
 }
