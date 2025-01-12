@@ -26,6 +26,7 @@ using Elevator = ElevatorGame.Source.Elevator;
 using Phone = ElevatorGame.Source.Phone;
 using Dialog = ElevatorGame.Source.Dialog;
 using ElevatorGame.Source.MainMenu;
+using TinyTween;
 
 namespace ElevatorGame;
 
@@ -153,6 +154,7 @@ public class MainGame : Game
 
     private readonly DayTransition _dayTransition = new DayTransition();
     private static float _fadeoutProgress;
+    private static TinyTween.Tween<float> _fadeoutTween = new FloatTween();
 
     private static Vector2 _lastMouseViewPos;
     private static Vector2 _lastMouseWorldPos;
@@ -400,6 +402,11 @@ public class MainGame : Game
             SteamManager.Update();
 
         Coroutines.Update();
+        if (_fadeoutTween.State == TweenState.Running)
+        {
+            _fadeoutTween.Update(1f / 60f);
+            _fadeoutProgress = _fadeoutTween.CurrentValue;
+        }
 
         if (GameState == GameStates.MainMenu)
         {
@@ -1099,9 +1106,9 @@ public class MainGame : Game
     {
         ResetShaderProperties();
         _fadeoutProgress = 0;
+        _fadeoutTween.Start(0f, 1f, 0.5f, TinyTween.ScaleFuncs.QuadraticEaseIn);
         while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.01f))
         {
-            _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 1, 8, 1f/60f);
             yield return null;
         }
         _fadeoutProgress = 1;
