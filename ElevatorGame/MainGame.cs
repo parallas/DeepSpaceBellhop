@@ -152,7 +152,7 @@ public class MainGame : Game
     private static MainMenu? _mainMenu = new();
 
     private readonly DayTransition _dayTransition = new DayTransition();
-    private float _fadeoutProgress;
+    private static float _fadeoutProgress;
 
     private static Vector2 _lastMouseViewPos;
     private static Vector2 _lastMouseWorldPos;
@@ -247,9 +247,6 @@ public class MainGame : Game
         DayRegistry.Init();
 
         CharacterRegistry.Init();
-
-        Coroutines.Stop("load_day_start");
-        Coroutines.TryRun("load_day_start", StartDay(data.Day), out _);
     }
 
     private void OnSettingsSave(ref SettingsData settings)
@@ -402,6 +399,8 @@ public class MainGame : Game
         if (UseSteamworks)
             SteamManager.Update();
 
+        Coroutines.Update();
+
         if (GameState == GameStates.MainMenu)
         {
             _mainMenu?.Update();
@@ -426,8 +425,6 @@ public class MainGame : Game
             base.Update(gameTime);
             return;
         }
-
-        Coroutines.Update();
 
         // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
@@ -824,10 +821,13 @@ public class MainGame : Game
         }
     }
 
-    public static void CloseMainMenu()
+    public static IEnumerator CloseMainMenu()
     {
         if (GameState != GameStates.MainMenu)
-            return;
+            yield break;
+
+        yield return FadeToBlack();
+        yield return 30;
 
         _mainMenu = null;
         CurrentMenu = Menus.None;
@@ -1019,6 +1019,8 @@ public class MainGame : Game
         _roomRenderer.SetDefinition(_roomDefs[0]);
         _roomRenderer.PreRender(SpriteBatch);
 
+        CurrentHealth = 8;
+
         if (!skipTransition)
         {
             yield return FadeFromBlack();
@@ -1093,7 +1095,7 @@ public class MainGame : Game
         CharacterManager.Init();
     }
 
-    private IEnumerator FadeToBlack()
+    public static IEnumerator FadeToBlack()
     {
         ResetShaderProperties();
         _fadeoutProgress = 0;
@@ -1105,7 +1107,7 @@ public class MainGame : Game
         _fadeoutProgress = 1;
     }
 
-    private IEnumerator FadeFromBlack()
+    public static IEnumerator FadeFromBlack()
     {
         _fadeoutProgress = 1;
         while(!MathUtil.Approximately(_fadeoutProgress, 0, 0.01f))
@@ -1150,7 +1152,7 @@ public class MainGame : Game
         return position + Vector2.Round(checkPos * MathUtil.InverseLerp01(0, 100, distance));
     }
 
-    private void ResetShaderProperties()
+    private static void ResetShaderProperties()
     {
         GrayscaleCoeffTarget = 1;
         // GrayscaleCoeff = 1;

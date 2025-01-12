@@ -1,3 +1,4 @@
+using System.Collections;
 using AsepriteDotNet.Aseprite;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -145,19 +146,23 @@ public class MainMenu
     private void OnButtonContinue()
     {
         SaveManager.Load();
-        MainGame.CloseMainMenu();
-        MainGame.GameState = MainGame.GameStates.Gameplay;
-        StartGame?.Invoke();
+        MainGame.Coroutines.TryRun("transition_to_game", TransitionToGame(), out _);
     }
 
     private void OnButtonNewGame()
     {
         SaveManager.DeleteSaveFile();
         SaveManager.Load();
-        MainGame.CloseMainMenu();
+        MainGame.Coroutines.TryRun("transition_to_game", TransitionToGame(), out _);
+    }
+
+    private IEnumerator TransitionToGame()
+    {
+        yield return MainGame.CloseMainMenu();
         // MainGame.GameState = MainGame.GameStates.Intro;
         MainGame.GameState = MainGame.GameStates.Gameplay;
         StartGame?.Invoke();
+        yield return MainGame.FadeFromBlack();
     }
 
     private void OnButtonOpenSettings()
