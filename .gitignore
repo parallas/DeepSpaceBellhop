@@ -138,3 +138,5 @@ dotnet-install.ps1
 *.so.56
 *.so.13
 *.so.13.26
+
+*.ttf
