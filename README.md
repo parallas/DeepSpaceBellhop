@@ -98,7 +98,7 @@ Steam integration: Steamworks SDK v157
 
 Uses a fork of Facepunch.Steamworks to interface with Steamworks SDK: [tmaster-terrarian/Facepunch.Steamworks](https://github.com/tmaster-terrarian/Facepunch.Steamworks)
 
-Uses a fork (of a fork) of the Coroutines system that was initially created by [ChevyRay](https://github.com/ChevyRay): [tmaster-terrarian/Coroutines](https://github.com/tmaster-terrarian/Coroutines). Detailed attribution is embedded in the file: [/Engine/Coroutines.cs](https://raw.githubusercontent.com/PixelDough/ElevatorGame/refs/heads/main/Engine/Coroutines.cs).
+Uses a fork (of a fork) of the Coroutines system that was initially created by [ChevyRay](https://github.com/ChevyRay): [tmaster-terrarian/Coroutines](https://github.com/tmaster-terrarian/Parallas.Coroutines). Detailed attribution is embedded in the file: [/Engine/Coroutines.cs](https://raw.githubusercontent.com/PixelDough/ElevatorGame/refs/heads/main/Engine/Coroutines.cs).
 
 ### BUILDING
 Windows 10 and 11, MacOS, and Arch Linux are confirmed and tested to be capable of building. There are likely many other Linux distros that work as well.
