@@ -1,45 +1,87 @@
 # Deep Space Bellhop
 Transport strange and unfamiliar characters between floors as an elevator operator.
 
-This file will usually be packaged with each copy of the game, located in the same folder as the "DeepSpaceBellhop.dll" file.
+This file will be packaged with every copy of the game, located in the same folder as the "DeepSpaceBellhop.dll" file.
 
 ### CONTROLS
 Mouse controls are supported for every action besides moving the elevator. The mouse cursor will change shape depending on context to communicate what action Left Click will do.
 
 The Elevator movement inputs can be held down to move several floors consecutively.
 
+#### keyboard/mouse controls
 Pause:
-Escape | C | Start (gamepad)
+C | Escape
 
 Go Back:
-X | Escape | B (gamepad)
+X | Escape
 
 Confirm / Fast-Forward Dialog:
-Z | Space | Enter | A (gamepad) | Left Click (mouse)
+Z | Space | Enter | Left Click (mouse)
 
 Move Elevator up:
-Up | W | Left Stick Up (gamepad) | Directional Pad Up (gamepad)
+Up | W
 
 Move Elevator down:
-Down | S | Left Stick Down (gamepad) | Directional Pad Down (gamepad)
+Down | S
 
 Open Phone screen / Close Tickets screen:
-Right | D | Left Stick Right (gamepad) | Directional Pad Right (gamepad)
+Right | D
 
 Open Tickets screen / Close Phone screen:
-Left | A | Left Stick Left (gamepad) | Directional Pad Left (gamepad)
+Left | A
 
 (Phone screen) Scroll up:
-Up | W | Left Stick Up (gamepad) | Directional Pad Up (gamepad) | Scroll Wheel Up (mouse)
+Up | W | Scroll Wheel Up (mouse)
 
 (Phone screen) Scroll down:
-Down | S | Left Stick Down (gamepad) | Directional Pad Down (gamepad) | Scroll Wheel Down (mouse)
+Down | S | Scroll Wheel Down (mouse)
 
-When compiled with the DEBUG flag, additional keyboard-exclusive inputs are available:
+(Settings screen) Cycle settings tab down:
+E | ]
+
+(Settings screen) Cycle settings tab up:
+Q | [
+
+#### gamepad & steam deck controls
+Pause:
+Start
+
+Go Back:
+Face Button East (xbox: B, dualshock: Circle)
+
+Confirm / Fast-Forward Dialog:
+Face Button South (xbox: A, dualshock: X)
+
+Move Elevator up:
+Left Stick Up | DPad Up
+
+Move Elevator down:
+Left Stick Down | DPad Down
+
+Open Phone screen / Close Tickets screen:
+DPad Right
+
+Open Tickets screen / Close Phone screen:
+DPad Left
+
+(Phone screen) Scroll up:
+DPad Up | Left Stick Up
+
+(Phone screen) Scroll down:
+DPad Down | Left Stick Down
+
+(Settings screen) Cycle settings tab down:
+Right Shoulder Button (xbox: RB, dualshock: R1)
+
+(Settings screen) Cycle settings tab up:
+Left Shoulder Button (xbox: LB, dualshock: L1)
+
+#### DEBUG-only controls
+When compiled in DEBUG mode, additional keyboard-exclusive controls are available:
 
   (note: official releases of the game will not be compiled with DEBUG enabled, so you will not be able to access these functions on those builds)
 
-  Open the interactive debug menu: F3
+  Toggle the debug gui: F3
 
   Advance to next day: Y
 
