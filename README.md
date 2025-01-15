@@ -88,7 +88,7 @@ When compiled in DEBUG mode, additional keyboard-exclusive controls are availabl
   Prevent additional characters from spawning (and promptly enter closing time): T
 
 ### LICENSE
-All source code and localizations, unless otherwise specified in this README or inline, is licensed under the [MIT license](https://github.com/Parralas/DeepSpaceBellhop/blob/main/LICENSE).
+All source code and localizations, unless otherwise specified in this README or inline, is licensed under the [MIT license](https://github.com/Parallas/DeepSpaceBellhop/blob/main/LICENSE).
 
 Graphical assets (excluding fonts) and audio are licensed under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
 
