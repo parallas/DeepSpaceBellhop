@@ -87,18 +87,23 @@ When compiled in DEBUG mode, additional keyboard-exclusive controls are availabl
 
   Prevent additional characters from spawning (and promptly enter closing time): T
 
+### LICENSE
+All source code and localizations, unless otherwise specified in this README or inline, is licensed under the [MIT license](https://github.com/Parralas/DeepSpaceBellhop/blob/main/LICENSE).
+
+Graphical assets (excluding fonts) and audio are licensed under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
+
 ### PACKAGES, TOOLS, AND ATTRIBUTION
 Runtime: .NET 8.0, x64 only
 
 Audio Engine: FMOD Studio by Firelight Technologies Pty Ltd.
 
-Uses a fork of FmodForFoxes to interface with FMOD: [PixelDough/FmodForFoxes](https://github.com/PixelDough/FmodForFoxes/tree/mac-support)
+Uses a fork of FmodForFoxes to interface with FMOD: [PixelDough/FmodForFoxes](https://github.com/PixelDough/FmodForFoxes/tree/mac-support) ([license](https://github.com/Martenfur/FmodForFoxes/blob/develop/LICENSE.md))
 
 Steam integration: Steamworks SDK v157
 
-Uses a fork of Facepunch.Steamworks to interface with Steamworks SDK: [tmaster-terrarian/Facepunch.Steamworks](https://github.com/tmaster-terrarian/Facepunch.Steamworks)
+Uses a fork of Facepunch.Steamworks to interface with Steamworks SDK: [tmaster-terrarian/Facepunch.Steamworks](https://github.com/tmaster-terrarian/Facepunch.Steamworks) ([license](https://github.com/FacePunch/Facepunch.Steamworks/blob/master/LICENSE))
 
-Uses a fork (of a fork) of the Coroutines system that was initially created by [ChevyRay](https://github.com/ChevyRay): [tmaster-terrarian/Coroutines](https://github.com/tmaster-terrarian/Parallas.Coroutines). Detailed attribution is embedded in the file: [/Engine/Coroutines.cs](https://raw.githubusercontent.com/PixelDough/ElevatorGame/refs/heads/main/Engine/Coroutines.cs).
+Uses a fork (of a fork) of the Coroutines system that was initially created by [ChevyRay](https://github.com/ChevyRay): [tmaster-terrarian/Coroutines](https://github.com/tmaster-terrarian/Parallas.Coroutines). Detailed attribution is embedded in the file: [/Engine/Coroutines.cs](https://raw.githubusercontent.com/Parralas/DeepSpaceBellhop/refs/heads/main/Engine/Coroutines.cs).
 
 ### BUILDING
 Windows 10 and 11, MacOS, and Arch Linux are confirmed and tested to be capable of building. There are likely many other Linux distros that work as well.
