@@ -1,4 +1,5 @@
 using Engine;
+using Engine.Localization;
 using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,12 +19,13 @@ public class SettingsMenu
 
     public enum SettingsTabs : int
     {
-        Audio = 0,
-        Interface = 1,
-        Graphics = 2
+        Game = 0,
+        Audio = 1,
+        Interface = 2,
+        Graphics = 3
     }
 
-    private SettingsTabs _currentTab = SettingsTabs.Audio;
+    private SettingsTabs _currentTab = SettingsTabs.Game;
 
     private SettingsTab Tab => _tabs[(int)CurrentTab];
 
@@ -42,11 +44,35 @@ public class SettingsMenu
 
     public void LoadContent()
     {
+        _isDirty = false;
+
         _renderTarget = new(MainGame.Graphics.GraphicsDevice, MainGame.GameBounds.Width, MainGame.GameBounds.Height);
 
         SaveManager.LoadSettings();
 
         _tabs = [
+            new SettingsTab
+            {
+                TitleLangToken = GetTabLangToken("game"),
+                Options = [
+                    new SettingsOptionEnum(
+                        index: 0,
+                        options:
+                            from langSettings in LocalizationManager.LoadedLanguages
+                            select (langSettings.Identifier, langSettings.Name)
+                    ) {
+                        GetValue = () => LocalizationManager.CurrentLanguage,
+                        SetValue = (id) =>
+                        {
+                            SaveManager.Settings.LanguagePreference = id;
+                            _isDirty = true;
+                        },
+                        LangToken = GetOptionLangToken("game", "language"),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Audio),
+                    }
+                ],
+            },
+
             new SettingsTab
             {
                 TitleLangToken = GetTabLangToken("audio"),
@@ -62,7 +88,7 @@ public class SettingsMenu
                             _isDirty = true;
                         },
                         LangToken = GetOptionLangToken("audio", "master_volume"),
-                        SetSelected = GetOptionSelectedAction(tab: 0),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Audio),
                     },
 
                     new SettingsOptionSlider(index: 2, width: 100, minValue: 0, maxValue: 100, stepAmount: 5)
@@ -74,7 +100,7 @@ public class SettingsMenu
                             _isDirty = true;
                         },
                         LangToken = GetOptionLangToken("audio", "music_volume"),
-                        SetSelected = GetOptionSelectedAction(tab: 0),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Audio),
                     },
 
                     new SettingsOptionSlider(index: 3, width: 100, minValue: 0, maxValue: 100, stepAmount: 5)
@@ -86,7 +112,7 @@ public class SettingsMenu
                             _isDirty = true;
                         },
                         LangToken = GetOptionLangToken("audio", "sfx_volume"),
-                        SetSelected = GetOptionSelectedAction(tab: 0),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Audio),
                     },
 
                     new SettingsOptionCheckbox(index: 4)
@@ -98,7 +124,7 @@ public class SettingsMenu
                             _isDirty = true;
                         },
                         LangToken = GetOptionLangToken("audio", "mute_when_unfocused"),
-                        SetSelected = GetOptionSelectedAction(tab: 0),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Audio),
                     },
                 ],
             },
@@ -118,17 +144,18 @@ public class SettingsMenu
 
         if (OperatingSystem.IsWindows())
         {
-            _tabs[2].Options.Add(SettingsOptionFiller.Create(
-                index: _tabs[2].Options.Count,
+            int tab = (int)SettingsTabs.Graphics;
+            _tabs[tab].Options.Add(SettingsOptionFiller.Create(
+                index: _tabs[tab].Options.Count,
                 langToken: GetSectionLangToken("graphics", "windows")
             ));
 
-            _tabs[2].Options.Add(new SettingsOptionCheckbox(index: _tabs[2].Options.Count)
+            _tabs[tab].Options.Add(new SettingsOptionCheckbox(index: _tabs[tab].Options.Count)
             {
                 SetValue = OnChangeFullscreen,
                 GetValue = () => MainGame.IsFullscreen,
                 LangToken = GetOptionLangToken("graphics", "fullscreen"),
-                SetSelected = GetOptionSelectedAction(tab: 2),
+                SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Graphics),
             });
         }
 
@@ -310,9 +337,9 @@ public class SettingsMenu
         return $"{prefix}.{tab}.{infix}.{name}";
     }
 
-    private Action<int> GetOptionSelectedAction(int tab)
+    private Action<int> GetOptionSelectedAction(SettingsTabs tab)
     {
-        return i => _tabs[tab].SetSelectedOption(i);
+        return i => _tabs[(int)tab].SetSelectedOption(i);
     }
 
     class SettingsTab

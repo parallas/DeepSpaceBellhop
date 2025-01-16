@@ -8,6 +8,9 @@
 
         "ui.settings": "Settings",
 
+        "ui.settings.tab.game": "Game",
+        "ui.settings.tab.game.option.language": "Language",
+
         "ui.settings.tab.audio": "Audio",
         "ui.settings.tab.audio.section.volume": "Volume",
         "ui.settings.tab.audio.option.master_volume": "Master",

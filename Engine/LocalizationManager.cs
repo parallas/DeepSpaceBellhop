@@ -164,4 +164,6 @@ public static class LocalizationManager
         cachedValues.Add(token, value);
         return value;
     }
+
+    public static IEnumerable<LanguageSettings> LoadedLanguages => loadedLanguages.Values;
 }
