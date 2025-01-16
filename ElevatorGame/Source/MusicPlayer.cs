@@ -8,6 +8,7 @@ public static class MusicPlayer
 {
     private static readonly Dictionary<string, EventDescription> MusicEventDescriptions = new();
     private static EventInstance _currentMusic;
+    private static string? _currentMusicName;
 
     public static void RegisterEventPath(string key, string path)
     {
@@ -28,6 +29,11 @@ public static class MusicPlayer
 
     public static void PlayMusic(string key)
     {
+        if(key == _currentMusicName)
+            return;
+
+        _currentMusicName = key;
+
         StopMusic(false, true);
 
         if (!MusicEventDescriptions.TryGetValue(key, out var desc)) return;

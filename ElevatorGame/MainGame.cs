@@ -361,6 +361,7 @@ public class MainGame : Game
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
         Intro.LoadContent();
+        MusicPlayer.PlayMusic("MainMenu");
 
         Coroutines.TryRun("main_intro", DoIntro(), out _);
     }
