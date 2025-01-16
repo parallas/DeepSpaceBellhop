@@ -8,8 +8,6 @@ public class SaveData()
 {
     public int Day { get; set; }
 
-    public string LanguagePreference { get; set; } = "en-us";
-
     public List<RoomDef> Rooms { get; set; } = [];
 }
 

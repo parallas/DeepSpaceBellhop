@@ -233,34 +233,34 @@ public class MainGame : Game
     {
         data.Day = CurrentDay;
         data.Rooms = [.. _roomDefs];
-
-        data.LanguagePreference = LocalizationManager.CurrentLanguage ?? "en-us";
     }
 
     private void OnSaveDataLoad(ref SaveData data)
     {
         CurrentDay = data.Day;
         _roomDefs = [.. data.Rooms];
+    }
+
+    private void OnSettingsSave(ref SettingsData data)
+    {
+        data.AudioMasterVolume = StudioSystem.GetParameterTargetValue("VolumeMaster");
+        data.AudioMusicVolume = StudioSystem.GetParameterTargetValue("VolumeMusic");
+        data.AudioSFXVolume = StudioSystem.GetParameterTargetValue("VolumeSounds");
+
+        data.LanguagePreference = LocalizationManager.CurrentLanguage ?? "en-us";
+    }
+
+    private void OnSettingsLoad(ref SettingsData data)
+    {
+        StudioSystem.SetParameterValue("VolumeMaster", data.AudioMasterVolume);
+        StudioSystem.SetParameterValue("VolumeMusic", data.AudioMusicVolume);
+        StudioSystem.SetParameterValue("VolumeSounds", data.AudioSFXVolume);
 
         LocalizationManager.CurrentLanguage = data.LanguagePreference;
 
         DayRegistry.Init();
 
         CharacterRegistry.Init();
-    }
-
-    private void OnSettingsSave(ref SettingsData settings)
-    {
-        settings.AudioMasterVolume = StudioSystem.GetParameterTargetValue("VolumeMaster");
-        settings.AudioMusicVolume = StudioSystem.GetParameterTargetValue("VolumeMusic");
-        settings.AudioSFXVolume = StudioSystem.GetParameterTargetValue("VolumeSounds");
-    }
-
-    private void OnSettingsLoad(ref SettingsData settings)
-    {
-        StudioSystem.SetParameterValue("VolumeMaster", settings.AudioMasterVolume);
-        StudioSystem.SetParameterValue("VolumeMusic", settings.AudioMusicVolume);
-        StudioSystem.SetParameterValue("VolumeSounds", settings.AudioSFXVolume);
     }
 
     protected override void LoadContent()
