@@ -7,38 +7,41 @@ namespace ElevatorGame.Source.Intro;
 
 public static class Intro
 {
-    private static List<Texture2D> _logos;
-
-    private static int _currentLogo;
-    private static float _currentLogoOpacity = 1;
+    private static int _currentScene;
 
     private static IntroScene[] _scenes;
 
     public static void LoadContent()
     {
-        _logos = [
-            ContentLoader.Load<Texture2D>("graphics/intro/ParallasLogo"),
-            ContentLoader.Load<Texture2D>("graphics/intro/FmodLogo"),
+        _scenes = [
+            new IntroSceneLogo("graphics/intro/ParallasLogo"),
+            new IntroSceneLogo("graphics/intro/FmodLogo"),
         ];
 
-        _scenes = [
-            
-        ];
+        foreach (var scene in _scenes)
+        {
+            scene.LoadContent();
+        }
     }
 
     public static IEnumerator RunSequence()
     {
-        for(int i = 0; i < _logos.Count; i++)
+        for(int i = 0; i < _scenes.Length; i++)
         {
-            _currentLogo = i;
-            yield return 2 * 60;
+            _currentScene = i;
+            yield return _scenes[i].GetEnumerator();
         }
+    }
+
+    public static void PreDraw(SpriteBatch spriteBatch)
+    {
+        _scenes[_currentScene].PreDraw(spriteBatch);
     }
 
     public static void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.GraphicsDevice.Clear(Color.Black);
 
-        spriteBatch.Draw(_logos[_currentLogo], Vector2.Zero, Color.White * _currentLogoOpacity);
+        _scenes[_currentScene].Draw(spriteBatch);
     }
 }
