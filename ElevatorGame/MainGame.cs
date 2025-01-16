@@ -27,6 +27,7 @@ using Phone = ElevatorGame.Source.Phone;
 using Dialog = ElevatorGame.Source.Dialog;
 using ElevatorGame.Source.MainMenu;
 using TinyTween;
+using ElevatorGame.Source.Intro;
 
 namespace ElevatorGame;
 
@@ -93,9 +94,10 @@ public class MainGame : Game
         DayTransition,
         TurnTransition,
         MainMenu,
+        Intro,
     }
 
-    public static Menus CurrentMenu { get; set; } = Menus.MainMenu;
+    public static Menus CurrentMenu { get; set; } = Menus.Intro;
 
     public enum GameStates
     {
@@ -104,7 +106,7 @@ public class MainGame : Game
         Intro,
     }
 
-    public static GameStates GameState { get; set; } = GameStates.MainMenu;
+    public static GameStates GameState { get; set; } = GameStates.Intro;
 
     public bool EndOfDaySequence { get; private set; }
 
@@ -150,7 +152,7 @@ public class MainGame : Game
 
     private static PauseManager _pauseManager = new();
 
-    private static MainMenu? _mainMenu = new();
+    private static MainMenu? _mainMenu;
 
     private readonly DayTransition _dayTransition = new DayTransition();
     private static float _fadeoutProgress;
@@ -292,21 +294,21 @@ public class MainGame : Game
             Color.White,        Color.White,        Color.White
         ]);
 
-        _elevator = new(OnChangeFloorNumber, EndOfTurnSequence, ElevatorCrashed);
-        _elevator.LoadContent();
+        // _elevator = new(OnChangeFloorNumber, EndOfTurnSequence, ElevatorCrashed);
+        // _elevator.LoadContent();
 
-        _phone = new(_elevator);
-        _phone.LoadContent();
+        // _phone = new(_elevator);
+        // _phone.LoadContent();
 
-        _ticketManager = new TicketManager(_elevator);
-        _ticketManager.LoadContent();
+        // _ticketManager = new TicketManager(_elevator);
+        // _ticketManager.LoadContent();
 
-        _dialog = new();
-        _dialog.LoadContent();
+        // _dialog = new();
+        // _dialog.LoadContent();
 
-        CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog, _elevator);
-        // CharacterManager.Init();
-        CharacterManager.LoadContent();
+        // CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog, _elevator);
+        // // CharacterManager.Init();
+        // CharacterManager.LoadContent();
 
         var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
         _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
@@ -346,11 +348,6 @@ public class MainGame : Game
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
 
-        _mainMenu.ExitGame = Exit;
-        _mainMenu.StartGame = OnMainMenuStartGame;
-        _mainMenu.OnChangeFullscreen = SetFullscreen;
-        _mainMenu.LoadContent();
-
         if (SaveManager.SaveData.Rooms.Count == 0)
         {
             for (int i = 0; i < 99; i++)
@@ -363,6 +360,15 @@ public class MainGame : Game
         _roomRenderer.LoadContent();
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
+        Intro.LoadContent();
+
+        Coroutines.TryRun("main_intro", DoIntro(), out _);
+    }
+
+    private IEnumerator DoIntro()
+    {
+        yield return Intro.RunSequence();
+
         CreateMainMenu();
     }
 
@@ -371,8 +377,8 @@ public class MainGame : Game
         FmodManager.Unload();
         MusicPlayer.UnloadContent();
 
-        _elevator.UnloadContent();
-        _phone.UnloadContent();
+        _elevator?.UnloadContent();
+        _phone?.UnloadContent();
     }
 
     private void Game_Exiting(object sender, ExitingEventArgs e)
@@ -417,9 +423,16 @@ public class MainGame : Game
         }
         else if (GameState == GameStates.Intro)
         {
-            // intro animation
-            base.Update(gameTime);
-            return;
+            if(Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed)
+            {
+                Coroutines.StopAll();
+                CreateMainMenu();
+            }
+            else
+            {
+                base.Update(gameTime);
+                return;
+            }
         }
 
         if (Keybindings.Pause.Pressed && CurrentMenu != Menus.DayTransition)
@@ -483,10 +496,10 @@ public class MainGame : Game
     {
         UpdateShaderProperties();
 
-        _roomRenderer.PreRender(SpriteBatch);
-        _phone.PreRenderScreen(SpriteBatch);
-        _dayTransition.PreDraw(SpriteBatch);
-        _pauseManager.PreDraw(SpriteBatch);
+        _roomRenderer?.PreRender(SpriteBatch);
+        _phone?.PreRenderScreen(SpriteBatch);
+        _dayTransition?.PreDraw(SpriteBatch);
+        _pauseManager?.PreDraw(SpriteBatch);
         _mainMenu?.PreDraw(SpriteBatch);
 
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
@@ -525,7 +538,7 @@ public class MainGame : Game
                             Cursor.Draw(SpriteBatch);
                         break;
                     case GameStates.Intro:
-                        // draw intro animation
+                        Intro.Draw(SpriteBatch);
                         break;
                 }
             }
@@ -558,15 +571,15 @@ public class MainGame : Game
 
     private void DrawUI(SpriteBatch spriteBatch)
     {
-        _phone.Draw(spriteBatch);
+        _phone?.Draw(spriteBatch);
 
-        _ticketManager.Draw(spriteBatch);
+        _ticketManager?.Draw(spriteBatch);
 
-        _dialog.Draw(spriteBatch);
+        _dialog?.Draw(spriteBatch);
 
-        _buttonHint.Draw(spriteBatch, new(GameBounds.Width / 2, GameBounds.Height - 20 - (_buttonHintOpacity * 4)));
+        _buttonHint?.Draw(spriteBatch, new(GameBounds.Width / 2, GameBounds.Height - 20 - (_buttonHintOpacity * 4)));
 
-        _pauseManager.Draw(spriteBatch);
+        _pauseManager?.Draw(spriteBatch);
 
         DrawScreenTransition(spriteBatch);
 
@@ -1052,8 +1065,8 @@ public class MainGame : Game
         };
         _pauseManager.LoadContent();
 
-        _elevator.Dispose();
-        _phone.Dispose();
+        _elevator?.Dispose();
+        _phone?.Dispose();
         // _dialog.UnloadContent();
         // _ticketManager.UnloadContent();
         // CharacterManager.UnloadContent();
