@@ -65,6 +65,7 @@ public class SettingsMenu
                         SetValue = (id) =>
                         {
                             SaveManager.Settings.LanguagePreference = id;
+                            LocalizationManager.CurrentLanguage = id;
                             _isDirty = true;
                         },
                         LangToken = GetOptionLangToken("game", "language"),

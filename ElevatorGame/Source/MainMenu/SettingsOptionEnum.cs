@@ -72,7 +72,8 @@ public class SettingsOptionEnum : SettingsOption<string>
 
             int sel = _selected + 1;
             if(sel >= _options.Count) sel = 0;
-            SetValue(_options[sel]);
+            _selected = sel;
+            SetValue(_options[_selected]);
         }
         else if (mouseOverLeftArrow && InputManager.GetPressed(MouseButtons.LeftButton))
         {
@@ -81,13 +82,15 @@ public class SettingsOptionEnum : SettingsOption<string>
 
             int sel = _selected - 1;
             if(sel < 0) sel = _options.Count - 1;
-            SetValue(_options[sel]);
+            _selected = sel;
+            SetValue(_options[_selected]);
         }
         else if (!InputManager.GetPressed(MouseButtons.LeftButton) && isSelected && Keybindings.Confirm.Pressed)
         {
             int sel = _selected + inputDir;
             if(sel < 0) sel = _options.Count - 1;
-            SetValue(_options[sel % _options.Count]);
+            _selected = sel % _options.Count;
+            SetValue(_options[_selected]);
         }
 
         _lastMousePos = InputManager.MousePosition;
