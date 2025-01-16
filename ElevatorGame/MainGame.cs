@@ -271,7 +271,8 @@ public class MainGame : Game
         // NOTE: You HAVE TO init fmod in the Initialize().
         // Otherwise, it may not work on some platforms.
         FmodController.LoadContent("audio/banks/Desktop", true, ["Master", "SFX", "Music"], ["Master"]);
-        MusicPlayer.RegisterEventGuid("MainMenu", "{3c9a1f7e-ccbd-4b36-b879-da149caab4c0}");
+        MusicPlayer.RegisterEventGuid("MainMenuOld", "{3c9a1f7e-ccbd-4b36-b879-da149caab4c0}");
+        MusicPlayer.RegisterEventGuid("MainMenu", "{7bbbc8c1-14ab-488e-9f28-b2854ec7fcd3}");
         MusicPlayer.RegisterEventGuid("Day1", "{6cb39cba-ca9b-459e-ba30-e19398c5536d}");
         MusicPlayer.RegisterEventGuid("Day2", "{1750806a-4d75-4285-8898-3c846fcbccf0}");
         MusicPlayer.RegisterEventGuid("Day3", "{bffc9aa0-3e77-4e1e-8c56-2ef5ade92602}");

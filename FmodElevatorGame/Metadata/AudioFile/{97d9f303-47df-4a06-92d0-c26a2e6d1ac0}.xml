@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{97d9f303-47df-4a06-92d0-c26a2e6d1ac0}">
+		<property name="assetPath">
+			<value>Music/SpaceMusic_60bpm.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>124.29600000000001</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{8cc827c7-cb66-4dda-b72c-48429909c1e5}</destination>
+		</relationship>
+	</object>
+</objects>
