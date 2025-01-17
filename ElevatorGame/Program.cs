@@ -2,6 +2,3 @@
 
 using var game = new ElevatorGame.MainGame(steam);
 game.Run();
-
-if (steam)
-    Engine.SteamManager.Cleanup();
