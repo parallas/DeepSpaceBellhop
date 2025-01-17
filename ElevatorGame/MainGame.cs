@@ -503,6 +503,11 @@ public class MainGame : Game
         _pauseManager?.PreDraw(SpriteBatch);
         _mainMenu?.PreDraw(SpriteBatch);
 
+        if(GameState == GameStates.Intro)
+        {
+            Intro.PreDraw(SpriteBatch);
+        }
+
         RenderPipeline.DrawBeforeUI(SpriteBatch, GraphicsDevice, _elevatorEffects, () =>
         {
             GraphicsDevice.Clear(new Color(new Vector3(120, 105, 196)));
