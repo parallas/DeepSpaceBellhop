@@ -117,6 +117,7 @@ public static class SteamManager
     public static void StoreStats()
     {
         if (!IsSteamRunning) return;
+        IsSteamRunning = false;
 
         SteamUserStats.StoreStats();
     }
