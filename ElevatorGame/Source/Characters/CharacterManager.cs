@@ -5,6 +5,7 @@ using System.Linq;
 using ElevatorGame.Source.Dialog;
 using ElevatorGame.Source.Tickets;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -84,6 +85,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         {
             CacheCharactersInPlay = cache;
         }
+
+        StudioSystem.SetParameterValue("ActivityLevel", CharactersInPlay.Count / 10f);
     }
 
     public void DrawWaiting(SpriteBatch spriteBatch)
