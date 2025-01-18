@@ -76,7 +76,7 @@ public class MainMenu
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
             .CreateAnimatedSprite("Tag");
 
-        _bgSprite.Color = Color.Gray;
+        // _bgSprite.Color = Color.Gray;
 
         _logoSprite = ContentLoader.Load<AsepriteFile>("graphics/main_menu/Logo")
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
