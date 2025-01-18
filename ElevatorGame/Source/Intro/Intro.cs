@@ -14,8 +14,8 @@ public static class Intro
     public static void LoadContent()
     {
         _scenes = [
-            new IntroSceneLogo("graphics/intro/ParallasLogo"),
-            new IntroSceneLogo("graphics/intro/FmodLogo"),
+            new IntroSceneSimpleImage("graphics/intro/ParallasLogo"),
+            new IntroSceneSimpleImage("graphics/intro/FmodLogo"),
         ];
 
         foreach (var scene in _scenes)

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ElevatorGame.Source.Intro;
 
-public class IntroSceneLogo(string path) : IntroScene
+public class IntroSceneSimpleImage(string path) : IntroScene
 {
     private Texture2D _texture;
 
