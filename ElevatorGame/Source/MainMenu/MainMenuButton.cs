@@ -68,7 +68,7 @@ public class MainMenuButton(
             {
                 onClick?.Invoke();
             }
-            else if (!InputManager.GetPressed(MouseButtons.LeftButton) && Keybindings.Confirm.Pressed)
+            else if (!InputManager.GetReleased(MouseButtons.LeftButton) && Keybindings.Confirm.Pressed)
             {
                 onClick?.Invoke();
             }
