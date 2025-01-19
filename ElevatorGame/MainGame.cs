@@ -438,6 +438,7 @@ public class MainGame : Game
             {
                 Coroutines.StopAll();
                 CreateMainMenu();
+                return;
             }
             else
             {
