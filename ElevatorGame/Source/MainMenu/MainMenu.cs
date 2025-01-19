@@ -14,6 +14,7 @@ public class MainMenu
 
     private AnimatedSprite _bgSprite;
     private AnimatedSprite _logoSprite;
+    private Sprite _buttonPanelSprite;
 
     public Action ExitGame { get; set; }
     public Action StartGame { get; set; }
@@ -72,16 +73,20 @@ public class MainMenu
             button.LoadContent();
         }
 
-        _bgSprite = ContentLoader.Load<AsepriteFile>("graphics/main_menu/Background")
+        _bgSprite = ContentLoader.Load<AsepriteFile>("graphics/main_menu/Background")!
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
             .CreateAnimatedSprite("Tag");
 
         // _bgSprite.Color = Color.Gray;
 
-        _logoSprite = ContentLoader.Load<AsepriteFile>("graphics/main_menu/Logo")
+        _logoSprite = ContentLoader.Load<AsepriteFile>("graphics/main_menu/Logo")!
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
             .CreateAnimatedSprite("Tag");
         _logoSprite.OriginX = _logoSprite.Width / 2;
+
+        _buttonPanelSprite = ContentLoader.Load<AsepriteFile>("graphics/CardTray")!
+            .CreateSprite(MainGame.Graphics.GraphicsDevice, 0, true);
+        _buttonPanelSprite.OriginX = _buttonPanelSprite.Width / 2;
     }
 
     public void Update()
@@ -121,8 +126,12 @@ public class MainMenu
         MainGame.Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _bgSprite.Draw(spriteBatch, Vector2.Zero);
+        _logoSprite.Color = Color.Black;
+        _logoSprite.Draw(spriteBatch, new((MainGame.GameBounds.Width / 3) + 14, -10));
+        _logoSprite.Color = Color.White;
         _logoSprite.Draw(spriteBatch, new((MainGame.GameBounds.Width / 3) + 12, -12));
 
+        _buttonPanelSprite.Draw(spriteBatch, new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 40));
         foreach (var b in _titleButtons)
         {
             b.Draw(spriteBatch);
