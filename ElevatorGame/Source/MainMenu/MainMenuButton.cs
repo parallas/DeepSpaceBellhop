@@ -64,11 +64,11 @@ public class MainMenuButton(
         if (isSelected)
         {
             // this prevents the button from activating on mouse click if the mouse not over the button
-            if (InputManager.GetReleased(MouseButtons.LeftButton) && _bounds.Contains(MainGame.Cursor.ViewPosition))
+            if (InputManager.GetPressed(MouseButtons.LeftButton) && _bounds.Contains(MainGame.Cursor.ViewPosition))
             {
                 onClick?.Invoke();
             }
-            else if (!InputManager.GetReleased(MouseButtons.LeftButton) && Keybindings.Confirm.Pressed)
+            else if (!InputManager.GetPressed(MouseButtons.LeftButton) && Keybindings.Confirm.Pressed)
             {
                 onClick?.Invoke();
             }
