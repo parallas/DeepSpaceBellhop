@@ -647,8 +647,19 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
     public void SimulateBatteryChange(int change)
     {
-        if (change > 0) PlayHeal();
-        else if (change < 0) PlayHurt();
+        if (change == 0) return;
+        if (change < 0)
+        {
+            change += MainGame.HealthShield;
+            if (change >= 0) return;
+
+            PlayHurt();
+        }
+        else
+        {
+            PlayHeal();
+        }
+
         SimulateBatteryValue(_simulatedBatteryValue + change);
     }
 

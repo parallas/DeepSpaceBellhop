@@ -152,6 +152,11 @@ public static class MathUtil
         return (int)Math.Floor(value);
     }
 
+    public static int ClampToInt(float value, int a, int b)
+    {
+        return (int)Math.Clamp(value, a, b);
+    }
+
     public static float InverseLerp(float a, float b, float t)
     {
         return (t - a)/(b - a);

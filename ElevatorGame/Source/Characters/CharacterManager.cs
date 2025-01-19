@@ -141,7 +141,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
             phone.SimulateBatteryChange(-1);
             yield return 20;
-            MainGame.ChangeHealth(-1);
+            MainGame.
+                ChangeHealth(-1);
         }
 
         foreach (CharacterActor characterActor in _cabList)
@@ -331,6 +332,16 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
          var firstWaiting = _waitList.FirstOrDefault(actor => actor.FloorNumberCurrent == floorNumber);
          if (firstWaiting is null) return 0;
          return Math.Sign(firstWaiting.FloorNumberTarget - firstWaiting.FloorNumberCurrent);
+    }
+
+    public bool IsCharacterWaitingOnFloor(int floorNumber)
+    {
+        return _waitList.Any(actor => actor.FloorNumberCurrent == floorNumber);
+    }
+
+    public bool IsCharacterWaitingToGoToFloor(int floorNumber)
+    {
+        return _cabList.Any(actor => actor.FloorNumberTarget == floorNumber);
     }
 
     public CharacterActor SpawnCharacter(CharacterDef characterDef, int minFloor = 1)

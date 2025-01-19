@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Processors;
 using ElevatorGame.Source;
+using ElevatorGame.Source.BG_Characters;
 using ElevatorGame.Source.Characters;
 using ElevatorGame.Source.Days;
 using ElevatorGame.Source.Pause;
@@ -67,6 +68,7 @@ public class MainGame : Game
     public static bool PunishMistakes => DayRegistry.Days[CurrentDay].PunishMistakes;
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;
+    public static int HealthShield { get; set; } = 0;
 
     public static float GrayscaleCoeff { get; set; } = 1;
     public static float GrayscaleCoeffTarget { get; set; } = 1;
@@ -126,6 +128,9 @@ public class MainGame : Game
 
     private static List<RoomDef> _roomDefs = [];
     private RoomRenderer _roomRenderer;
+
+    private BgCharacterRenderer _bgCharacterRenderer;
+    private int _comboCount;
 
     private Sprite _yetiIdle;
     private Sprite _yetiPeace;
@@ -263,6 +268,8 @@ public class MainGame : Game
         DayRegistry.Init();
 
         CharacterRegistry.Init();
+
+        BgCharacterRegistry.Init();
     }
 
     protected override void LoadContent()
@@ -360,6 +367,9 @@ public class MainGame : Game
         _roomRenderer.LoadContent();
         _roomRenderer.SetDefinition(_roomDefs[0]);
 
+        BgCharacterRegistry.LoadContent();
+        _bgCharacterRenderer = new BgCharacterRenderer();
+
         Intro.LoadContent();
         MusicPlayer.PlayMusic("MainMenu");
 
@@ -455,6 +465,8 @@ public class MainGame : Game
         _elevator.Update(gameTime);
         _ticketManager.Update(gameTime);
         _phone.Update(gameTime);
+
+        _bgCharacterRenderer.Update(gameTime);
 
         CharacterManager.Update(gameTime);
 
@@ -564,7 +576,8 @@ public class MainGame : Game
     private void DrawScene(SpriteBatch spriteBatch)
     {
         _roomRenderer.Draw(spriteBatch);
-        // _yetiIdle.Draw(spriteBatch, Camera.GetParallaxPosition(new(80, 40), 50));
+
+        _bgCharacterRenderer.Draw(spriteBatch);
 
         CharacterManager.DrawWaiting(spriteBatch);
 
@@ -900,6 +913,29 @@ public class MainGame : Game
     {
         CurrentFloor = floorNumber;
         _roomRenderer.SetDefinition(_roomDefs[floorNumber - 1]);
+
+        bool isProductiveTurn = CharacterManager.IsCharacterWaitingOnFloor(CurrentFloor) ||
+                                CharacterManager.IsCharacterWaitingToGoToFloor(CurrentFloor);
+
+        if (!isProductiveTurn)
+        {
+            int countClamped = MathUtil.ClampToInt(_comboCount, 3, 9);
+            double chanceToSpawn = Math.Pow(MathUtil.InverseLerp01(0, 10, countClamped), 2);
+            double roll = Random.Shared.NextDouble();
+            if (roll < chanceToSpawn)
+            {
+                _bgCharacterRenderer.SetCharacterDef(BgCharacterRegistry.GetRandomCharacter());
+            }
+            else
+            {
+                _bgCharacterRenderer.SetCharacterDef(null);
+            }
+        }
+        else
+        {
+            _comboCount++;
+            _bgCharacterRenderer.SetCharacterDef(null);
+        }
     }
 
     private IEnumerator EndOfTurnSequence()
@@ -970,6 +1006,8 @@ public class MainGame : Game
 
         if (CharacterManager.CharactersInPlay.Count == 0)
             CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
+
+        HealthShield = 0;
     }
 
     private IEnumerator ElevatorCrashed()
@@ -984,13 +1022,13 @@ public class MainGame : Game
         }
     }
 
-    public void SimulateBatteryChange(int newValue)
-    {
-        _phone.SimulateBatteryChange(newValue);
-    }
-
     public static void ChangeHealth(int change)
     {
+        if (change < 0)
+        {
+            change += HealthShield;
+            if (change >= 0) return;
+        }
         CurrentHealth = Math.Clamp(CurrentHealth + change, 0, 8);
     }
 
@@ -1046,7 +1084,11 @@ public class MainGame : Game
         _roomRenderer.SetDefinition(_roomDefs[0]);
         _roomRenderer.PreRender(SpriteBatch);
 
+        _bgCharacterRenderer.SetCharacterDef(null);
+
+        _comboCount = 0;
         CurrentHealth = 8;
+        HealthShield = 0;
 
         if (!skipTransition)
         {
