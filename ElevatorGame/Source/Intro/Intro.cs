@@ -16,6 +16,8 @@ public static class Intro
         _scenes = [
             new IntroSceneSimpleImage("graphics/intro/ParallasLogo"),
             new IntroSceneSimpleImage("graphics/intro/FmodLogo"),
+            new IntroSceneAnimatedSprite("graphics/intro/Planet", "Tag"),
+            new IntroSceneAnimatedSprite("graphics/intro/Sprite-0002", "Tag"),
         ];
 
         foreach (var scene in _scenes)
