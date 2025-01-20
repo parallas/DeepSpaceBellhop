@@ -19,6 +19,7 @@ public class IntroSceneAnimatedSprite(string path, string tag) : IntroScene
 
     public override IEnumerator GetEnumerator()
     {
+        _sprite.Play();
         yield return 120;
     }
 
