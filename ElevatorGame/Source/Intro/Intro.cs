@@ -7,7 +7,7 @@ namespace ElevatorGame.Source.Intro;
 
 public static class Intro
 {
-    private static int _currentScene;
+    private static int _currentScene = -1;
 
     private static IntroScene[] _scenes;
 
@@ -28,6 +28,8 @@ public static class Intro
 
     public static IEnumerator RunSequence()
     {
+        yield return 10;
+
         for(int i = 0; i < _scenes.Length; i++)
         {
             _currentScene = i;
@@ -37,11 +39,17 @@ public static class Intro
 
     public static void PreDraw(SpriteBatch spriteBatch)
     {
+        if(_currentScene == -1)
+            return;
+
         _scenes[_currentScene].PreDraw(spriteBatch);
     }
 
     public static void Draw(SpriteBatch spriteBatch)
     {
+        if(_currentScene == -1)
+            return;
+
         spriteBatch.GraphicsDevice.Clear(Color.Black);
 
         _scenes[_currentScene].Draw(spriteBatch);
