@@ -14,7 +14,7 @@ public static class Intro
     public static void LoadContent()
     {
         _scenes = [
-            new IntroSceneSimpleImage("graphics/intro/ParallasLogo"),
+            new IntroSceneParallas(),
             new IntroSceneSimpleImage("graphics/intro/FmodLogo"),
 
             // animated intro
