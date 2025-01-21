@@ -10,16 +10,29 @@ namespace ElevatorGame.Source.Intro;
 public class IntroSceneParallas : IntroScene
 {
     private AnimatedSprite _sprite;
+    private Effect _ditherShader;
+    private EffectParameter _ditherShaderIntensity;
+    private RenderTarget2D _rt;
+
+    private int _frame;
 
     public override void LoadContent()
     {
         _sprite = ContentLoader.Load<AsepriteFile>("graphics/intro/ParallasLogo")
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
             .CreateAnimatedSprite("Tag");
+        _ditherShader = ContentLoader.Load<Effect>("shaders/dither_overlay");
+        _ditherShaderIntensity = _ditherShader.Parameters["DitherIntensity"];
+
+        _rt = new(MainGame.Graphics.GraphicsDevice, 240, 135);
+
+        OnResize(new(1920, 1080));
     }
 
     public override IEnumerator GetEnumerator()
     {
+        MainGame.WindowResized += OnResize;
+
         yield return 30;
 
         for(int i = 0; i < 107; i++)
@@ -75,15 +88,44 @@ public class IntroSceneParallas : IntroScene
         }
 
         yield return 30;
+
+        MainGame.WindowResized -= OnResize;
+    }
+
+    private void OnResize(Point point)
+    {
+        _ditherShader.Parameters["ScreenDimensions"].SetValue(new Vector2(
+            point.X,
+            point.Y
+        ));
     }
 
     public override void PreDraw(SpriteBatch spriteBatch)
     {
-        
+        const int edge = 8;
+        if(_frame <= edge)
+        {
+            _ditherShaderIntensity.SetValue(_frame / (float)edge);
+        }
+        else if(_frame > (107 * 2) + edge)
+        {
+            _ditherShaderIntensity.SetValue(1f - ((_frame - ((107 * 2) + edge)) / (float)edge));
+        }
+
+        MainGame.Graphics.GraphicsDevice.SetRenderTarget(_rt);
+        MainGame.Graphics.GraphicsDevice.Clear(Color.Black);
+        spriteBatch.Begin(samplerState: SamplerState.PointWrap/*, effect: _ditherShader*/); // need to fix this
+        {
+            _sprite.Draw(spriteBatch, Vector2.Zero);
+        }
+        spriteBatch.End();
+        MainGame.Graphics.GraphicsDevice.Reset();
+
+        _frame++;
     }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        _sprite.Draw(spriteBatch, Vector2.Zero);
+        spriteBatch.Draw(_rt, Vector2.Zero, Color.White);
     }
 }

@@ -176,6 +176,8 @@ public class MainGame : Game
 
     public static bool IsUsingGamePad => _isUsingGamePad;
 
+    public static event Action<Point> WindowResized;
+
     public MainGame(bool useSteamworks)
     {
         Graphics = new GraphicsDeviceManager(this);
@@ -195,6 +197,9 @@ public class MainGame : Game
         #endif
 
         Window.AllowUserResizing = true;
+
+        Window.ClientSizeChanged += (object? sender, EventArgs args)
+            => WindowResized?.Invoke(Window.ClientBounds.Size);
 
         Graphics.PreferredBackBufferWidth = 1920;
         Graphics.PreferredBackBufferHeight = 1080;
