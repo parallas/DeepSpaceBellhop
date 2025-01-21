@@ -47,10 +47,10 @@ public static class Intro
 
     public static void Draw(SpriteBatch spriteBatch)
     {
+        spriteBatch.GraphicsDevice.Clear(Color.Black);
+
         if(_currentScene == -1)
             return;
-
-        spriteBatch.GraphicsDevice.Clear(Color.Black);
 
         _scenes[_currentScene].Draw(spriteBatch);
     }
