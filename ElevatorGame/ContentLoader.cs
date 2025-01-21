@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.IO;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,6 +31,10 @@ public static class ContentLoader
             {
                 using Stream stream = TitleContainer.OpenStream($"Content/{assetName}.aseprite");
                 return AsepriteFileLoader.FromStream(fileName: "file", stream: stream, preMultiplyAlpha: true) as T;
+            }
+            else if(typeof(T).IsAssignableTo(typeof(SimpleModel)))
+            {
+                return SimpleModel.Load(assetName) as T;
             }
 
             return _content.Load<T>(assetName);

@@ -1,4 +1,5 @@
 using System.Collections;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,13 +13,13 @@ public class IntroSceneTest : IntroScene
     private VertexPositionColorTexture[] triangleVertices;
     private BasicEffect basicEffect;
 
-    private Model model;
+    private SimpleModel model;
 
     public override void LoadContent()
     {
         _rt = new(MainGame.Graphics.GraphicsDevice, 240, 135);
 
-        worldMatrix = Matrix.Identity;
+        worldMatrix = Matrix.CreateTranslation(Vector3.One * -0.5f) * Matrix.CreateScale(10);
 
         viewMatrix = Matrix.CreateLookAt(new Vector3(0, 0, 50), Vector3.Zero, Vector3.Up);
 
@@ -28,22 +29,23 @@ public class IntroSceneTest : IntroScene
             1.0f, 300.0f
         );
 
-        basicEffect = new BasicEffect(MainGame.Graphics.GraphicsDevice);
+        basicEffect = new(MainGame.Graphics.GraphicsDevice)
+        {
+            // primitive color
+            AmbientLightColor = new Vector3(0.1f, 0.1f, 0.1f),
+            DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f),
+            SpecularColor = new Vector3(0.25f, 0.25f, 0.25f),
+            SpecularPower = 5.0f,
+            Alpha = 1.0f,
 
-        // primitive color
-        basicEffect.AmbientLightColor = new Vector3(0.1f, 0.1f, 0.1f);
-        basicEffect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
-        basicEffect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
-        basicEffect.SpecularPower = 5.0f;
-        basicEffect.Alpha = 1.0f;
-
-        // The following MUST be enabled if you want to color your vertices
-        basicEffect.VertexColorEnabled = true;
+            // The following MUST be enabled if you want to color your vertices
+            VertexColorEnabled = true
+        };
 
         // Use the built in 3 lighting mode provided with BasicEffect            
         // basicEffect.EnableDefaultLighting();
 
-        model = ContentLoader.Load<Model>("models/cube");
+        model = ContentLoader.Load<SimpleModel>("models/cube");
 
         // triangleVertices = [
         //     new(new Vector3(0f, 0f, 0f), Color.Cyan, Vector2.UnitY),
@@ -68,7 +70,7 @@ public class IntroSceneTest : IntroScene
         viewMatrix = Matrix.CreateLookAt(
             new Vector3(
                 50 * MathF.Cos(MainGame.Frame * 0.05f),
-                0,
+                50 * MathF.Sin(MainGame.Frame * 0.05f),
                 50 * MathF.Sin(MainGame.Frame * 0.05f)
             ),
             Vector3.Zero,
@@ -79,22 +81,16 @@ public class IntroSceneTest : IntroScene
         basicEffect.View = viewMatrix;
         basicEffect.Projection = projectionMatrix;
 
-        RasterizerState rasterizerState = new RasterizerState();
-        rasterizerState.CullMode = CullMode.None;
+        RasterizerState rasterizerState = new()
+        {
+            CullMode = CullMode.CullClockwiseFace
+        };
         MainGame.Graphics.GraphicsDevice.RasterizerState = rasterizerState;
         foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
         {
             pass.Apply();
 
-            model.Draw(worldMatrix, viewMatrix, projectionMatrix);
-
-            // MainGame.Graphics.GraphicsDevice.DrawUserPrimitives(
-            //     PrimitiveType.TriangleList,
-            //     triangleVertices,
-            //     0,
-            //     1,
-            //     VertexPositionColor.VertexDeclaration
-            // );
+            model.Draw(MainGame.Graphics.GraphicsDevice);
         }
 
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(null);

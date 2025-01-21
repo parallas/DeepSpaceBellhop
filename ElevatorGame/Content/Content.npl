@@ -98,24 +98,7 @@
 		"obj": {
 			"path": "models/*.obj",
 			"recursive": "True",
-			"action": "build",
-			"importer": "FbxImporter",
-			"processor": "ModelProcessor",
-			"processorParam": {
-				"ColorKeyEnabled": "True",
-				"DefaultEffect": "BasicEffect",
-				"GenerateMipmaps": "True",
-				"GenerateTangentFrames": "False",
-				"PremultiplyTextureAlpha": "True",
-				"PremultiplyVertexColors": "True",
-				"ResizeTexturesToPowerOfTwo": "False",
-				"RotationX": 0,
-				"RotationY": 0,
-				"RotationZ": 0,
-				"Scale": 1,
-				"SwapWindingOrder": "False",
-				"TextureFormat": "Compressed"
-			}
+			"action": "copy"
 		},
 		"localization": {
 			"path": "localizations/*.json",
