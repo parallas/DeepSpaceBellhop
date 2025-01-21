@@ -4,7 +4,7 @@ namespace ElevatorGame.Source.BG_Characters;
 
 public static class BgCharacterRegistry
 {
-    public static Dictionary<string, BgCharacterDef> CharacterTable { get; private set; } = new Dictionary<string, BgCharacterDef>();
+    public static Dictionary<string, BgCharacterDef> CharacterTable { get; private set; } = [];
 
     public static void RegisterCharacterDef(BgCharacterDef characterDefs)
     {
@@ -21,6 +21,8 @@ public static class BgCharacterRegistry
 
     public static void Init()
     {
+        CharacterTable.Clear();
+
         RegisterCharacterDefs([
             new() { Name = "Mimi", SpritePath = "graphics/characters_bg/Mimi" },
             new() { Name = "Yeti", SpritePath = "graphics/characters_bg/Yeti" },
