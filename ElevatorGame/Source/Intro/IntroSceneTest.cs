@@ -9,8 +9,10 @@ public class IntroSceneTest : IntroScene
     private RenderTarget2D _rt;
 
     private Matrix worldMatrix, viewMatrix, projectionMatrix;
-    private VertexPositionColor[] triangleVertices;
+    private VertexPositionColorTexture[] triangleVertices;
     private BasicEffect basicEffect;
+
+    private Model model;
 
     public override void LoadContent()
     {
@@ -41,11 +43,13 @@ public class IntroSceneTest : IntroScene
         // Use the built in 3 lighting mode provided with BasicEffect            
         // basicEffect.EnableDefaultLighting();
 
-        triangleVertices = [
-            new(new Vector3(0f, 0f, 0f), Color.Cyan),
-            new(new Vector3(10f, 10f, 0f), Color.Magenta),
-            new(new Vector3(10f, 0f, -5f), Color.White)
-        ];
+        model = ContentLoader.Load<Model>("models/cube");
+
+        // triangleVertices = [
+        //     new(new Vector3(0f, 0f, 0f), Color.Cyan, Vector2.UnitY),
+        //     new(new Vector3(10f, 10f, 0f), Color.Magenta, Vector2.UnitX),
+        //     new(new Vector3(10f, 0f, -5f), Color.White, Vector2.One)
+        // ];
     }
 
     public override IEnumerator GetEnumerator()
@@ -82,13 +86,15 @@ public class IntroSceneTest : IntroScene
         {
             pass.Apply();
 
-            MainGame.Graphics.GraphicsDevice.DrawUserPrimitives(
-                PrimitiveType.TriangleList,
-                triangleVertices,
-                0,
-                1,
-                VertexPositionColor.VertexDeclaration
-            );
+            model.Draw(worldMatrix, viewMatrix, projectionMatrix);
+
+            // MainGame.Graphics.GraphicsDevice.DrawUserPrimitives(
+            //     PrimitiveType.TriangleList,
+            //     triangleVertices,
+            //     0,
+            //     1,
+            //     VertexPositionColor.VertexDeclaration
+            // );
         }
 
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(null);
