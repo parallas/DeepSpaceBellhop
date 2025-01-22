@@ -132,9 +132,6 @@ public class MainGame : Game
     private BgCharacterRenderer _bgCharacterRenderer;
     private int _comboCount;
 
-    private Sprite _yetiIdle;
-    private Sprite _yetiPeace;
-
     private Sprite _darkOverlaySprite;
     private float _darkOverlayOpacity;
 
@@ -321,11 +318,7 @@ public class MainGame : Game
         // CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog, _elevator);
         // // CharacterManager.Init();
         // CharacterManager.LoadContent();
-
-        var yetiSpriteFile = ContentLoader.Load<AsepriteFile>("graphics/characters/Yeti")!;
-        _yetiIdle = yetiSpriteFile.CreateSprite(GraphicsDevice, 0, true);
-        _yetiPeace = yetiSpriteFile.CreateSprite(GraphicsDevice, 1, true);
-
+        
         var darkOverlayFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDarkOverlay");
         _darkOverlaySprite = darkOverlayFile!.CreateSprite(GraphicsDevice, 0, true);
         _darkOverlaySprite.OriginX = 64;
