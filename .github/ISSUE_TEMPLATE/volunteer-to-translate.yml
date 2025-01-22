@@ -11,20 +11,22 @@ body:
   attributes:
     value: |
       Thank you for contributing! Please use the json file located at `/Content/localizations/en-us.json` for reference!
-- type: input
+- type: textarea
   id: lang-name
   attributes:
     label: "Language Name"
     description: "Written in the language followed by country id"
     placeholder: "Español (MX)"
+    render: txt
   validations:
     required: true
-- type: input
+- type: textarea
   id: lang-identifier
   attributes:
     label: "Language ID"
     description: "Will be the name of the json file, uses ISO identifiers."
     placeholder: "es-mx"
+    render: txt
   validations:
     required: true
 body:
