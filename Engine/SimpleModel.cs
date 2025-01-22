@@ -84,7 +84,7 @@ public class SimpleModel
             else if(line.StartsWith("vn "))
             {
                 var split = line.Split(' ', 4, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine($"{line}, {split[1]}, {split[2]}, {split[3]}");
+                // Console.WriteLine($"{line}, {split[1]}, {split[2]}, {split[3]}");
                 vn.Add(new Vector3(
                     float.Parse(split[1]),
                     float.Parse(split[2]),
@@ -94,7 +94,7 @@ public class SimpleModel
             else if(line.StartsWith("vc ")) // custom vertex color implementation
             {
                 var split = line.Split(' ', 4, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine($"{line}, {split[1]}, {split[2]}, {split[3]}");
+                // Console.WriteLine($"{line}, {split[1]}, {split[2]}, {split[3]}");
                 vc.Add(new Color(
                     float.Parse(split[1]),
                     float.Parse(split[2]),
@@ -127,7 +127,7 @@ public class SimpleModel
             }
         }
 
-        SimpleModel mdl = new SimpleModel {
+        SimpleModel mdl = new() {
             Faces = [..f],
             Normals = [..vn],
             TexCoords = [..vt],

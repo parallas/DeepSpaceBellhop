@@ -37,7 +37,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
     float2 pos = uv * ScreenDimensions;
 
-    float ditherValue = (ditherMatrix[pos.x % 4][pos.y % 4] / 16.0) < DitherIntensity ? 1 : 0;
+    float ditherValue = max(0, sign(DitherIntensity - (ditherMatrix[pos.x % 4][pos.y % 4] / 16.0)));
 
     return float4(col.rgb * ditherValue, col.a);
 }

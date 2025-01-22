@@ -1,5 +1,6 @@
 using System.Collections;
 using AsepriteDotNet.Aseprite;
+using Engine;
 using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,8 +14,9 @@ public class IntroSceneParallas : IntroScene
     private Effect _ditherShader;
     private EffectParameter _ditherShaderIntensity;
     private RenderTarget2D _rt;
+    private RenderTarget2D _rtEffect;
 
-    private int _frame;
+    private float _fadeAmount = 1;
 
     public override void LoadContent()
     {
@@ -25,15 +27,18 @@ public class IntroSceneParallas : IntroScene
         _ditherShaderIntensity = _ditherShader.Parameters["DitherIntensity"];
 
         _rt = new(MainGame.Graphics.GraphicsDevice, 240, 135);
-
-        OnResize(new(1920, 1080));
+        _rtEffect = new(MainGame.Graphics.GraphicsDevice, 240, 135);
     }
 
     public override IEnumerator GetEnumerator()
     {
-        MainGame.WindowResized += OnResize;
+        while(_fadeAmount > 0)
+        {
+            _fadeAmount = MathUtil.Approach(_fadeAmount, 0, 1f/20f);
+            yield return null;
+        }
 
-        yield return 30;
+        yield return 10;
 
         for(int i = 0; i < 107; i++)
         {
@@ -87,45 +92,47 @@ public class IntroSceneParallas : IntroScene
             }
         }
 
-        yield return 30;
+        yield return 20;
 
-        MainGame.WindowResized -= OnResize;
-    }
+        while(_fadeAmount < 1)
+        {
+            _fadeAmount = MathUtil.Approach(_fadeAmount, 1, 1f/20f);
+            yield return null;
+        }
 
-    private void OnResize(Point point)
-    {
-        _ditherShader.Parameters["ScreenDimensions"].SetValue(new Vector2(
-            point.X,
-            point.Y
-        ));
+        yield return 20;
     }
 
     public override void PreDraw(SpriteBatch spriteBatch)
     {
-        const int edge = 8;
-        if(_frame <= edge)
-        {
-            _ditherShaderIntensity.SetValue(_frame / (float)edge);
-        }
-        else if(_frame > (107 * 2) + edge)
-        {
-            _ditherShaderIntensity.SetValue(1f - ((_frame - ((107 * 2) + edge)) / (float)edge));
-        }
+        _ditherShader.Parameters["ScreenDimensions"].SetValue(new Vector2(
+            240,
+            135
+        ));
+
+        _ditherShaderIntensity?.SetValue(1-_fadeAmount);
 
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_rt);
         MainGame.Graphics.GraphicsDevice.Clear(Color.Black);
-        spriteBatch.Begin(samplerState: SamplerState.PointWrap/*, effect: _ditherShader*/); // need to fix this
+        spriteBatch.Begin(samplerState: SamplerState.PointWrap);
         {
             _sprite.Draw(spriteBatch, Vector2.Zero);
         }
         spriteBatch.End();
-        MainGame.Graphics.GraphicsDevice.Reset();
 
-        _frame++;
+        MainGame.Graphics.GraphicsDevice.SetRenderTarget(_rtEffect);
+        MainGame.Graphics.GraphicsDevice.Clear(Color.Black);
+        spriteBatch.Begin(samplerState: SamplerState.PointWrap, effect: _ditherShader);
+        {
+            spriteBatch.Draw(_rt, Vector2.Zero, Color.White);
+        }
+        spriteBatch.End();
+
+        MainGame.Graphics.GraphicsDevice.Reset();
     }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_rt, Vector2.Zero, Color.White);
+        spriteBatch.Draw(_rtEffect, Vector2.Zero, Color.White);
     }
 }
