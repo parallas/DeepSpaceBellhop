@@ -1,7 +1,9 @@
 using System;
+using AsepriteDotNet.Aseprite;
 using Engine.Display;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source;
 
@@ -79,7 +81,11 @@ public static class RenderPipeline
     {
         var graphicsDevice = graphicsDeviceManager.GraphicsDevice;
 
-        RtScreen.DrawWithRtOnScreen(_renderTarget, graphicsDeviceManager, spriteBatch, null, Color.White, () =>
+        var screenSpaceEffects = ContentLoader.Load<Effect>("shaders/screenspaceeffects");
+        screenSpaceEffects?
+            .Parameters["MaskTexture"]?
+            .SetValue(ContentLoader.Load<Texture2D>("graphics/LcdMask"));
+        RtScreen.DrawWithRtOnScreen(_renderTarget, graphicsDeviceManager, spriteBatch, null, screenSpaceEffects, Color.White, () =>
         {
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {

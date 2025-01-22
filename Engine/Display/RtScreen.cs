@@ -6,7 +6,7 @@ namespace Engine.Display;
 
 public static class RtScreen
 {
-    public static void DrawWithRtOnScreen(RenderTarget2D renderTarget2D, GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Effect postProcessingEffect, Color color, Action drawCode)
+    public static void DrawWithRtOnScreen(RenderTarget2D renderTarget2D, GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Effect postProcessingEffect, Effect screenSpaceEffect, Color color, Action drawCode)
     {
         GraphicsDevice graphicsDevice = graphics.GraphicsDevice;
 
@@ -26,11 +26,23 @@ public static class RtScreen
         drawCode?.Invoke();
 
         int nearestScale = (int)Math.Floor((decimal)MathHelper.Min(widthRatio, heightRatio));
-        RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
+        using RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
         graphicsDevice.SetRenderTarget(scaledRt);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: postProcessingEffect);
         {
             spriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), color);
+        }
+        spriteBatch.End();
+        graphicsDevice.Reset();
+
+        screenSpaceEffect?.Parameters["GameTime"]?.SetValue(DateTime.Now.Ticks);
+        screenSpaceEffect?.Parameters["BackBufferResolution"]?.SetValue(new Vector4(rtWidth, rtHeight,
+            (float)rtWidth / rtHeight, (float)rtHeight / rtWidth));
+        using RenderTarget2D screenSpaceEffectRt = new RenderTarget2D(graphicsDevice, scaledRt.Width, scaledRt.Height);
+        graphicsDevice.SetRenderTarget(screenSpaceEffectRt);
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: screenSpaceEffect);
+        {
+            spriteBatch.Draw(scaledRt, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), color);
         }
         spriteBatch.End();
         graphicsDevice.Reset();
@@ -52,13 +64,12 @@ public static class RtScreen
 
         int xOffset = screenWidth / 2 - newWidth / 2;
         int yOffset = screenHeight / 2 - newHeight / 2;
+
         spriteBatch.Begin(samplerState: SamplerState.AnisotropicClamp);
         {
-            spriteBatch.Draw(scaledRt, new Rectangle(xOffset, yOffset, newWidth, newHeight), Color.White);
+            spriteBatch.Draw(screenSpaceEffectRt, new Rectangle(xOffset, yOffset, newWidth, newHeight), Color.White);
         }
         spriteBatch.End();
-
-        scaledRt.Dispose();
     }
 
     public static Vector2 ToScreenSpace(Vector2 position, Point renderBufferSize, Rectangle screenBounds)

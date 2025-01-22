@@ -318,7 +318,7 @@ public class MainGame : Game
         // CharacterManager = new CharacterManager(_phone, _ticketManager, _dialog, _elevator);
         // // CharacterManager.Init();
         // CharacterManager.LoadContent();
-        
+
         var darkOverlayFile = ContentLoader.Load<AsepriteFile>("graphics/ElevatorDarkOverlay");
         _darkOverlaySprite = darkOverlayFile!.CreateSprite(GraphicsDevice, 0, true);
         _darkOverlaySprite.OriginX = 64;
