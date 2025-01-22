@@ -1,4 +1,3 @@
----
 name: Volunteer to translate
 about: "Submit localization data to translate the game, use /Content/localizations for reference"
 title: "[LOCALE] Name (xx-xx)"
@@ -42,4 +41,3 @@ body:
     render: json
   validations:
     required: true
----
