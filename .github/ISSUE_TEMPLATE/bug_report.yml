@@ -1,8 +1,8 @@
 name: Bug report
-about: Create a bug report to help us improve the game
+description: Create a bug report to help us improve the game
 title: "[BUG] simple and brief title"
-labels: bug
-assignees: ''
+labels: ["bug"]
+assignees: []
 body:
 - type: input
   id: description
@@ -60,6 +60,6 @@ body:
   id: additional-context
   attributes:
     label: Additional Context
-    descriptions: "Add any other context about the problem here, such as which day you were on, whether characters were on the elevator or not, etc."
+    description: "Add any other context about the problem here, such as which day you were on, whether characters were on the elevator or not, etc."
   validations:
     required: false
