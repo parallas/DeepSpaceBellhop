@@ -39,7 +39,7 @@ body:
 - type: dropdown
   id: os
   attributes:
-    label: Platform
+    label: Platforms
     options:
       - linux
       - mac
@@ -51,9 +51,10 @@ body:
 - type: dropdown
   id: version
   attributes:
-    label: Game Version
+    label: Game Versions
     options:
       - 1.0.0
+    multiple: true
   validations:
     required: true
 - type: textarea
