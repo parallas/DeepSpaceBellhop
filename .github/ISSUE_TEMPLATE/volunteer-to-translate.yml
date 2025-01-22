@@ -4,8 +4,15 @@ title: "[LOCALE] Name (xx-xx)"
 labels: ["localization"]
 assignees: []
 body:
+- type: markdown
+  attributes:
+    value: "## Hello!"
+- type: markdown
+  attributes:
+    value: |
+      Thank you for contributing! Please use the json file located at `/Content/localizations/en-us.json` for reference!
 - type: input
-  id: name
+  id: lang-name
   attributes:
     label: "Language Name"
     description: "Written in the language followed by country id"
@@ -13,7 +20,7 @@ body:
   validations:
     required: true
 - type: input
-  id: identifier
+  id: lang-identifier
   attributes:
     label: "Language ID"
     description: "Will be the name of the json file, uses ISO identifiers."
@@ -22,14 +29,14 @@ body:
     required: true
 body:
 - type: checkboxes
-  id: additional-checks
+  id: "additional-checks"
   attributes:
-    label: "Other information"
+    label: "Information"
     description: "You may select all that apply"
     options:
       - label: "Covers every token in the current version"
 - type: textarea
-  id: data
+  id: "data"
   attributes:
     label: "JSON Values"
     description: "Should only contain the content of the `values` property"
