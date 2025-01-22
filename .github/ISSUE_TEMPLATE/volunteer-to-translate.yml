@@ -1,8 +1,8 @@
-name: Volunteer to translate
-about: "Submit localization data to translate the game, use /Content/localizations for reference"
+name: "Volunteer to translate"
+description: "Submit localization data to translate the game, use /Content/localizations for reference"
 title: "[LOCALE] Name (xx-xx)"
-labels: localization
-assignees: ''
+labels: ["localization"]
+assignees: []
 body:
 - type: input
   id: name
