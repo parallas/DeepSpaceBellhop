@@ -133,7 +133,7 @@ public class MainGame : Game
     private int _comboCount;
 
     private Sprite _darkOverlaySprite;
-    private float _darkOverlayOpacity;
+    private float _darkOverlayOpacity = 1f;
 
     private AnimatedSprite _buttonHint;
     private float _buttonHintOpacity;
@@ -474,7 +474,7 @@ public class MainGame : Game
         CameraPosition = MathUtil.ExpDecay(CameraPosition, CameraPositionTarget, 8f, 1f / 60f);
         Camera.Update();
 
-        float darkOverlayOpacityTarget = 0;
+        float darkOverlayOpacityTarget = 0.25f;
         if(EndOfDaySequence)
         {
             darkOverlayOpacityTarget = 1f;
