@@ -937,18 +937,23 @@ public class MainGame : Game
         MusicPlayer.PlayMusic("MainMenu");
     }
 
-    private IEnumerator ReturnToMainMenuSequence()
+    private IEnumerator ReturnToMainMenuSequence(bool fadeOut = true, bool fadeIn = true)
     {
-        yield return FadeToBlack();
-        yield return 30;
+        if (fadeOut) yield return FadeToBlack(); else _fadeoutProgress = 1;
+        yield return 10;
         CreateMainMenu();
         StudioSystem.SetParameterValue("IsPaused", 0f);
-        yield return FadeFromBlack();
+        if (fadeOut || fadeIn) yield return FadeFromBlack();
     }
 
-    private void ReturnToMainMenu()
+    private void ReturnToMainMenu(bool fadeOut = true, bool fadeIn = true)
     {
-        Coroutines.TryRun("main_return_to_main_menu", ReturnToMainMenuSequence(), out _);
+        Coroutines.TryRun("main_return_to_main_menu", ReturnToMainMenuSequence(fadeOut, fadeIn), out _);
+    }
+
+    private void ReturnToMainMenuFromResultsScreen()
+    {
+        ReturnToMainMenu(false, true);
     }
 
     private void OnMainMenuStartGame()
@@ -1087,7 +1092,7 @@ public class MainGame : Game
     {
         // kills u
         GameState = GameStates.GameOver;
-        _gameOverScreen.Init(_phone.PhonePosition, _instance.ReturnToMainMenu);
+        _gameOverScreen.Init(_phone.PhonePosition, _instance.ReturnToMainMenuFromResultsScreen);
         MusicPlayer.StopMusic(true, false);
     }
 
@@ -1230,18 +1235,19 @@ public class MainGame : Game
     public static IEnumerator FadeToBlack()
     {
         ResetShaderProperties();
+
         _fadeoutProgress = 0;
         _fadeoutTween.Start(0f, 1f, 0.5f, TinyTween.ScaleFuncs.QuadraticEaseIn);
         while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.01f))
         {
             yield return null;
         }
+
         _fadeoutProgress = 1;
     }
 
     public static IEnumerator FadeFromBlack()
     {
-        _fadeoutProgress = 1;
         while(!MathUtil.Approximately(_fadeoutProgress, 0, 0.01f))
         {
             _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 0, 5, 1f/60f);

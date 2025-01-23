@@ -65,7 +65,7 @@ public class GameOverScreen
 
         if (_showPromptForResults && Keybindings.Confirm.Pressed)
         {
-            _onContinue?.Invoke();
+            MainGame.Coroutines.TryRun("continue_return_to_main_menu", ReturnToMainMenu(), out _);
             _showPromptForResults = false;
         }
     }
@@ -116,5 +116,14 @@ public class GameOverScreen
         yield return 30;
 
         _showPromptForResults = true;
+    }
+
+    private IEnumerator ReturnToMainMenu()
+    {
+        _phoneTargetPos.Y = MainGame.GameBounds.Bottom + 16;
+        _showOhNoText = false;
+        _showPromptForResults = false;
+        yield return 15;
+        _onContinue?.Invoke();
     }
 }
