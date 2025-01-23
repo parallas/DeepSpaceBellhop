@@ -23,6 +23,7 @@ public static class RenderPipeline
     public static void Init(Point size)
     {
         RenderBufferSize = size;
+        RtScreen.Init();
     }
 
     public static void LoadContent(GraphicsDevice graphicsDevice)

@@ -23,6 +23,13 @@ sampler2D MaskTextureSampler = sampler_state {
     AddressV = WRAP;
 };
 
+Texture2D LastFrameTexture;
+sampler2D LastFrameTextureSampler = sampler_state {
+    Texture = <LastFrameTexture>;
+    AddressU = WRAP;
+    AddressV = WRAP;
+};
+
 #include "voronoi.hlsl"
 #include "keijiro_simplex3d.hlsl"
 
@@ -39,7 +46,10 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float4 col = tex2D(SpriteTextureSampler, uv).rgba * input.Color.rgba;
     float4 maskSample = tex2D(MaskTextureSampler, uv * BackBufferResolution.xy);
     maskSample = lerp(maskSample, float4(1, 1, 1, 1), 0.85f);
-    return float4(maskSample * col.rgb, 1);
+    float3 maskColored = maskSample.rgb * col.rgb;
+    float3 blurSample = lerp(maskColored, tex2D(LastFrameTextureSampler, uv).rgb, 0.2f);
+    float3 finalSample = blurSample;
+    return float4(finalSample, 1);
 }
 
 technique SpriteDrawing

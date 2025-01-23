@@ -388,6 +388,8 @@ public class MainGame : Game
 
         _elevator?.UnloadContent();
         _phone?.UnloadContent();
+
+        RtScreen.UnloadContent();
     }
 
     private void Game_Exiting(object sender, ExitingEventArgs e)

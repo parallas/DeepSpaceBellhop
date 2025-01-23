@@ -6,6 +6,22 @@ namespace Engine.Display;
 
 public static class RtScreen
 {
+    private static RenderTarget2D _scaledRt;
+    private static RenderTarget2D _screenSpaceEffectRt;
+    private static RenderTarget2D _lastFrameRt;
+
+    public static void Init()
+    {
+
+    }
+
+    public static void UnloadContent()
+    {
+        _scaledRt?.Dispose();
+        _screenSpaceEffectRt?.Dispose();
+        _lastFrameRt?.Dispose();
+    }
+
     public static void DrawWithRtOnScreen(RenderTarget2D renderTarget2D, GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Effect postProcessingEffect, Effect screenSpaceEffect, Color color, Action drawCode)
     {
         GraphicsDevice graphicsDevice = graphics.GraphicsDevice;
@@ -26,11 +42,32 @@ public static class RtScreen
         drawCode?.Invoke();
 
         int nearestScale = (int)Math.Floor((decimal)MathHelper.Min(widthRatio, heightRatio));
-        using RenderTarget2D scaledRt = new RenderTarget2D(graphicsDevice, rtWidth * nearestScale, rtHeight * nearestScale);
-        graphicsDevice.SetRenderTarget(scaledRt);
+        int scaledRtWidth = rtWidth * nearestScale;
+        int scaledRtHeight = rtHeight * nearestScale;
+        if (_scaledRt is null || _screenSpaceEffectRt is null ||
+            _scaledRt.Width != scaledRtWidth || _scaledRt.Height != scaledRtHeight)
+        {
+            _scaledRt?.Dispose();
+            _scaledRt = new RenderTarget2D(graphicsDevice, scaledRtWidth, scaledRtHeight);
+
+            _screenSpaceEffectRt?.Dispose();
+            _screenSpaceEffectRt = new RenderTarget2D(graphicsDevice, scaledRtWidth, scaledRtHeight);
+
+            _lastFrameRt?.Dispose();
+            _lastFrameRt = new RenderTarget2D(graphicsDevice, scaledRtWidth, scaledRtHeight);
+
+            graphicsDevice.SetRenderTarget(_lastFrameRt);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            {
+                spriteBatch.Draw(_scaledRt, new Rectangle(0, 0, _scaledRt.Width, _scaledRt.Height), color);
+            }
+            spriteBatch.End();
+            graphicsDevice.Reset();
+        }
+        graphicsDevice.SetRenderTarget(_scaledRt);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: postProcessingEffect);
         {
-            spriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), color);
+            spriteBatch.Draw(renderTarget2D, new Rectangle(0, 0, _scaledRt.Width, _scaledRt.Height), color);
         }
         spriteBatch.End();
         graphicsDevice.Reset();
@@ -38,11 +75,19 @@ public static class RtScreen
         screenSpaceEffect?.Parameters["GameTime"]?.SetValue(DateTime.Now.Ticks);
         screenSpaceEffect?.Parameters["BackBufferResolution"]?.SetValue(new Vector4(rtWidth, rtHeight,
             (float)rtWidth / rtHeight, (float)rtHeight / rtWidth));
-        using RenderTarget2D screenSpaceEffectRt = new RenderTarget2D(graphicsDevice, scaledRt.Width, scaledRt.Height);
-        graphicsDevice.SetRenderTarget(screenSpaceEffectRt);
+        screenSpaceEffect?.Parameters["LastFrameTexture"]?.SetValue(_lastFrameRt);
+        graphicsDevice.SetRenderTarget(_screenSpaceEffectRt);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: screenSpaceEffect);
         {
-            spriteBatch.Draw(scaledRt, new Rectangle(0, 0, scaledRt.Width, scaledRt.Height), color);
+            spriteBatch.Draw(_scaledRt, new Rectangle(0, 0, _scaledRt.Width, _scaledRt.Height), color);
+        }
+        spriteBatch.End();
+        graphicsDevice.Reset();
+
+        graphicsDevice.SetRenderTarget(_lastFrameRt);
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        {
+            spriteBatch.Draw(_screenSpaceEffectRt, new Rectangle(0, 0, _scaledRt.Width, _scaledRt.Height), color);
         }
         spriteBatch.End();
         graphicsDevice.Reset();
@@ -67,7 +112,7 @@ public static class RtScreen
 
         spriteBatch.Begin(samplerState: SamplerState.AnisotropicClamp);
         {
-            spriteBatch.Draw(screenSpaceEffectRt, new Rectangle(xOffset, yOffset, newWidth, newHeight), Color.White);
+            spriteBatch.Draw(_screenSpaceEffectRt, new Rectangle(xOffset, yOffset, newWidth, newHeight), Color.White);
         }
         spriteBatch.End();
     }
