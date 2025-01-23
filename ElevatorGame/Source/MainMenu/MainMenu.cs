@@ -126,10 +126,14 @@ public class MainMenu
         MainGame.Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _bgSprite.Draw(spriteBatch, Vector2.Zero);
+
+        Vector2 logoPos = new(MathF.Truncate(MainGame.GameBounds.Width / 3f) + 12, -12);
+        logoPos.Y += MathF.Sin(MainGame.Frame / 60f) * 2f;
+        logoPos = Vector2.Floor(logoPos);
         _logoSprite.Color = Color.Black;
-        _logoSprite.Draw(spriteBatch, new((MainGame.GameBounds.Width / 3) + 14, -10));
+        _logoSprite.Draw(spriteBatch, logoPos + Vector2.One * 2f);
         _logoSprite.Color = Color.White;
-        _logoSprite.Draw(spriteBatch, new((MainGame.GameBounds.Width / 3) + 12, -12));
+        _logoSprite.Draw(spriteBatch, logoPos);
 
         _buttonPanelSprite.Draw(spriteBatch, new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 40));
         foreach (var b in _titleButtons)
