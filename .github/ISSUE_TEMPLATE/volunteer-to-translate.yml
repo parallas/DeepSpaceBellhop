@@ -1,0 +1,49 @@
+name: "Volunteer to translate"
+description: "Submit localization data to translate the game, use /Content/localizations for reference"
+title: "[LOCALE] Name (xx-xx)"
+labels: ["localization"]
+assignees: []
+body:
+- type: markdown
+  attributes:
+    value: "## Hello!"
+- type: markdown
+  attributes:
+    value: |
+      Thank you for contributing! Please use the json file located at `/Content/localizations/en-us.json` for reference!
+- type: input
+  id: "lname"
+  attributes:
+    label: "Displayname"
+    description: "Written in the language followed by country ISO identifier"
+    placeholder: "Español (MX)"
+  validations:
+    required: true
+- type: input
+  id: "lid"
+  attributes:
+    label: "Identifier"
+    description: "Will be the name of the file, uses ISO identifiers."
+    placeholder: "es-mx"
+  validations:
+    required: true
+- type: checkboxes
+  id: "additional-checks"
+  attributes:
+    label: "Information"
+    description: "You may select all that apply"
+    options:
+      - label: "Covers every token in the current version"
+- type: textarea
+  id: "data"
+  attributes:
+    label: "JSON Values"
+    description: "Should only contain the content of the `values` property"
+    placeholder: |
+      {
+          "token.example.yeah": "Si",
+          ...
+      }
+    render: json
+  validations:
+    required: true

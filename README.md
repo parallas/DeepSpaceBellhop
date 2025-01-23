@@ -104,19 +104,3 @@ Steam integration: Steamworks SDK v157
 Uses a fork of Facepunch.Steamworks to interface with Steamworks SDK: [tmaster-terrarian/Facepunch.Steamworks](https://github.com/tmaster-terrarian/Facepunch.Steamworks) ([license](https://github.com/FacePunch/Facepunch.Steamworks/blob/master/LICENSE))
 
 Uses a fork (of a fork) of the Coroutines system that was initially created by [ChevyRay](https://github.com/ChevyRay): [tmaster-terrarian/Coroutines](https://github.com/tmaster-terrarian/Parallas.Coroutines). Detailed attribution is embedded in the file: [/Engine/Coroutines.cs](https://raw.githubusercontent.com/Parralas/DeepSpaceBellhop/refs/heads/main/Engine/Coroutines.cs).
-
-### BUILDING
-Windows 10 and 11, MacOS, and Arch Linux are confirmed and tested to be capable of building. There are likely many other Linux distros that work as well.
-
-Since it's being compiled without steam support, you will need to supply the `--no-steam` command-line argument to the game when you launch it.
-
-If you wish to compile the game yourself, there are some components required to build successfully:
-- FMOD Core and FMOD Studio binaries, version 2.02.25 (you can download them from the "Engine" section of the FMOD download page).
-- Linux & MacOS need A valid 64-bit Wine prefix (the WoW64 version is technically optional but recommended), with d3dcompiler_47.dll and the .NET 8.0 sdk installed on it.
-- Linux needs the `zip` command installed, if you choose to use the included build script. You can get it from most of the popular package managers.
-
-There are two build scripts for different operating systems, with `build.bat` being made for Windows, and `build.sh` for Linux or Mac OS.
-
-To make a build, run the corresponding build script in the repository's root folder. The script will output a build for each supported platform (if on Linux or MacOS, it also creates a matching zip folder for each)
-
-After the script completes, builds are located at `./ElevatorGame/bin/Release/net8.0/`.
