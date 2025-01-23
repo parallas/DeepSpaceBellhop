@@ -18,6 +18,7 @@ namespace ElevatorGame.Source.Phone;
 public class Phone(Elevator.Elevator elevator) : IDisposable
 {
     public const float MaxOffset = 32f;
+    public const int ParallaxDepth = 25;
 
     private bool _isOpen;
     private float _offset;
@@ -49,6 +50,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     // sprite origin: 202, 79
     // mouse region origin: 193, 75
 
+    public Vector2 PhonePosition => _phonePosition;
     private Vector2 _phonePosition;
     private Vector2 _dockedPhonePos;
     private Vector2 _openPhonePos;
@@ -281,7 +283,7 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
 
         float blend = _offset / 32f;
         Vector2 blendedPhonePos = Vector2.Lerp(_dockedPhonePos, _openPhonePos, blend);
-        Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, 25);
+        Vector2 phonePos = MainGame.GetCursorParallaxValue(blendedPhonePos, ParallaxDepth);
         _phonePosition = MathUtil.ExpDecay(_phonePosition, phonePos, 13f, 1f / 60f);
 
         foreach (var order in _orders)

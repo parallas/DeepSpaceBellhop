@@ -9,6 +9,7 @@ using ElevatorGame.Source;
 using ElevatorGame.Source.BG_Characters;
 using ElevatorGame.Source.Characters;
 using ElevatorGame.Source.Days;
+using ElevatorGame.Source.GameOver;
 using ElevatorGame.Source.Pause;
 using ElevatorGame.Source.Rooms;
 using ElevatorGame.Source.Tickets;
@@ -34,6 +35,7 @@ namespace ElevatorGame;
 
 public class MainGame : Game
 {
+    private static MainGame _instance;
     public static GraphicsDeviceManager Graphics { get; set; }
     public static SpriteBatch SpriteBatch { get; set; }
     public static ImGuiRenderer GuiRenderer { get; private set; }
@@ -106,6 +108,7 @@ public class MainGame : Game
         Gameplay,
         MainMenu,
         Intro,
+        GameOver,
     }
 
     public static GameStates GameState { get; set; } = GameStates.Intro;
@@ -121,7 +124,7 @@ public class MainGame : Game
     public static bool HasMadeMistake { get; set; }
 
     private Elevator.Elevator _elevator;
-    private Phone.Phone _phone;
+    private static Phone.Phone _phone;
     private Dialog.Dialog _dialog;
 
     private TicketManager _ticketManager;
@@ -155,6 +158,7 @@ public class MainGame : Game
     private static PauseManager _pauseManager = new();
 
     private static MainMenu? _mainMenu;
+    private static GameOverScreen _gameOverScreen;
 
     private readonly DayTransition _dayTransition = new DayTransition();
     private static float _fadeoutProgress;
@@ -182,6 +186,8 @@ public class MainGame : Game
         IsMouseVisible = false;
 
         UseSteamworks = useSteamworks;
+
+        _instance = this;
     }
 
     protected override void Initialize()
@@ -233,6 +239,8 @@ public class MainGame : Game
 
         DayRegistry.Init();
 
+        BgCharacterRegistry.Init();
+
         CharacterRegistry.Init();
 
         base.Initialize();
@@ -270,8 +278,6 @@ public class MainGame : Game
         DayRegistry.Init();
 
         CharacterRegistry.Init();
-
-        BgCharacterRegistry.Init();
     }
 
     protected override void LoadContent()
@@ -348,6 +354,9 @@ public class MainGame : Game
         _pauseManager.ExitGame = Exit;
         _pauseManager.OpenMainMenu = CreateMainMenu;
         _pauseManager.LoadContent();
+
+        _gameOverScreen = new GameOverScreen();
+        _gameOverScreen.LoadContent(GraphicsDevice);
 
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
@@ -446,8 +455,20 @@ public class MainGame : Game
                 return;
             }
         }
+        else if (GameState == GameStates.GameOver)
+        {
+            _gameOverScreen.Update();
 
-        if (Keybindings.Pause.Pressed && CurrentMenu != Menus.DayTransition)
+            Camera.Position =
+                CameraPosition + Cursor.TiltOffset;
+
+            CameraPosition = MathUtil.ExpDecay(CameraPosition, CameraPositionTarget, 8f, 1f / 60f);
+            Camera.Update();
+
+            return;
+        }
+
+        if (Keybindings.Pause.Pressed && CurrentMenu != Menus.DayTransition && GameState == GameStates.Gameplay)
         {
             _pauseManager.Pause();
         }
@@ -534,6 +555,9 @@ public class MainGame : Game
                     case GameStates.MainMenu:
                         break;
                     case GameStates.Intro:
+                        break;
+                    case GameStates.GameOver:
+                        _gameOverScreen.Draw(SpriteBatch);
                         break;
                 }
             }
@@ -628,6 +652,15 @@ public class MainGame : Game
                         {
                             Coroutines.TryRun("main_day_advance", SetDay(i), out _);
                         }
+                    }
+                    ImGui.EndMenu();
+                }
+
+                if (ImGui.BeginMenu("Gameplay", enabled: GameState == GameStates.Gameplay))
+                {
+                    if (ImGui.MenuItem("kills u"))
+                    {
+                        ChangeHealth(-int.MaxValue);
                     }
                     ImGui.EndMenu();
                 }
@@ -904,6 +937,20 @@ public class MainGame : Game
         MusicPlayer.PlayMusic("MainMenu");
     }
 
+    private IEnumerator ReturnToMainMenuSequence()
+    {
+        yield return FadeToBlack();
+        yield return 30;
+        CreateMainMenu();
+        StudioSystem.SetParameterValue("IsPaused", 0f);
+        yield return FadeFromBlack();
+    }
+
+    private void ReturnToMainMenu()
+    {
+        Coroutines.TryRun("main_return_to_main_menu", ReturnToMainMenuSequence(), out _);
+    }
+
     private void OnMainMenuStartGame()
     {
         Coroutines.StopAll();
@@ -1031,6 +1078,17 @@ public class MainGame : Game
             if (change >= 0) return;
         }
         CurrentHealth = Math.Clamp(CurrentHealth + change, 0, 8);
+
+        if (CurrentHealth > 0) return;
+        StartGameOver();
+    }
+
+    private static void StartGameOver()
+    {
+        // kills u
+        GameState = GameStates.GameOver;
+        _gameOverScreen.Init(_phone.PhonePosition, _instance.ReturnToMainMenu);
+        MusicPlayer.StopMusic(true, false);
     }
 
     private IEnumerator AdvanceDay()
@@ -1132,6 +1190,10 @@ public class MainGame : Game
         _phone.LoadContent();
         _ticketManager.LoadContent();
         CharacterManager.LoadContent();
+
+        CurrentHealth = 8;
+        HealthShield = 0;
+        _comboCount = 0;
 
         CameraPosition = Vector2.Zero;
         CameraPositionTarget = Vector2.Zero;
