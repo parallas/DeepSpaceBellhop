@@ -1179,6 +1179,7 @@ public class MainGame : Game
 
         _elevator?.Dispose();
         _phone?.Dispose();
+        _dialog?.StopImmediately();
         // _dialog.UnloadContent();
         // _ticketManager.UnloadContent();
         // CharacterManager.UnloadContent();

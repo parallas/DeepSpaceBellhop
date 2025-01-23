@@ -45,6 +45,8 @@ public class Dialog() : IDisposable
     private EventDescription _audioTalkEndDescription;
     private EventInstance _audioContinue;
 
+    private CoroutineHandle _currentDialog;
+
     public void LoadContent()
     {
         _glyphSprite = ContentLoader.Load<AsepriteFile>("graphics/glyphs")
@@ -68,6 +70,17 @@ public class Dialog() : IDisposable
     }
 
     public IEnumerator Display(Page[] pages, DisplayMethod displayMethod)
+    {
+        MainGame.Coroutines.TryRun("dialog_display", Run(pages, displayMethod), out _currentDialog);
+        yield return _currentDialog?.Wait();
+    }
+
+    public void StopImmediately()
+    {
+        _currentDialog?.Stop();
+    }
+
+    private IEnumerator Run(Page[] pages, DisplayMethod displayMethod)
     {
         var lastCursor = MainGame.Cursor.CursorSprite;
         var lastMenu = MainGame.CurrentMenu;
