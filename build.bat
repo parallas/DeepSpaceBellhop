@@ -1,9 +1,3 @@
-echo "===== Begin building OSX-x64 ====="
-rd /s/q "./ElevatorGame/bin/Release/net8.0/osx-x64"
-dotnet publish ElevatorGame -c Release -r osx-x64 -p:ExtraDefineConstants=OSX -p:UseSteamworks=false -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained true
-rd /s/q "./ElevatorGame/bin/Release/net8.0/osx-x64/publish"
-sh ./zip.sh osx-x64
-
 echo "===== Begin building OSX-arm64 ====="
 rd /s/q "./ElevatorGame/bin/Release/net8.0/osx-arm64"
 dotnet publish ElevatorGame -c Release -r osx-arm64 -p:ExtraDefineConstants=OSX -p:UseSteamworks=false -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained true
