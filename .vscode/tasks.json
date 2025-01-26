@@ -8,6 +8,7 @@
             "args": [
                 "build",
                 "${workspaceFolder}/ElevatorGame.sln",
+                "/property:UseSteamworks=true",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -25,6 +26,7 @@
                     "${workspaceFolder}/ElevatorGame.sln",
                     "-c:Debug",
                     "/property:ExtraDefineConstants=WINDOWS",
+                    "/property:UseSteamworks=true",
                     "/property:GenerateFullPaths=true",
                     "/consoleloggerparameters:NoSummary;ForceNoAlign"
                 ]
@@ -37,6 +39,7 @@
             "args": [
                 "publish",
                 "${workspaceFolder}/ElevatorGame.sln",
+                "/property:UseSteamworks=true",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],

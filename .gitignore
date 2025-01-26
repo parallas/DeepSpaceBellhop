@@ -140,3 +140,5 @@ dotnet-install.ps1
 
 *.ttf
 steam_appid.txt
+
+build-steam.*

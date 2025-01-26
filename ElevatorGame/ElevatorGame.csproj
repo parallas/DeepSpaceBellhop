@@ -10,6 +10,7 @@
     <PlatformTarget>anycpu</PlatformTarget>
 
     <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+    <DefineConstants Condition=" '$(UseSteamworks)' == 'true' ">$(DefineConstants);STEAM</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -64,7 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="steam_appid.txt">
+    <Content Include="steam_appid.txt" Condition=" '$(UseSteamworks)' == 'true' ">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

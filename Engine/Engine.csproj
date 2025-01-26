@@ -6,6 +6,7 @@
         <PlatformTarget>anycpu</PlatformTarget>
 
         <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+        <DefineConstants Condition=" '$(UseSteamworks)' != 'false' ">$(DefineConstants);STEAM</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,11 +24,16 @@
       <!-- OSX -->
       <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
           $(DefineConstants), '^(.*;)*OSX(;.*)*$'))">
+        <Choose>
+          <When Condition=" '$(UseSteamworks)' != 'false' ">
+            <ItemGroup>
+              <None Update="libsteam_api.dylib">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              </None>
+            </ItemGroup>
+          </When>
+        </Choose>
         <ItemGroup>
-          <None Update="libsteam_api.dylib">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          </None>
-
           <None Update="libfmod.dylib">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
@@ -46,11 +52,16 @@
       <!-- Windows -->
       <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
           $(DefineConstants), '^(.*;)*WINDOWS(;.*)*$'))">
+        <Choose>
+          <When Condition=" '$(UseSteamworks)' != 'false' ">
+            <ItemGroup>
+              <None Update="steam_api64.dll">
+                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+              </None>
+            </ItemGroup>
+          </When>
+        </Choose>
         <ItemGroup>
-          <None Update="steam_api64.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-          </None>
-
           <None Update="fmod.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
@@ -69,11 +80,16 @@
       <!-- Linux -->
       <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
           $(DefineConstants), '^(.*;)*LINUX(;.*)*$'))">
+        <Choose>
+          <When Condition=" '$(UseSteamworks)' != 'false' ">
+            <ItemGroup>
+              <None Update="libsteam_api.so">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              </None>
+            </ItemGroup>
+          </When>
+        </Choose>
         <ItemGroup>
-          <None Update="libsteam_api.so">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          </None>
-
           <None Update="libfmodL.so">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
@@ -132,11 +148,22 @@
       </When>
 
       <Otherwise>
+        <Choose>
+          <When Condition=" '$(UseSteamworks)' != 'false' ">
+            <ItemGroup>
+              <None Update="libsteam_api.dylib">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              </None>
+              <None Update="steam_api64.dll">
+                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+              </None>
+              <None Update="libsteam_api.so">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              </None>
+            </ItemGroup>
+          </When>
+        </Choose>
         <ItemGroup>
-          <None Update="libsteam_api.dylib">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          </None>
-
           <None Update="libfmod.dylib">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
@@ -150,10 +177,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
 
-          <None Update="steam_api64.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-          </None>
-
           <None Update="fmod.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
@@ -164,10 +187,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
           <None Update="fmodstudioL.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          </None>
-
-          <None Update="libsteam_api.so">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           </None>
 
@@ -231,21 +250,25 @@
     </Choose>
 
     <Choose>
-      <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
-         $(DefineConstants), '^(.*;)*WINDOWS(;.*)*$'))">
-        <ItemGroup>
-          <Reference Include="Facepunch.Steamworks.Win64" SpecificVersion="False">
-            <HintPath>Facepunch.Steamworks.Win64.dll</HintPath>
-          </Reference>
-        </ItemGroup>
+      <When Condition="'$(UseSteamworks)' != 'false'">
+        <Choose>
+          <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(
+            $(DefineConstants), '^(.*;)*WINDOWS(;.*)*$'))">
+            <ItemGroup>
+              <Reference Include="Facepunch.Steamworks.Win64" SpecificVersion="False">
+                <HintPath>Facepunch.Steamworks.Win64.dll</HintPath>
+              </Reference>
+            </ItemGroup>
+          </When>
+          <Otherwise>
+            <ItemGroup>
+              <Reference Include="Facepunch.Steamworks.Posix" SpecificVersion="False">
+                <HintPath>Facepunch.Steamworks.Posix.dll</HintPath>
+              </Reference>
+            </ItemGroup>
+          </Otherwise>
+        </Choose>
       </When>
-      <Otherwise>
-        <ItemGroup>
-          <Reference Include="Facepunch.Steamworks.Posix" SpecificVersion="False">
-            <HintPath>Facepunch.Steamworks.Posix.dll</HintPath>
-          </Reference>
-        </ItemGroup>
-      </Otherwise>
     </Choose>
 
     <ItemGroup>
