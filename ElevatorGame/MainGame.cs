@@ -88,6 +88,7 @@ public class MainGame : Game
     public static SpriteFont Font { get; private set; }
     public static SpriteFont FontBold { get; private set; }
     public static SpriteFont FontItalic { get; private set; }
+    public static SpriteFont FontIntro { get; private set; }
 
     public enum Menus
     {
@@ -361,6 +362,7 @@ public class MainGame : Game
         Font = ContentLoader.Load<SpriteFont>("fonts/default");
         FontBold = ContentLoader.Load<SpriteFont>("fonts/defaultBold");
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
+        FontIntro = ContentLoader.Load<SpriteFont>("fonts/intro");
 
         if (SaveManager.SaveData.Rooms.Count == 0)
         {
