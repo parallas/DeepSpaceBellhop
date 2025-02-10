@@ -76,6 +76,7 @@ public class PauseManager
             SetSelectedButton,
             () =>
             {
+                MainGame.Coroutines.StopAll();
                 MainGame.Coroutines.TryRun("return_to_main_menu", ReturnToMainMenu(), out _);
             }
         );
