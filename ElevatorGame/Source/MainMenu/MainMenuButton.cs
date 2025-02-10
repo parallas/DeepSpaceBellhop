@@ -22,6 +22,8 @@ public class MainMenuButton(
     private Vector2 _offset = new(-20, 0);
     private float _opacity = 0;
 
+    private float _highlightValue = 0;
+
     private RenderTarget2D _renderTarget;
 
     public int Index { get; set; } = index;
@@ -29,7 +31,8 @@ public class MainMenuButton(
     public void LoadContent()
     {
         var textSize = MainGame.FontBold.MeasureString(LocalizationManager.Get(langToken));
-        position.X -= textSize.X / 2;
+        // position.X -= textSize.X / 2;
+        position.X -= 26;
         _bounds = new Rectangle(
             MathUtil.RoundToInt(position.X),
             MathUtil.RoundToInt(position.Y),
@@ -37,7 +40,7 @@ public class MainMenuButton(
             MathUtil.RoundToInt(textSize.Y)
         );
 
-        _renderTarget = new(MainGame.Graphics.GraphicsDevice, _bounds.Width + 2, _bounds.Height);
+        _renderTarget = new(MainGame.Graphics.GraphicsDevice, _bounds.Width + 12, _bounds.Height);
     }
 
     public void Update(bool isSelected)
@@ -63,6 +66,8 @@ public class MainMenuButton(
 
         if (isSelected)
         {
+            _highlightValue = MathUtil.ExpDecay(_highlightValue, 1, 13, 1f / 60f);
+
             // this prevents the button from activating on mouse click if the mouse not over the button
             if (InputManager.GetPressed(MouseButtons.LeftButton) && _bounds.Contains(MainGame.Cursor.ViewPosition))
             {
@@ -73,6 +78,10 @@ public class MainMenuButton(
                 onClick?.Invoke();
             }
         }
+        else
+        {
+            _highlightValue = MathUtil.ExpDecay(_highlightValue, 0, 13, 1f / 60f);
+        }
     }
 
     public void PreDraw(SpriteBatch spriteBatch, bool isSelected)
@@ -82,25 +91,49 @@ public class MainMenuButton(
         {
             MainGame.Graphics.GraphicsDevice.Clear(Color.Transparent);
 
+            var col = Color.Lerp(Color.White, ColorUtil.CreateFromHex(0x94e089), _highlightValue);
+            var offset = _highlightValue * 10;
+
+            Vector2 pos = new(MathF.Round(offset), 0);
+
+            spriteBatch.DrawString(
+                MainGame.FontBold,
+                ">",
+                pos + new Vector2(-8, 0) + Vector2.One * 2,
+                Color.Black
+            );
+            spriteBatch.DrawString(
+                MainGame.FontBold,
+                ">",
+                pos + new Vector2(-8, 0) + Vector2.One,
+                Color.Black
+            );
+            spriteBatch.DrawString(
+                MainGame.FontBold,
+                ">",
+                pos + new Vector2(-8, 0),
+                col
+            );
+
             spriteBatch.DrawStringSpacesFix(
                 MainGame.FontBold,
                 LocalizationManager.Get(langToken),
-                Vector2.One * 2,
+                pos + Vector2.One * 2,
                 Color.Black,
                 6
             );
             spriteBatch.DrawStringSpacesFix(
                 MainGame.FontBold,
                 LocalizationManager.Get(langToken),
-                Vector2.One,
+                pos + Vector2.One,
                 Color.Black,
                 6
             );
             spriteBatch.DrawStringSpacesFix(
                 MainGame.FontBold,
                 LocalizationManager.Get(langToken),
-                Vector2.Zero,
-                isSelected ? Color.Yellow : Color.White,
+                pos,
+                col,
                 6
             );
         }
@@ -110,6 +143,6 @@ public class MainMenuButton(
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_renderTarget, position + _offset + Vector2.UnitY * -2, Color.White * _opacity);
+        spriteBatch.Draw(_renderTarget, position + new Vector2(-10, 0) + _offset + Vector2.UnitY * -2, Color.White * _opacity);
     }
 }
