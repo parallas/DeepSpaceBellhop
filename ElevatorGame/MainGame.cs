@@ -966,7 +966,7 @@ public class MainGame : Game
     private void OnMainMenuStartGame()
     {
         Coroutines.StopAll();
-        Coroutines.TryRun("main_day_advance", SetDay(CurrentDay, skipTransition: true), out _);
+        Coroutines.TryRun("main_day_advance", SetDay(CurrentDay), out _);
     }
 
     private void OnChangeFloorNumber(int floorNumber)
@@ -1131,6 +1131,8 @@ public class MainGame : Game
         EndOfDaySequence = false;
         _darkOverlayOpacity = 0;
 
+        Console.WriteLine("TRANSITION");
+
         HasMadeMistake = false;
 
         if (!skipTransition)
@@ -1249,12 +1251,12 @@ public class MainGame : Game
     {
         ResetShaderProperties();
 
-        _fadeoutProgress = 0;
-        _fadeoutTween.Start(0f, 1f, 0.5f, TinyTween.ScaleFuncs.QuadraticEaseIn);
+        _fadeoutTween.Start(_fadeoutProgress, 1f, 0.5f, TinyTween.ScaleFuncs.QuadraticEaseIn);
         while(!MathUtil.Approximately(_fadeoutProgress, 1, 0.01f))
         {
             yield return null;
         }
+        _fadeoutTween.Stop(stopBehavior: StopBehavior.ForceComplete);
 
         _fadeoutProgress = 1;
     }

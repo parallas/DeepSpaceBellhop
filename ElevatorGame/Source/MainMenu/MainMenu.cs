@@ -175,7 +175,7 @@ public class MainMenu
         // MainGame.GameState = MainGame.GameStates.Intro;
         MainGame.GameState = MainGame.GameStates.Gameplay;
         StartGame?.Invoke();
-        yield return MainGame.FadeFromBlack();
+        // yield return MainGame.FadeFromBlack();
     }
 
     private void OnButtonOpenSettings()
