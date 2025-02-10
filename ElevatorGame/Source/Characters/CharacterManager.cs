@@ -427,7 +427,9 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
 
     private IEnumerator SpawnMoreCharacters()
     {
-        bool shouldSpawn = Random.Shared.Next(100) < MainGame.SpawnChance;
+        // The more people who are waiting (relative to the max characters for the day), the less chance more can spawn
+        bool shouldSpawn = Random.Shared.Next(100) <
+                           MainGame.SpawnChance * (1 - (float)_waitList.Count / MainGame.MaxCharacters);
         if (!shouldSpawn) yield break;
 
         int spawnAmount = Random.Shared.Next(MainGame.MaxCountPerSpawn) + 1;
