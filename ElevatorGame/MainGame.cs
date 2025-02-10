@@ -1102,6 +1102,7 @@ public class MainGame : Game
     {
         // kills u
         GameState = GameStates.GameOver;
+        Coroutines.StopAll();
         _gameOverScreen.Init(_phone.PhonePosition, _instance.ReturnToMainMenuFromResultsScreen);
         MusicPlayer.StopMusic(true, false);
     }
