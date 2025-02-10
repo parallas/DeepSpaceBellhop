@@ -17,7 +17,7 @@ public class RoomRenderer
     
     private RenderTarget2D _roomRenderTarget;
     private AsepriteFile _spriteFile;
-    private Sprite[] _layerSprites;
+    private Sprite[] _layerSprites = [];
 
     private Effect _roomEffects;
 

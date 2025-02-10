@@ -365,17 +365,8 @@ public class MainGame : Game
         FontItalic = ContentLoader.Load<SpriteFont>("fonts/defaultItalic");
         FontIntro = ContentLoader.Load<SpriteFont>("fonts/intro");
 
-        if (SaveManager.SaveData.Rooms.Count == 0)
-        {
-            for (int i = 0; i < 99; i++)
-            {
-                var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
-                _roomDefs.Add(newRoomDef);
-            }
-        }
         _roomRenderer = new RoomRenderer();
         _roomRenderer.LoadContent();
-        _roomRenderer.SetDefinition(_roomDefs[0]);
 
         BgCharacterRegistry.LoadContent();
         _bgCharacterRenderer = new BgCharacterRenderer();
@@ -918,7 +909,15 @@ public class MainGame : Game
         {
             for (int i = 0; i < 99; i++)
             {
-                var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric");
+                int max = int.MaxValue - 1;
+                (int, int) roomRange = (0, max);
+                if (i < 10)
+                    roomRange = (0, 2);
+                else if (i < 20)
+                    roomRange = (3, 5);
+                else if (i < 30)
+                    roomRange = (6, max);
+                var newRoomDef = RoomDef.MakeRandom("graphics/RoomsGeneric", roomRange.Item1, roomRange.Item2);
                 _roomDefs.Add(newRoomDef);
             }
         }

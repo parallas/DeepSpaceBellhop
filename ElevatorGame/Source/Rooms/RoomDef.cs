@@ -14,7 +14,7 @@ public struct RoomDef
     public int ColorIndex1 { get; set; }
     public int ColorIndex2 { get; set; }
 
-    public static RoomDef MakeRandom(string filePath)
+    public static RoomDef MakeRandom(string filePath, int minIndex = 0, int maxIndex = Int32.MaxValue)
     {
         int colorIndex1 = 0;
         int colorIndex2 = 0;
@@ -31,7 +31,8 @@ public struct RoomDef
         );
         
         var spriteFile = ContentLoader.Load<AsepriteFile>(filePath)!;
-        int randomFrameIndex = Random.Shared.Next(spriteFile.FrameCount);
+        Console.WriteLine(Math.Min(spriteFile.FrameCount, maxIndex + 1));
+        int randomFrameIndex = Random.Shared.Next(minIndex, Math.Min(spriteFile.FrameCount, maxIndex + 1));
 
         return new RoomDef()
         {
