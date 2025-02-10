@@ -61,6 +61,7 @@ public class MainGame : Game
     public static CoroutineRunner Coroutines { get; set; } = new();
 
     public static int CurrentDay { get; private set; } = 0;
+    public static int Turn { get; private set; } = 0;
     public static int FloorCount => DayRegistry.Days[CurrentDay].FloorCount;
     public static int CompletionRequirement => DayRegistry.Days[CurrentDay].CompletionRequirement;
     public static float SpawnChance => DayRegistry.Days[CurrentDay].OrderSpawnChancePerTurn;
@@ -511,15 +512,12 @@ public class MainGame : Game
         _darkOverlayOpacity = MathUtil.ExpDecay(_darkOverlayOpacity, darkOverlayOpacityTarget, 2f, 1f/60f);
         _darkOverlaySprite.Color = Color.White * _darkOverlayOpacity;
 
-        if (CurrentDay == 0 && CurrentFloor == 1 && _buttonHintVisible)
+        if (CurrentDay == 0)
         {
-            _buttonHintOpacity = MathUtil.Approach(_buttonHintOpacity, 1, 0.1f);
-        }
-        else
-        {
-            _buttonHintOpacity = MathUtil.Approach(_buttonHintOpacity, 0, 0.1f);
-            if (CurrentFloor != 1)
+            if(Turn >= 2)
                 _buttonHintVisible = false;
+
+            _buttonHintOpacity = MathUtil.Approach(_buttonHintOpacity, _buttonHintVisible ? 1 : 0, 0.1f);
         }
         _buttonHint.Color = Color.White * _buttonHintOpacity;
         _buttonHint.Update(1f / 60f);
@@ -620,6 +618,14 @@ public class MainGame : Game
         _phone?.Draw(spriteBatch);
 
         _ticketManager?.Draw(spriteBatch);
+
+        spriteBatch.DrawStringSpacesFix(
+            FontIntro,
+            string.Format(LocalizationManager.Get("ui.gameplay.turn_counter"), Turn + 1),
+            Vector2.UnitX * 2,
+            Color.White,
+            6
+        );
 
         _dialog?.Draw(spriteBatch);
 
@@ -1063,6 +1069,8 @@ public class MainGame : Game
             CharacterManager.SpawnMultipleRandomCharacters(MaxCountPerSpawn);
 
         HealthShield = 0;
+
+        Turn++;
     }
 
     private IEnumerator ElevatorCrashed()
@@ -1193,6 +1201,7 @@ public class MainGame : Game
         CharacterManager = new(_phone, _ticketManager, _dialog, _elevator);
 
         CurrentFloor = 1;
+        Turn = 0;
         _dialog.LoadContent();
         _elevator.LoadContent();
         _phone.LoadContent();
