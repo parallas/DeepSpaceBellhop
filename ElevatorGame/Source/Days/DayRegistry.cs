@@ -13,8 +13,9 @@ public static class DayRegistry
             new DayDef
             {
                 FloorCount = 10,
-                OrderSpawnChancePerTurn = 40,
+                OrderSpawnChancePerTurn = 20,
                 MaxCountPerSpawn = 2,
+                MaxCharacters = 4,
                 CompletionRequirement = 10,
                 CharacterIds = ["Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl"],
                 StartCharacterCount = 1,
@@ -24,8 +25,9 @@ public static class DayRegistry
             new DayDef
             {
                 FloorCount = 20,
-                OrderSpawnChancePerTurn = 40,
+                OrderSpawnChancePerTurn = 30,
                 MaxCountPerSpawn = 2,
+                MaxCharacters = 6,
                 CompletionRequirement = 20,
                 CharacterIds =
                 [
@@ -41,6 +43,7 @@ public static class DayRegistry
                 FloorCount = 30,
                 OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
+                MaxCharacters = 8,
                 CompletionRequirement = 20,
                 CharacterIds =
                 [
@@ -57,8 +60,9 @@ public static class DayRegistry
             new DayDef
             {
                 FloorCount = 40,
-                OrderSpawnChancePerTurn = 60,
+                OrderSpawnChancePerTurn = 40,
                 MaxCountPerSpawn = 2,
+                MaxCharacters = 10,
                 CompletionRequirement = 30,
                 CharacterIds =
                 [

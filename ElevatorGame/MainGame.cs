@@ -68,6 +68,7 @@ public class MainGame : Game
     public static string[] CharacterIdsPool => DayRegistry.Days[CurrentDay].CharacterIds;
     public static int StartCharacterCount => DayRegistry.Days[CurrentDay].StartCharacterCount;
     public static int MaxCountPerSpawn => DayRegistry.Days[CurrentDay].MaxCountPerSpawn;
+    public static int MaxCharacters => DayRegistry.Days[CurrentDay].MaxCharacters;
     public static bool PunishMistakes => DayRegistry.Days[CurrentDay].PunishMistakes;
     public static int CurrentFloor { get; set; } = 1;
     public static int CurrentHealth { get; set; } = 8;

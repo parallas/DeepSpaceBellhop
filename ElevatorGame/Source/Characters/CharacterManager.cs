@@ -86,7 +86,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             CacheCharactersInPlay = cache;
         }
 
-        StudioSystem.SetParameterValue("ActivityLevel", CharactersInPlay.Count / 10f);
+        StudioSystem.SetParameterValue("ActivityLevel", (float)CharactersInPlay.Count / MainGame.MaxCharacters);
     }
 
     public void DrawWaiting(SpriteBatch spriteBatch)
@@ -431,6 +431,8 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
         if (!shouldSpawn) yield break;
 
         int spawnAmount = Random.Shared.Next(MainGame.MaxCountPerSpawn) + 1;
+        spawnAmount = Math.Clamp(spawnAmount, 0, MainGame.MaxCharacters - CharactersInPlay.Count);
+        if (spawnAmount <= 0) yield break;
 
         SpawnMultipleRandomCharacters(spawnAmount);
     }
