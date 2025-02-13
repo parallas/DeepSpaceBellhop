@@ -1198,6 +1198,10 @@ public class MainGame : Game
         // _ticketManager.UnloadContent();
         // CharacterManager.UnloadContent();
 
+        CurrentHealth = 8;
+        HealthShield = 0;
+        _comboCount = 0;
+
         _dialog = new();
         _elevator = new(OnChangeFloorNumber, EndOfTurnSequence, ElevatorCrashed);
         _phone = new(_elevator);
@@ -1211,10 +1215,6 @@ public class MainGame : Game
         _phone.LoadContent();
         _ticketManager.LoadContent();
         CharacterManager.LoadContent();
-
-        CurrentHealth = 8;
-        HealthShield = 0;
-        _comboCount = 0;
 
         CameraPosition = Vector2.Zero;
         CameraPositionTarget = Vector2.Zero;
