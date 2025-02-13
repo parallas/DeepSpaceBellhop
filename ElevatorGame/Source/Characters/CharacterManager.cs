@@ -273,7 +273,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
                 flags |= TicketActor.TicketFlags.Slimy;
             if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Clumsy)
                 && Random.Shared.Next(0, 3) == 0
-                && !(_history.Count == 0 && MainGame.CurrentDay == 0))
+                && !(_history.Count == 1 && MainGame.CurrentDay == 0))
                 flags |= TicketActor.TicketFlags.UpsideDown;
 
             ticketManager.AddTicket(characterActor.FloorNumberTarget, flags);
