@@ -980,7 +980,7 @@ public class MainGame : Game
 
         if (!isProductiveTurn)
         {
-            int countClamped = MathUtil.ClampToInt(_comboCount, 3, 9);
+            int countClamped = MathUtil.ClampToInt(_comboCount, 0, 9);
             double chanceToSpawn = Math.Pow(MathUtil.InverseLerp01(0, 10, countClamped), 2);
             double roll = Random.Shared.NextDouble();
             if (roll < chanceToSpawn)
