@@ -1,5 +1,6 @@
 using System.Collections;
 using AsepriteDotNet.Aseprite;
+using ElevatorGame.Source.Backgrounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Aseprite;
@@ -30,8 +31,11 @@ public class MainMenu
 
     private SettingsMenu _settings;
 
+    private BackgroundStars _backgroundStars;
+
     public void LoadContent()
     {
+        _backgroundStars = new(MainGame.Graphics.GraphicsDevice) { DoParallax = true };
         _titleButtons.AddRange([
             new(
                 position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 30),
@@ -91,6 +95,7 @@ public class MainMenu
 
     public void Update()
     {
+        _backgroundStars.Update();
         MainGame.Cursor.CursorSpriteOverride = Cursor.CursorSprites.Default;
 
         _bgSprite.Update(1f / 60f);
@@ -113,6 +118,7 @@ public class MainMenu
 
     public void PreDraw(SpriteBatch spriteBatch)
     {
+        _backgroundStars.PreDraw(spriteBatch);
         for (int i = 0; i < _titleButtons.Count; i++)
         {
             _titleButtons[i].PreDraw(spriteBatch, i == _selectedButton);
@@ -126,6 +132,7 @@ public class MainMenu
         MainGame.Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _bgSprite.Draw(spriteBatch, Vector2.Zero);
+        _backgroundStars.Draw(spriteBatch);
 
         Vector2 logoPos = new(MathF.Truncate(MainGame.GameBounds.Width / 3f) + 12, -12);
         logoPos.Y += MathF.Sin(MainGame.Frame / 60f) * 2f;

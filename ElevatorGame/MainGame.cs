@@ -1303,7 +1303,7 @@ public class MainGame : Game
                 new(240, 135)
             ) - new Vector2(240, 135) / 2f
         ) * (8 / 120f);
-        return position + Vector2.Round(checkPos * MathUtil.InverseLerp01(0, 100, distance));
+        return position + Vector2.Round(checkPos * MathUtil.InverseLerp(0, 100, distance));
     }
 
     private static void ResetShaderProperties()

@@ -15,6 +15,7 @@ public static class Intro
     {
         _scenes = [
             // new IntroSceneTest(),
+            new IntroSceneStars(),
             new IntroSceneParallas(),
             new IntroSceneSimpleImage("graphics/intro/FmodLogo"),
 
