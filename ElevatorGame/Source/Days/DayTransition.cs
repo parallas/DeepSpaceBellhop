@@ -16,6 +16,7 @@ public class DayTransition
     private AnimatedSprite _digits5x7AnimSprite;
     private Sprite _arrowSprite;
     private AnimatedSprite _floorDotAnimSprite;
+    private bool _floorDotAnimSpriteIsVisible = true;
 
     private Rectangle _numberRect;
     private Rectangle _arrowRect;
@@ -80,7 +81,8 @@ public class DayTransition
         _arrowSprite.Draw(spriteBatch, _arrowRect.Location.ToVector2());
 
         Vector2 floorDotOffset = Vector2.UnitX * ((_targetFloorNumber - 2) * 3);
-        _floorDotAnimSprite.Draw(spriteBatch, _dotRect.Location.ToVector2() + floorDotOffset);
+        if(_floorDotAnimSpriteIsVisible)
+            _floorDotAnimSprite.Draw(spriteBatch, _dotRect.Location.ToVector2() + floorDotOffset);
     }
 
     public void Draw(SpriteBatch spriteBatch)
@@ -94,6 +96,9 @@ public class DayTransition
     {
         _targetFloorNumber = newLevelNumber;
         _showTransition = true;
+
+        if(_targetFloorNumber == 1)
+            _floorDotAnimSpriteIsVisible = false;
 
         _digits5x7AnimSprite.SetFrame(newLevelNumber - 1);
 
@@ -124,7 +129,10 @@ public class DayTransition
         // Update floor number
         _digits5x7AnimSprite.SetFrame(newLevelNumber);
 
-        yield return 120;
+        yield return 3;
+        _floorDotAnimSpriteIsVisible = true;
+
+        yield return 117;
 
         // Fade out
         _transitionDirection = -1;
