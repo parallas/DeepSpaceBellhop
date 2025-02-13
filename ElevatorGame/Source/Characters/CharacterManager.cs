@@ -17,6 +17,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
     private readonly List<CharacterActor> _movingList = [];
     private readonly List<CharacterActor> _cabList = [];
     private readonly List<CharacterActor> _leavingList = [];
+    private readonly List<string> _history = [];
 
     private bool _eventfulTurn = false;
 
@@ -259,6 +260,7 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             yield return characterActor.GetInElevatorBegin();
             _waitList.Remove(characterActor);
             _movingList.Add(characterActor);
+            _history.Add(characterActor.Def.Name);
             phone.HighlightOrder(characterActor);
 
             if (_cabList.Count >= 9)
@@ -269,7 +271,9 @@ public class CharacterManager(Phone.Phone phone, TicketManager ticketManager, Di
             TicketActor.TicketFlags flags = TicketActor.TicketFlags.None;
             if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Slimy))
                 flags |= TicketActor.TicketFlags.Slimy;
-            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Clumsy) && Random.Shared.Next(0, 3) == 0)
+            if (characterActor.Def.Flags.HasFlag(CharacterDef.CharacterFlag.Clumsy)
+                && Random.Shared.Next(0, 3) == 0
+                && !(_history.Count == 0 && MainGame.CurrentDay == 0))
                 flags |= TicketActor.TicketFlags.UpsideDown;
 
             ticketManager.AddTicket(characterActor.FloorNumberTarget, flags);
