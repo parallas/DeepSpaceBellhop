@@ -1,6 +1,7 @@
 using System.Collections;
 using AsepriteDotNet.Aseprite;
 using ElevatorGame.Source.Backgrounds;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Aseprite;
@@ -16,6 +17,8 @@ public class MainMenu
     private AnimatedSprite _bgSprite;
     private AnimatedSprite _logoSprite;
     private Sprite _buttonPanelSprite;
+
+    private float _offset;
 
     public Action ExitGame { get; set; }
     public Action StartGame { get; set; }
@@ -111,6 +114,12 @@ public class MainMenu
             int inputDir = (Keybindings.Down.Pressed ? 1 : 0) - (Keybindings.Up.Pressed ? 1 : 0);
             _selectedButton = (_selectedButton + inputDir) % _titleButtons.Count;
             if (_selectedButton < 0) _selectedButton = _titleButtons.Count - 1;
+
+            _offset = MathUtil.ExpDecay(_offset, 0, 5, 1f / 60f);
+        }
+        else
+        {
+            _offset = MathUtil.ExpDecay(_offset, -200, 5, 1f / 60f);
         }
 
         _settings?.Update();
@@ -134,7 +143,7 @@ public class MainMenu
         _bgSprite.Draw(spriteBatch, Vector2.Zero);
         _backgroundStars.Draw(spriteBatch);
 
-        Vector2 logoPos = new(MathF.Truncate(MainGame.GameBounds.Width / 3f) + 12, -12);
+        Vector2 logoPos = new(MathF.Truncate((MainGame.GameBounds.Width / 3f) + _offset) + 12, -12);
         logoPos.Y += MathF.Sin(MainGame.Frame / 60f) * 2f;
         logoPos = Vector2.Floor(logoPos);
         _logoSprite.Color = Color.Black;
@@ -142,10 +151,10 @@ public class MainMenu
         _logoSprite.Color = Color.White;
         _logoSprite.Draw(spriteBatch, logoPos);
 
-        _buttonPanelSprite.Draw(spriteBatch, new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 40));
+        _buttonPanelSprite.Draw(spriteBatch, new(MathUtil.FloorToInt((MainGame.GameBounds.Width / 3) + _offset), MainGame.GameBounds.Height - 16 - 40));
         foreach (var b in _titleButtons)
         {
-            b.Draw(spriteBatch);
+            b.Draw(spriteBatch, new(_offset, 0));
         }
 
         _settings?.Draw(spriteBatch);

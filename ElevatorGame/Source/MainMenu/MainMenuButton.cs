@@ -141,8 +141,8 @@ public class MainMenuButton(
         MainGame.Graphics.GraphicsDevice.Reset();
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, Vector2 pos)
     {
-        spriteBatch.Draw(_renderTarget, position + new Vector2(-10, 0) + _offset + Vector2.UnitY * -2, Color.White * _opacity);
+        spriteBatch.Draw(_renderTarget, position + Vector2.Floor(pos) + new Vector2(-10, 0) + _offset + Vector2.UnitY * -2, Color.White * _opacity);
     }
 }

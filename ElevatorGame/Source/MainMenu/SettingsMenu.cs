@@ -237,7 +237,7 @@ public class SettingsMenu
         MainGame.Graphics.GraphicsDevice.SetRenderTarget(_renderTarget);
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         {
-            MainGame.Graphics.GraphicsDevice.Clear(Color.Black * 0.9f);
+            MainGame.Graphics.GraphicsDevice.Clear(Color.Black * 0.33f);
 
             for (int i = 0; i < _tabs.Count; i++)
             {
