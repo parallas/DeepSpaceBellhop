@@ -41,28 +41,28 @@ public class MainMenu
         _backgroundStars = new(MainGame.Graphics.GraphicsDevice) { DoParallax = true };
         _titleButtons.AddRange([
             new(
-                position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 30),
+                position: new(MainGame.GameBounds.Width / 2, MainGame.GameBounds.Height - 16 - 30),
                 langToken: "ui.main_menu.continue",
                 index: 0,
                 setSelectedButton: SetSelectedButton,
                 onClick: OnButtonContinue
             ),
             new(
-                position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 20),
+                position: new(MainGame.GameBounds.Width / 2, MainGame.GameBounds.Height - 16 - 20),
                 langToken: "ui.main_menu.new_game",
                 index: 1,
                 setSelectedButton: SetSelectedButton,
                 onClick: OnButtonNewGame
             ),
             new(
-                position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16 - 10),
+                position: new(MainGame.GameBounds.Width / 2, MainGame.GameBounds.Height - 16 - 10),
                 langToken: "ui.main_menu.settings",
                 index: 2,
                 setSelectedButton: SetSelectedButton,
                 onClick: OnButtonOpenSettings
             ),
             new(
-                position: new(MainGame.GameBounds.Width / 3, MainGame.GameBounds.Height - 16),
+                position: new(MainGame.GameBounds.Width / 2, MainGame.GameBounds.Height - 16),
                 langToken: "ui.main_menu.quit",
                 index: 3,
                 setSelectedButton: SetSelectedButton,
@@ -143,7 +143,7 @@ public class MainMenu
         _bgSprite.Draw(spriteBatch, Vector2.Zero);
         _backgroundStars.Draw(spriteBatch);
 
-        Vector2 logoPos = new(MathF.Truncate((MainGame.GameBounds.Width / 3f) + _offset) + 12, -12);
+        Vector2 logoPos = new(MathF.Truncate((MainGame.GameBounds.Width / 2f) + _offset), -12);
         logoPos.Y += MathF.Sin(MainGame.Frame / 60f) * 2f;
         logoPos = Vector2.Floor(logoPos);
         _logoSprite.Color = Color.Black;
@@ -151,7 +151,7 @@ public class MainMenu
         _logoSprite.Color = Color.White;
         _logoSprite.Draw(spriteBatch, logoPos);
 
-        _buttonPanelSprite.Draw(spriteBatch, new(MathUtil.FloorToInt((MainGame.GameBounds.Width / 3) + _offset), MainGame.GameBounds.Height - 16 - 40));
+        _buttonPanelSprite.Draw(spriteBatch, new(MathUtil.FloorToInt((MainGame.GameBounds.Width / 2) + _offset), MainGame.GameBounds.Height - 16 - 40));
         foreach (var b in _titleButtons)
         {
             b.Draw(spriteBatch, new(_offset, 0));

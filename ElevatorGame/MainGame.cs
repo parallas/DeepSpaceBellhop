@@ -438,6 +438,7 @@ public class MainGame : Game
         }
         else if (GameState == GameStates.Intro)
         {
+            Intro.Update();
             if(Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed)
             {
                 Coroutines.StopAll();

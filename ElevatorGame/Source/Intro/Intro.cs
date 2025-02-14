@@ -7,6 +7,7 @@ namespace ElevatorGame.Source.Intro;
 
 public static class Intro
 {
+    public static event Action OnComplete;
     private static int _currentScene = -1;
 
     private static IntroScene[] _scenes;
@@ -15,7 +16,7 @@ public static class Intro
     {
         _scenes = [
             // new IntroSceneTest(),
-            new IntroSceneStars(),
+            new IntroSceneStory(),
             new IntroSceneParallas(),
             new IntroSceneSimpleImage("graphics/intro/FmodLogo"),
 
@@ -36,6 +37,17 @@ public static class Intro
         {
             _currentScene = i;
             yield return _scenes[i].GetEnumerator();
+        }
+
+        OnComplete?.Invoke();
+    }
+
+    public static void Update()
+    {
+        if (Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed)
+        {
+            MainGame.Coroutines.Stop("main_intro");
+            OnComplete?.Invoke();
         }
     }
 
