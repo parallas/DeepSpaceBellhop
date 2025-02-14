@@ -51,15 +51,27 @@ public class IntroSceneStory : IntroScene
                      """;
     }
 
+    public IEnumerator PreTitleIntro()
+    {
+        _landPos = 0;
+
+        yield return 60;
+
+        _landPos = 135 * 3;
+    }
+
     public override IEnumerator GetEnumerator()
     {
         yield return 60;
 
         _showText = true;
 
-        yield return 60 * 10;
+        yield return 60 * 12;
 
         _showText = false;
+
+        yield return 30;
+
         _elevatorFlamesActive = true;
 
         while (!MathUtil.Approximately(_landPos, 0f, 1f))
