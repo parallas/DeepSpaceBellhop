@@ -76,7 +76,7 @@ public class MainMenu
             ),
         ]);
 
-        if (!SaveManager.SaveFileExists)
+        if (!MainGame.SaveFileExists)
         {
             RemoveButton(0);
         }
@@ -183,13 +183,13 @@ public class MainMenu
             spriteBatch,
             new(
                 MathUtil.FloorToInt((MainGame.GameBounds.Width / 2) + _offset),
-                MathUtil.FloorToInt(MainGame.GameBounds.Height - 16 - 40 + (100 * _hideProgress))
+                MathUtil.FloorToInt(MainGame.GameBounds.Height - 16 - (_titleButtons.Count * 10) + (100 * _hideProgress))
             )
         );
 
         foreach (var b in _titleButtons)
         {
-            b.Draw(spriteBatch, new(_offset, 100 * _hideProgress));
+            b.Draw(spriteBatch, new(_offset, 120 * _hideProgress));
         }
 
         _settings?.Draw(spriteBatch);

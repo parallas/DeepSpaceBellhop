@@ -180,6 +180,8 @@ public class MainGame : Game
 
     public static bool IsUsingGamePad => _isUsingGamePad;
 
+    public static bool SaveFileExists { get; private set; }
+
     public static event Action<Point> WindowResized;
 
     public MainGame(bool useSteamworks)
@@ -221,6 +223,8 @@ public class MainGame : Game
                 GraphicsDevice.DisplayMode.Height <= 1080
             );
         }
+
+        SaveFileExists = SaveManager.SaveFileExists;
 
         SaveManager.OnLoad += OnSaveDataLoad;
         SaveManager.OnSave += OnSaveDataSave;
@@ -936,6 +940,8 @@ public class MainGame : Game
         _mainMenu.LoadContent();
         CurrentMenu = Menus.MainMenu;
         GameState = GameStates.MainMenu;
+
+        SaveFileExists = SaveManager.SaveFileExists;
 
         SaveManager.Save();
 
