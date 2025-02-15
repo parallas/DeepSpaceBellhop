@@ -143,7 +143,7 @@ public class MainMenu
             if(MainGame.Coroutines.IsRunning("menu_pre_title") && (Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed))
             {
                 MainGame.Coroutines.Stop("menu_pre_title");
-                _intro = new();
+                _intro = new(4);
                 _intro.LoadContent();
                 _state = State.Title;
             }
