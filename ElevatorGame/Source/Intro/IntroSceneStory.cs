@@ -56,21 +56,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         _backgroundStars = new BackgroundStars(MainGame.Graphics.GraphicsDevice, 0f)
             { HandleVelocity = false, Speed = startingStarSpeed };
 
-        _introText = """
-                     Mission Briefing:
-                     Your job is to pick
-                     up and drop off 
-                     guests in a timely
-                     manner. 
-                     
-                     Occupancy will grow
-                     over the next four
-                     days. 
-                     
-                     Precision and tact
-                     is of utmost
-                     importance to client.
-                     """;
+        _introText = LocalizationManager.Get("dialog.intro");
     }
 
     public IEnumerator PreTitleIntro()
