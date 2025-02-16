@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ElevatorGame.Source.Dialog;
 using Engine;
 
 namespace ElevatorGame.Source.Characters;
@@ -10,8 +11,6 @@ public static class CharacterRegistry
 
     public static void Init()
     {
-        CharacterTable.Clear();
-
         _characterDefs =
         [
             new CharacterDef
@@ -19,15 +18,6 @@ public static class CharacterRegistry
                 Name = "Blueulet",
                 SpritePath = "graphics/characters/BlueAxolotl",
                 WalkSpeed = 10,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Blueulet.enter.0"))
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Blueulet.exit.0"))
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Blueulet.angry.0"))
-                ],
                 AngryIconPosition = new(-13, -72),
                 Flags = CharacterDef.CharacterFlag.Clumsy
             },
@@ -36,15 +26,6 @@ public static class CharacterRegistry
                 Name = "Greenulet",
                 SpritePath = "graphics/characters/GreenAxolotl",
                 WalkSpeed = 6,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Greenulet.enter.0"))
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Greenulet.exit.0"))
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Greenulet.angry.0"))
-                ],
                 AngryIconPosition = new(-13, -69),
             },
             new CharacterDef
@@ -52,18 +33,6 @@ public static class CharacterRegistry
                 Name = "EmalynCat",
                 SpritePath = "graphics/characters/EmalynCat",
                 WalkSpeed = 6,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.EmalynCat.enter.0")),
-                    new(LocalizationManager.Get("dialog.character.EmalynCat.enter.1")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.EmalynCat.exit.0")),
-                    new(LocalizationManager.Get("dialog.character.EmalynCat.exit.1")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.EmalynCat.angry.0")),
-                    new(LocalizationManager.Get("dialog.character.EmalynCat.angry.1")),
-                ],
                 AngryIconPosition = new(-10, -46),
             },
             new CharacterDef
@@ -79,17 +48,6 @@ public static class CharacterRegistry
                 Name = "Robot",
                 SpritePath = "graphics/characters/Robot",
                 WalkSpeed = 6,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Robot.enter.0")),
-                    new(LocalizationManager.Get("dialog.character.Robot.enter.1")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Robot.exit.0")),
-                    new(LocalizationManager.Get("dialog.character.Robot.exit.1")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Robot.angry.0")),
-                ],
                 AngryIconPosition = new(-6, -39),
             },
             new CharacterDef
@@ -105,18 +63,6 @@ public static class CharacterRegistry
                 Name = "ShroomKing",
                 SpritePath = "graphics/characters/ShroomKing",
                 WalkSpeed = 6,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.ShroomKing.enter.0")),
-                    new(LocalizationManager.Get("dialog.character.ShroomKing.enter.1")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.ShroomKing.exit.0")),
-                    new(LocalizationManager.Get("dialog.character.ShroomKing.exit.1")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.ShroomKing.angry.0")),
-                    new(LocalizationManager.Get("dialog.character.ShroomKing.angry.1")),
-                ],
                 AngryIconPosition = new(-13, -74),
                 Flags = CharacterDef.CharacterFlag.Toxic
             },
@@ -125,9 +71,6 @@ public static class CharacterRegistry
                 Name = "Benbo",
                 SpritePath = "graphics/characters/Benbo",
                 WalkSpeed = 16,
-                EnterPhrases = [new(LocalizationManager.Get("dialog.character.Benbo.enter.0"))],
-                ExitPhrases = [new(LocalizationManager.Get("dialog.character.Benbo.exit.0"))],
-                AngryPhrases = [new(LocalizationManager.Get("dialog.character.Benbo.angry.0"))],
                 AngryIconPosition = new(-4, -12)
             },
             new CharacterDef
@@ -135,15 +78,6 @@ public static class CharacterRegistry
                 Name = "Beebo",
                 SpritePath = "graphics/characters/Beebo",
                 WalkSpeed = 6,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Beebo.enter.0")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Beebo.exit.0")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Beebo.angry.0")),
-                ],
                 AngryIconPosition = new(-13, -69),
             },
             new CharacterDef
@@ -159,15 +93,6 @@ public static class CharacterRegistry
                 Name = "JellyfishGirl",
                 SpritePath = "graphics/characters/JellyfishGirl",
                 WalkSpeed = 4,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.JellyfishGirl.enter.0")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.JellyfishGirl.exit.0")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.JellyfishGirl.angry.0")),
-                ],
                 AngryIconPosition = new(-13, -64),
             },
             new CharacterDef
@@ -182,15 +107,6 @@ public static class CharacterRegistry
                 Name = "Box",
                 SpritePath = "graphics/characters/Box",
                 WalkSpeed = 4,
-                EnterPhrases = [
-                    new("..."),
-                ],
-                ExitPhrases = [
-                    new("..."),
-                ],
-                AngryPhrases = [
-                    new("..."),
-                ],
                 AngryIconPosition = new(-11, -49),
             },
             new CharacterDef
@@ -198,15 +114,6 @@ public static class CharacterRegistry
                 Name = "Alieno",
                 SpritePath = "graphics/characters/Alieno",
                 WalkSpeed = 4,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Alieno.enter.0")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Alieno.exit.0")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Alieno.angry.0")),
-                ],
                 AngryIconPosition = new(-8, -46),
             },
             new CharacterDef
@@ -214,23 +121,49 @@ public static class CharacterRegistry
                 Name = "Flippy",
                 SpritePath = "graphics/characters/Flippy",
                 WalkSpeed = 4,
-                EnterPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Flippy.enter.0")),
-                ],
-                ExitPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Flippy.exit.0")),
-                ],
-                AngryPhrases = [
-                    new(LocalizationManager.Get("dialog.character.Flippy.angry.0")),
-                ],
                 AngryIconPosition = new(-9, -51),
                 Flags = CharacterDef.CharacterFlag.Clumsy | CharacterDef.CharacterFlag.Flippy
             },
         ];
 
+        LocalizationManager.LocalizationDataReloaded += RefreshData;
+    }
+
+    public static void RefreshData()
+    {
+        CharacterTable.Clear();
+
         foreach (var characterDef in _characterDefs)
         {
+            characterDef.EnterPhrases = [..
+                from t in GetTokens(characterDef.Name, "enter")
+                select new DialogDef(t)
+            ];
+            characterDef.ExitPhrases = [..
+                from t in GetTokens(characterDef.Name, "exit")
+                select new DialogDef(t)
+            ];
+            characterDef.AngryPhrases = [..
+                from t in GetTokens(characterDef.Name, "angry")
+                select new DialogDef(t)
+            ];
+
             CharacterTable.Add(characterDef.Name, characterDef);
         }
+    }
+
+    private static List<string> GetTokens(string name, string category)
+    {
+        int i = 0;
+        string token;
+        List<string> tokens = [];
+
+        while (LocalizationManager.TokenExists(token = $"dialog.character.{name}.{category}.{i}"))
+        {
+            tokens.Add(token);
+            i++;
+        }
+
+        return tokens;
     }
 }

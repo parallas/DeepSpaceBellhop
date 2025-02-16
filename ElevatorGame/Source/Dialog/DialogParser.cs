@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ElevatorGame.Source.Characters;
+using Engine;
 
 namespace ElevatorGame.Source.Dialog;
 
@@ -32,10 +33,8 @@ public static class DialogParser
         Dialog.Page[] newPages = new Dialog.Page[pages.Length];
         for (int i = 0; i < pages.Length; i++)
         {
-            var page = pages[i];
-            var content = page.Content;
-            var parsedContent = content.Replace("$floorNumDest", characterActor.FloorNumberTarget.ToString());
-            newPages[i] = new Dialog.Page() { Content = parsedContent, CharInterval = page.CharInterval };
+            ref var page = ref newPages[i];
+            page.Content = pages[i].Content.Replace("$floorNumDest", characterActor.FloorNumberTarget.ToString());
         }
         return newPages;
     }

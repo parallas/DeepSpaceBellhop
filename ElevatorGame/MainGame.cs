@@ -30,6 +30,7 @@ using Dialog = ElevatorGame.Source.Dialog;
 using ElevatorGame.Source.MainMenu;
 using TinyTween;
 using ElevatorGame.Source.Intro;
+using ElevatorGame.Source.Dialog;
 
 namespace ElevatorGame;
 
@@ -281,10 +282,6 @@ public class MainGame : Game
         StudioSystem.SetParameterValue("VolumeSounds", data.AudioSFXVolume);
 
         LocalizationManager.CurrentLanguage = data.LanguagePreference;
-
-        DayRegistry.Init();
-
-        CharacterRegistry.Init();
     }
 
     protected override void LoadContent()
@@ -304,6 +301,7 @@ public class MainGame : Game
         MusicPlayer.RegisterEventGuid("Day4", "{0db5b5ff-da7b-46a4-b2c6-8b39c311857f}");
 
         SaveManager.LoadSettings();
+        CharacterRegistry.RefreshData();
 
         RenderPipeline.LoadContent(GraphicsDevice);
 
@@ -1239,7 +1237,10 @@ public class MainGame : Game
         {
             yield return _phone.Open(false, false);
             _phone.StartTalking();
-            yield return _dialog.Display(DayRegistry.Days[dayIndex].StartDialog.Pages, Dialog.Dialog.DisplayMethod.Human);
+            yield return _dialog.Display(
+                DayRegistry.Days[dayIndex].StartDialog.Pages,
+                Dialog.Dialog.DisplayMethod.Human
+            );
             _phone.StopTalking();
         }
 

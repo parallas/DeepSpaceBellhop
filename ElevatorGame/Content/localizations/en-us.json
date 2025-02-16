@@ -26,9 +26,9 @@
 
         "ui.gameplay.turn_counter": "Turn #{0}",
 
-        "dialog.intro": "Mission Briefing:\n\nYour job is to pick\nup and drop off\nguests in a timely\nmanner.\n\nOccupancy will grow\nover the next four\ndays.\n\nPrecision and tact\nis of utmost\nimportance to client.",
+        "dialog.intro": "Mission Briefing:\nYour job is to pick up and drop off guests in a timely manner.\nOccupancy will grow over the next four days.\nPrecision and tact is of utmost importance to client.",
 
-        "dialog.phone.tutorial.intro": "Check my screen to see where the elevator has been called.<PAGE>Good luck!",
+        "dialog.phone.tutorial.intro": "Hello! Be sure to check my screen to see where the elevator has been called.<PAGE>Good luck!",
         "dialog.phone.tutorial.end_of_day": "Day complete - time to go home!<PAGE>Return to the Ground Floor to clock out.",
         "dialog.phone.tutorial.character_effects": "Certain guests might respond strangely to being taken in the wrong direction.<PAGE>Rest assured that any strange side effects will most likely wear off within a few turns!",
         "dialog.phone.tutorial.punish": "Hey there! Due to the ever growing popularity of this hotel, you need to be more careful each turn.<PAGE>I'll lose battery whenever you make mistakes.",
@@ -72,6 +72,10 @@
         "dialog.character.JellyfishGirl.enter.0": "You take me to floor $floorNumDest, oui?",
         "dialog.character.JellyfishGirl.exit.0": "Merci! Merci!",
         "dialog.character.JellyfishGirl.angry.0": "Bonne nuit...",
+
+        "dialog.character.Box.enter.0": "...",
+        "dialog.character.Box.exit.0": "...",
+        "dialog.character.Box.angry.0": "...",
 
         "dialog.character.Alieno.enter.0": "Yo.",
         "dialog.character.Alieno.exit.0": "See ya.",

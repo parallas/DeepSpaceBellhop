@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace ElevatorGame.Source.Characters;
 
-public struct CharacterDef()
+public class CharacterDef()
 {
     [Flags]
     public enum CharacterFlag

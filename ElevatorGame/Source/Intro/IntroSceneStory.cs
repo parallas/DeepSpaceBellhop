@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text;
 using AsepriteDotNet.Aseprite;
 using ElevatorGame.Source.Backgrounds;
 using Engine;
@@ -9,7 +10,7 @@ using MonoGame.Aseprite;
 
 namespace ElevatorGame.Source.Intro;
 
-public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
+public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene, IDisposable
 {
     private RenderTarget2D _renderTarget;
     private Texture2D _elevatorSheet;
@@ -39,6 +40,9 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
     private bool _ufoHover = false;
     private bool _elevatorHover = false;
 
+    EventInstance? _ufoHoverSound;
+    EventInstance? _cannonOpenSound;
+
     private bool _doScreenShake = false;
 
     private string _introText;
@@ -61,7 +65,38 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         _backgroundStars = new BackgroundStars(MainGame.Graphics.GraphicsDevice, 0f)
             { HandleVelocity = false, Speed = startingStarSpeed };
 
-        _introText = LocalizationManager.Get("dialog.intro");
+        LocalizationManager.LocalizationDataReloaded += ReloadTokens;
+        ReloadTokens();
+    }
+
+    private void ReloadTokens()
+    {
+        var split = LocalizationManager.Get("dialog.intro").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        for (int l = 0; l < split.Length; l++)
+        {
+            StringBuilder currentLine = new();
+            List<string> lines = [];
+            var words = split[l].Split(' ');
+            for (int w = 0; w < words.Length; w++)
+            {
+                var word = words[w];
+                if(MainGame.FontIntro.MeasureString(currentLine.ToString() + word).X > 128)
+                {
+                    lines.Add(currentLine.ToString());
+                    currentLine = new();
+                }
+
+                if(currentLine.Length != 0)
+                    currentLine.Append(' ');
+                currentLine.Append(word);
+            }
+            lines.Add(currentLine.ToString());
+
+            split[l] = string.Join('\n', lines);
+        }
+
+        _introText = string.Join("\n\n", split);
     }
 
     public IEnumerator PreTitleIntro()
@@ -74,8 +109,8 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         _ufoShake = false;
         _backgroundStars.Speed = 0f;
 
-        using var ufoHoverSound = StudioSystem.GetEvent("event:/SFX/Intro/UfoHover").CreateInstance();
-        ufoHoverSound.Start();
+        _ufoHoverSound = StudioSystem.GetEvent("event:/SFX/Intro/UfoHover").CreateInstance();
+        _ufoHoverSound.Start();
 
         yield return 60;
 
@@ -92,7 +127,9 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         }
 
         FmodController.PlayOneShot("event:/SFX/Intro/Signal");
-        ufoHoverSound.Stop();
+        _ufoHoverSound.Stop();
+        _ufoHoverSound.Dispose();
+        _ufoHoverSound = null;
         _ufoHover = false;
 
         _ufoShake = true;
@@ -101,8 +138,8 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
         yield return 40;
 
-        using var canonOpenSound = StudioSystem.GetEvent("event:/SFX/Intro/CanonOpen").CreateInstance();
-        canonOpenSound.Start();
+        _cannonOpenSound = StudioSystem.GetEvent("event:/SFX/Intro/CanonOpen").CreateInstance();
+        _cannonOpenSound.Start();
         while (_cannonPos < 10)
         {
             _cannonPos = MathUtil.Approach(_cannonPos, 10, 0.1f);
@@ -114,7 +151,9 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         yield return 120;
 
         _showLaserGlow = false;
-        canonOpenSound.Stop();
+        _cannonOpenSound.Stop();
+        _cannonOpenSound.Dispose();
+        _cannonOpenSound = null;
         FmodController.PlayOneShot("event:/SFX/Intro/Cork");
 
         _elevatorPos = 30;
@@ -284,7 +323,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
             if (_showText)
             {
                 var typedText = _introText.Substring(0, _textCharacterIndex);
-                var split = typedText.Split(["\r\n", "\n"], StringSplitOptions.TrimEntries);
+                var split = typedText.Split('\n', StringSplitOptions.TrimEntries);
                 for (var i = 0; i < split.Length; i++)
                 {
                     spriteBatch.DrawStringSpacesFix(
@@ -304,5 +343,26 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
     public override void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.Draw(_renderTarget, Vector2.Zero, Color.White);
+    }
+
+    public void Dispose()
+    {
+        LocalizationManager.LocalizationDataReloaded -= ReloadTokens;
+
+        _cannonTex = null;
+        _elevatorSheet = null;
+        _laserGlowTex = null;
+        _moonSurfaceTex = null;
+        _planetTex = null;
+        _ufoTex = null;
+        _starsTex = null;
+        _towerTex = null;
+
+        _ufoHoverSound?.Stop();
+        _ufoHoverSound?.Dispose();
+        _cannonOpenSound?.Stop();
+        _cannonOpenSound?.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

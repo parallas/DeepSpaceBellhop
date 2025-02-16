@@ -1,3 +1,5 @@
+using Engine;
+
 namespace ElevatorGame.Source.Dialog;
 
 public struct DialogDef(params string[] pagesText)
@@ -7,7 +9,7 @@ public struct DialogDef(params string[] pagesText)
     public readonly Dialog.Page[] Pages
         => [..
             (PagesText?.SelectMany(
-                p => p
+                p => (LocalizationManager.TokenExists(p) ? LocalizationManager.Get(p) : p)
                     .Split("<PAGE>", StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => new Dialog.Page { Content = s })
             ) ?? [])
