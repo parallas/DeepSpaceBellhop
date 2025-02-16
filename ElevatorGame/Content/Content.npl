@@ -1,120 +1,98 @@
 {
-	"references": [],
-	"content": {
-		"textures": {
-			"path": "graphics/*.png",
-			"recursive": "True",
-			"action": "build",
-			"importer": "TextureImporter",
-			"processor": "TextureProcessor",
-			"processorParam": {
-				"GenerateMipmaps": "False",
-				"PremultiplyAlpha": "True",
-				"ResizeToPowerOfTwo": "False",
-				"MakeSquare": "False",
-				"TextureFormat": "Color"
-			}
-		},
-		"aseprite": {
-			"path": "graphics/*.aseprite",
-			"recursive": "True",
-			"action": "copy"
-		},
-		"fonts": {
-			"path": "fonts/*.spritefont",
-			"recursive": "True",
-			"action": "build",
-			"importer": "FontDescriptionImporter",
-			"processor": "FontDescriptionProcessor",
-			"processorParam": {
-				"PremultiplyAlpha": "True",
-				"TextureFormat": "Color"
-			}
-		},
-		"audioWav": {
-			"path": "audio/*.wav",
-			"recursive": "True",
-			"action": "build",
-			"importer": "WavImporter",
-			"processor": "SoundEffectProcessor",
-			"processorParam": {
-				"Quality": "Best"
-			}
-		},
-		"audioMp3": {
-			"path": "audio/*.mp3",
-			"recursive": "True",
-			"action": "build",
-			"importer": "Mp3Importer",
-			"processor": "SoundEffectProcessor",
-			"processorParam": {
-				"Quality": "Best"
-			}
-		},
-		"audioOgg": {
-			"path": "audio/*.ogg",
-			"recursive": "True",
-			"action": "build",
-			"importer": "OggImporter",
-			"processor": "SoundEffectProcessor",
-			"processorParam": {
-				"Quality": "Best"
-			}
-		},
-		"levels": {
-			"path": "levels/*.ldtkl",
-			"recursive": "True",
-			"action": "copy"
-		},
-		"levelImages": {
-			"path": "levels/*.png",
-			"recursive": "True",
-			"action": "build",
-			"importer": "TextureImporter",
-			"processor": "TextureProcessor",
-			"processorParam": {
-				"GenerateMipmaps": "False",
-				"PremultiplyAlpha": "True",
-				"ResizeToPowerOfTwo": "False",
-				"MakeSquare": "False",
-				"TextureFormat": "Color"
-			}
-		},
-		"effects": {
-			"path": "shaders/*.fx",
-			"recursive": "True",
-			"action": "build",
-			"importer": "EffectImporter",
-			"processor": "EffectProcessor",
-			"processorParam": {
-				"Debug": "Auto"
-			}
-		},
-		"hlsl": {
-            "path": "shaders/*.hlsl",
+    "references": [],
+    "content": {
+        "textures": {
+            "path": "graphics/*.png",
             "recursive": "True",
-            "action": "copy",
+            "action": "build",
+            "importer": "TextureImporter",
+            "processor": "TextureProcessor",
+            "processorParam": {
+                "GenerateMipmaps": "False",
+                "PremultiplyAlpha": "True",
+                "ResizeToPowerOfTwo": "False",
+                "MakeSquare": "False",
+                "TextureFormat": "Color"
+            }
         },
-		"obj": {
-			"path": "models/*.obj",
-			"recursive": "True",
-			"action": "copy"
-		},
-		"localization": {
-			"path": "localizations/*.json",
-			"action": "copy"
-		},
-		"music":
-        {
-            "path": "audio/*.mp3",
+        "aseprite": {
+            "path": "graphics/*.aseprite",
             "recursive": "True",
             "action": "copy"
         },
-        "banks":
-        {
+        "fonts": {
+            "path": "fonts/*.spritefont",
+            "recursive": "True",
+            "action": "build",
+            "importer": "FontDescriptionImporter",
+            "processor": "FontDescriptionProcessor",
+            "processorParam": {
+                "PremultiplyAlpha": "True",
+                "TextureFormat": "Color"
+            }
+        },
+        "audioWav": {
+            "path": "audio/*.wav",
+            "recursive": "True",
+            "action": "build",
+            "importer": "WavImporter",
+            "processor": "SoundEffectProcessor",
+            "processorParam": {
+                "Quality": "Best"
+            }
+        },
+        "audioMp3": {
+            "path": "audio/*.mp3",
+            "recursive": "True",
+            "action": "build",
+            "importer": "Mp3Importer",
+            "processor": "SoundEffectProcessor",
+            "processorParam": {
+                "Quality": "Best"
+            }
+        },
+        "audioOgg": {
+            "path": "audio/*.ogg",
+            "recursive": "True",
+            "action": "build",
+            "importer": "OggImporter",
+            "processor": "SoundEffectProcessor",
+            "processorParam": {
+                "Quality": "Best"
+            }
+        },
+        "effects": {
+            "path": "shaders/*.fx",
+            "recursive": "True",
+            "action": "build",
+            "importer": "EffectImporter",
+            "processor": "EffectProcessor",
+            "processorParam": {
+                "Debug": "Auto"
+            }
+        },
+        "hlsl": {
+            "path": "shaders/*.hlsl",
+            "recursive": "True",
+            "action": "copy"
+        },
+        "obj": {
+            "path": "models/*.obj",
+            "recursive": "True",
+            "action": "copy"
+        },
+        "localization": {
+            "path": "localizations/*.json",
+            "action": "copy"
+        },
+        "data": {
+            "path": "data/*.json",
+            "action": "copy"
+        },
+        "banks": {
             "path": "audio/banks/*.bank",
             "recursive": "True",
             "action": "copy"
-        },
-	}
+        }
+    }
 }
