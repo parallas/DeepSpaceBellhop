@@ -19,7 +19,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
     private Texture2D _starsTex;
     private AnimatedSprite _signalSprite;
     private Texture2D _ufoTex;
-    private Texture2D _canonTex;
+    private Texture2D _cannonTex;
     private Texture2D _laserGlowTex;
 
     private BackgroundStars _backgroundStars;
@@ -31,7 +31,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
     private bool _elevatorFlamesActive = false;
 
     private Vector2 _ufoPos = new Vector2(-50, 14);
-    private float _canonPos = 0;
+    private float _cannonPos = 0;
     private bool _showLaserGlow = false;
     private float _signalPos = 140;
     private bool _signalMove = false;
@@ -55,7 +55,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
             .CreateSpriteSheet(MainGame.Graphics.GraphicsDevice, true)
             .CreateAnimatedSprite("Loop");
         _ufoTex = ContentLoader.Load<Texture2D>("graphics/intro/Ufo");
-        _canonTex = ContentLoader.Load<Texture2D>("graphics/intro/UfoLauncher");
+        _cannonTex = ContentLoader.Load<Texture2D>("graphics/intro/UfoLauncher");
         _laserGlowTex = ContentLoader.Load<Texture2D>("graphics/intro/LaserGlow");
 
         _backgroundStars = new BackgroundStars(MainGame.Graphics.GraphicsDevice, 0f)
@@ -103,9 +103,9 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
         using var canonOpenSound = StudioSystem.GetEvent("event:/SFX/Intro/CanonOpen").CreateInstance();
         canonOpenSound.Start();
-        while (_canonPos < 10)
+        while (_cannonPos < 10)
         {
-            _canonPos = MathUtil.Approach(_canonPos, 10, 0.1f);
+            _cannonPos = MathUtil.Approach(_cannonPos, 10, 0.1f);
             yield return null;
         }
 
@@ -232,7 +232,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
             _backgroundStars.Draw(spriteBatch);
 
             Point ufoPosInt = _ufoPos.ToPoint();
-            int canonPosInt = MathUtil.FloorToInt(_canonPos);
+            int cannonPosInt = MathUtil.FloorToInt(_cannonPos);
 
             // Draw Stars
             int starsPos = MathUtil.FloorToInt(exponentialLandPosFloor * 0.8f);
@@ -257,11 +257,11 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
             // Draw Laser Glow
             if (_showLaserGlow && MainGame.Frame % 4 < 2)
                 spriteBatch.Draw(_laserGlowTex,
-                    ufoPosInt.ToVector2() + Vector2.UnitY * canonPosInt + new Vector2(15, 9), Color.White);
+                    ufoPosInt.ToVector2() + Vector2.UnitY * cannonPosInt + new Vector2(15, 9), Color.White);
 
             // Draw UFO Canon
-            if (canonPosInt > 0)
-                spriteBatch.Draw(_canonTex, ufoPosInt.ToVector2() + Vector2.UnitY * canonPosInt, Color.White);
+            if (cannonPosInt > 0)
+                spriteBatch.Draw(_cannonTex, ufoPosInt.ToVector2() + Vector2.UnitY * cannonPosInt, Color.White);
 
             // Draw UFO
             Vector2 randomShake = Vector2.Zero;
