@@ -339,7 +339,7 @@ public class MainGame : Game
 
         _buttonHint = ContentLoader.Load<AsepriteFile>("graphics/ButtonHint")
             .CreateSpriteSheet(GraphicsDevice, false)
-            .CreateAnimatedSprite("Tag");
+            .CreateAnimatedSprite("MoveElevator");
         _buttonHint.Origin = new(19, 5);
 
         Cursor = new();
