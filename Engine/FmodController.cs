@@ -82,4 +82,11 @@ public static class FmodController
         FmodManager.Update();
     }
     #endregion
+
+    public static void PlayOneShot(string path)
+    {
+        var eventInstance = StudioSystem.GetEvent(path).CreateInstance();
+        eventInstance.Start();
+        eventInstance.Dispose();
+    }
 }

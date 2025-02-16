@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{0ea0b988-0dcd-473b-a84c-7038def5949b}">
+		<property name="assetPath">
+			<value>Intro/UFO_Hover.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>6.8616041666666669</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{8cc827c7-cb66-4dda-b72c-48429909c1e5}</destination>
+		</relationship>
+	</object>
+</objects>

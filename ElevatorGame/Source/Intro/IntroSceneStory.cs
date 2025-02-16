@@ -20,6 +20,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
     private AnimatedSprite _signalSprite;
     private Texture2D _ufoTex;
     private Texture2D _canonTex;
+    private Texture2D _laserGlowTex;
 
     private BackgroundStars _backgroundStars;
 
@@ -31,6 +32,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
     private Vector2 _ufoPos = new Vector2(-50, 14);
     private float _canonPos = 0;
+    private bool _showLaserGlow = false;
     private float _signalPos = 140;
     private bool _signalMove = false;
     private bool _ufoShake = false;
@@ -54,6 +56,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
             .CreateAnimatedSprite("Loop");
         _ufoTex = ContentLoader.Load<Texture2D>("graphics/intro/Ufo");
         _canonTex = ContentLoader.Load<Texture2D>("graphics/intro/UfoLauncher");
+        _laserGlowTex = ContentLoader.Load<Texture2D>("graphics/intro/LaserGlow");
 
         _backgroundStars = new BackgroundStars(MainGame.Graphics.GraphicsDevice, 0f)
             { HandleVelocity = false, Speed = startingStarSpeed };
@@ -71,6 +74,9 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         _ufoShake = false;
         _backgroundStars.Speed = 0f;
 
+        using var ufoHoverSound = StudioSystem.GetEvent("event:/SFX/Intro/UfoHover").CreateInstance();
+        ufoHoverSound.Start();
+
         yield return 60;
 
         while (_ufoPos.X < 142)
@@ -85,6 +91,8 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
             yield return null;
         }
 
+        FmodController.PlayOneShot("event:/SFX/Intro/Signal");
+        ufoHoverSound.Stop();
         _ufoHover = false;
 
         _ufoShake = true;
@@ -93,13 +101,21 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
         yield return 40;
 
+        using var canonOpenSound = StudioSystem.GetEvent("event:/SFX/Intro/CanonOpen").CreateInstance();
+        canonOpenSound.Start();
         while (_canonPos < 10)
         {
             _canonPos = MathUtil.Approach(_canonPos, 10, 0.1f);
             yield return null;
         }
 
+        _showLaserGlow = true;
+
         yield return 120;
+
+        _showLaserGlow = false;
+        canonOpenSound.Stop();
+        FmodController.PlayOneShot("event:/SFX/Intro/Cork");
 
         _elevatorPos = 30;
         while (_elevatorPos < 135)
@@ -237,6 +253,11 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
                 spriteBatch.Draw(_elevatorSheet, new Vector2(160, elevatorPosInt),
                     new Rectangle(_elevatorFlamesActive ? 7 : 0, 0, 7, 15), Color.White);
             }
+
+            // Draw Laser Glow
+            if (_showLaserGlow && MainGame.Frame % 4 < 2)
+                spriteBatch.Draw(_laserGlowTex,
+                    ufoPosInt.ToVector2() + Vector2.UnitY * canonPosInt + new Vector2(15, 9), Color.White);
 
             // Draw UFO Canon
             if (canonPosInt > 0)
