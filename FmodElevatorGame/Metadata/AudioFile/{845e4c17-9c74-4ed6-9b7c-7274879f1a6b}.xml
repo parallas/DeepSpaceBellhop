@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{845e4c17-9c74-4ed6-9b7c-7274879f1a6b}">
+		<property name="assetPath">
+			<value>Music/Bellhop_Intro_Short.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>28.728000000000002</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{8cc827c7-cb66-4dda-b72c-48429909c1e5}</destination>
+		</relationship>
+	</object>
+</objects>

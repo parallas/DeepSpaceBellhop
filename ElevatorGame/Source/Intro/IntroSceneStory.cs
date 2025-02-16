@@ -2,6 +2,7 @@ using System.Collections;
 using AsepriteDotNet.Aseprite;
 using ElevatorGame.Source.Backgrounds;
 using Engine;
+using FmodForFoxes.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Aseprite;
@@ -24,6 +25,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
     private float _landPos = 135 * 3;
     private bool _showText = false;
+    private int _textCharacterIndex = 0;
     private float _elevatorPos = 30;
     private bool _elevatorFlamesActive = false;
 
@@ -127,16 +129,27 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
         yield return 30;
 
-        while (!MathUtil.Approximately(_elevatorPos, 64, 1))
-        {
-            _elevatorPos = MathUtil.ExpDecay(_elevatorPos, 64, 2, 1f / 60f);
-            yield return null;
-        }
-
         _elevatorHover = true;
         _showText = true;
 
-        yield return 60 * 12;
+        int textCounter = 0;
+        while (textCounter < 60 * 8)
+        {
+            textCounter++;
+            _textCharacterIndex++;
+            if (_textCharacterIndex >= _introText.Length)
+            {
+                _textCharacterIndex = _introText.Length;
+            }
+
+            _elevatorPos = MathUtil.ExpDecay(_elevatorPos, 64, 2, 1f / 60f);
+
+            yield return null;
+        }
+
+        _elevatorPos = MathUtil.ExpDecay(_elevatorPos, 64, 2, 1f / 60f);
+
+        yield return 60 * 4;
 
         _showText = false;
 
@@ -149,7 +162,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         {
             var exponentialLandPos = MathF.Pow(_landPos / (135 * 3), 1.5f);
             _backgroundStars.Speed = exponentialLandPos * 4f;
-            _landPos = MathUtil.ExpDecay(_landPos, 0f, 1f, 1f / 60f);
+            _landPos = MathUtil.ExpDecay(_landPos, 0f, 1.2f, 1f / 60f);
             yield return null;
         }
         _landPos = 0f;
@@ -179,7 +192,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
         yield return 20;
         _doScreenShake = false;
 
-        yield return 60;
+        yield return 120;
     }
 
     public override void PreDraw(SpriteBatch spriteBatch)
@@ -249,7 +262,8 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene
 
             if (_showText)
             {
-                var split = _introText.Split(["\r\n", "\n"], StringSplitOptions.TrimEntries);
+                var typedText = _introText.Substring(0, _textCharacterIndex);
+                var split = typedText.Split(["\r\n", "\n"], StringSplitOptions.TrimEntries);
                 for (var i = 0; i < split.Length; i++)
                 {
                     spriteBatch.DrawStringSpacesFix(

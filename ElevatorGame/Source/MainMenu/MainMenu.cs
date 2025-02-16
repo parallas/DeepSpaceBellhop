@@ -230,6 +230,7 @@ public class MainMenu
     {
         if(!skipIntro)
         {
+            MusicPlayer.PlayMusic("Intro");
             _state = State.None;
             yield return _intro.GetEnumerator();
         }
