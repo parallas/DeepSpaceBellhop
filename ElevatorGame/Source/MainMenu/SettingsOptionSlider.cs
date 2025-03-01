@@ -41,7 +41,7 @@ public class SettingsOptionSlider : SettingsOption<int>
         Max = maxValue;
         StepAmount = stepAmount;
         Index = index;
-        _bounds = new(SettingsMenu.DividerX + 40, 2 + Index * 10, width, 9);
+        _bounds = new(SettingsMenu.DividerX + 40 + (100 - width), 2 + Index * 10, width, 9);
     }
 
     public override void LoadContent()
@@ -141,7 +141,7 @@ public class SettingsOptionSlider : SettingsOption<int>
         spriteBatch.DrawStringSpacesFix(
             MainGame.Font,
             LocalizationManager.Get(LangToken),
-            _bounds.Location.ToVector2() - Vector2.UnitX * 40 - Vector2.UnitY * 2,
+            _bounds.Location.ToVector2() - (Vector2.UnitX * (40 + (100 - _bounds.Width))) - Vector2.UnitY * 2,
             highlighted ? Color.White : ColorUtil.CreateFromHex(0xc0c0c0),
             6
         );

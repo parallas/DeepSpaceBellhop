@@ -9,6 +9,7 @@
         "ui.settings": "Settings",
 
         "ui.settings.tab.game": "Game",
+        "ui.settings.tab.game.section.general": "General",
         "ui.settings.tab.game.option.language": "Language",
 
         "ui.settings.tab.audio": "Audio",
@@ -19,10 +20,14 @@
         "ui.settings.tab.audio.option.mute_when_unfocused": "Mute When Unfocused",
 
         "ui.settings.tab.interface": "Interface",
+        "ui.settings.tab.interface.section.system": "System",
+        "ui.settings.tab.interface.option.native_cursor": "Native Cursor",
+        "ui.settings.tab.interface.option.fullscreen": "Fullscreen",
 
         "ui.settings.tab.graphics": "Graphics",
-        "ui.settings.tab.graphics.section.windows": "Windows Options",
-        "ui.settings.tab.graphics.option.fullscreen": "Fullscreen",
+        "ui.settings.tab.graphics.section.post_processing": "Post Processing",
+        "ui.settings.tab.graphics.option.lcd_effect": "LCD Effect",
+        "ui.settings.tab.graphics.option.frame_blending": "Frame Blending",
 
         "ui.gameplay.turn_counter": "Turn #{0}",
 

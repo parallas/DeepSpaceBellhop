@@ -55,8 +55,10 @@ public class SettingsMenu
             {
                 TitleLangToken = GetTabLangToken("game"),
                 Options = [
+                    SettingsOptionFiller.Create(index: 0, langToken: GetSectionLangToken("game", "general")),
+
                     new SettingsOptionEnum(
-                        index: 0,
+                        index: 1,
                         options:
                             from langSettings in LocalizationManager.LoadedLanguages
                             select (langSettings.Identifier, langSettings.Name)
@@ -133,30 +135,67 @@ public class SettingsMenu
             new SettingsTab
             {
                 TitleLangToken = GetTabLangToken("interface"),
-                Options = [],
+                Options = [
+                    SettingsOptionFiller.Create(index: 0, langToken: GetSectionLangToken("interface", "system")),
+
+                    new SettingsOptionCheckbox(index: 1)
+                    {
+                        GetValue = () => MainGame.UseNativeCursor,
+                        SetValue = (value) =>
+                        {
+                            MainGame.UseNativeCursor = value;
+                            _isDirty = true;
+                        },
+                        LangToken = GetOptionLangToken("interface", "native_cursor"),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Interface),
+                    },
+                ],
             },
 
             new SettingsTab
             {
                 TitleLangToken = GetTabLangToken("graphics"),
-                Options = [],
-            }
+                Options = [
+                    SettingsOptionFiller.Create(index: 0, langToken: GetSectionLangToken("graphics", "post_processing")),
+
+                    new SettingsOptionSlider(index: 1, width: 60, minValue: 0, maxValue: 100, stepAmount: 5) {
+                        GetValue = () => MathUtil.FloorToInt(RenderPipeline.MaskBlend * 100),
+                        SetValue = value =>
+                        {
+                            RenderPipeline.MaskBlend = value / 100f;
+                            _isDirty = true;
+                        },
+                        LangToken = GetOptionLangToken("graphics", "lcd_effect"),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Graphics),
+                    },
+                    new SettingsOptionSlider(index: 2, width: 60, minValue: 0, maxValue: 100, stepAmount: 5) {
+                        GetValue = () => MathUtil.FloorToInt(RenderPipeline.FrameBlend * 100),
+                        SetValue = value =>
+                        {
+                            RenderPipeline.FrameBlend = value / 100f;
+                            _isDirty = true;
+                        },
+                        LangToken = GetOptionLangToken("graphics", "frame_blending"),
+                        SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Graphics),
+                    },
+                ],
+            },
         ];
 
         if (OperatingSystem.IsWindows())
         {
-            int tab = (int)SettingsTabs.Graphics;
-            _tabs[tab].Options.Add(SettingsOptionFiller.Create(
-                index: _tabs[tab].Options.Count,
-                langToken: GetSectionLangToken("graphics", "windows")
-            ));
+            int tab = (int)SettingsTabs.Interface;
+            // _tabs[tab].Options.Add(SettingsOptionFiller.Create(
+            //     index: _tabs[tab].Options.Count,
+            //     langToken: GetSectionLangToken("interface", "windows")
+            // ));
 
             _tabs[tab].Options.Add(new SettingsOptionCheckbox(index: _tabs[tab].Options.Count)
             {
                 SetValue = OnChangeFullscreen,
                 GetValue = () => MainGame.IsFullscreen,
-                LangToken = GetOptionLangToken("graphics", "fullscreen"),
-                SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Graphics),
+                LangToken = GetOptionLangToken("interface", "fullscreen"),
+                SetSelected = GetOptionSelectedAction(tab: SettingsTabs.Interface),
             });
         }
 
@@ -238,6 +277,12 @@ public class SettingsMenu
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         {
             MainGame.Graphics.GraphicsDevice.Clear(Color.Black * 0.33f);
+
+            spriteBatch.Draw(
+                MainGame.PixelTexture,
+                new Rectangle(0, 0, DividerX - 6, MainGame.GameBounds.Height),
+                Color.Black * 0.5f
+            );
 
             for (int i = 0; i < _tabs.Count; i++)
             {

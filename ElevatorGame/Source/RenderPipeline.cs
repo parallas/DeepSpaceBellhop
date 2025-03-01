@@ -16,9 +16,23 @@ public static class RenderPipeline
     private static RenderTarget2D _gameWithUiRt;
     private static RenderTarget2D _postProcessRt;
     private static RenderTarget2D _renderTarget;
+    private static Effect _screenSpaceEffects;
+    private static EffectParameter _maskBlend;
+    private static EffectParameter _frameBlend;
     public static RenderTarget2D RenderTarget => _renderTarget;
 
-    private static GraphicsDevice _graphics;
+    private static float _maskBlendValue = 1;
+    private static float _frameBlendValue = 1;
+
+    public static float MaskBlend {
+        get => _maskBlendValue;
+        set => _maskBlendValue = value;
+    }
+
+    public static float FrameBlend {
+        get => _frameBlendValue;
+        set => _frameBlendValue = value;
+    }
 
     public static void Init(Point size)
     {
@@ -28,13 +42,17 @@ public static class RenderPipeline
 
     public static void LoadContent(GraphicsDevice graphicsDevice)
     {
-        _graphics = graphicsDevice;
         _renderTarget = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
         _gameSceneRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
         _beforeUiRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
         _uiRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
         _gameWithUiRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
         _postProcessRt = new RenderTarget2D(graphicsDevice, RenderBufferSize.X, RenderBufferSize.Y);
+
+        _screenSpaceEffects = ContentLoader.Load<Effect>("shaders/screenspaceeffects");
+        _screenSpaceEffects?.Parameters["MaskTexture"]?.SetValue(ContentLoader.Load<Texture2D>("graphics/LcdMask"));
+        _maskBlend = _screenSpaceEffects?.Parameters["MaskBlend"];
+        _frameBlend = _screenSpaceEffects?.Parameters["FrameBlend"];
     }
 
     public static void DrawBeforeUI(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Effect effect, Action drawAction)
@@ -80,13 +98,10 @@ public static class RenderPipeline
 
     public static void DrawFinish(SpriteBatch spriteBatch, GraphicsDeviceManager graphicsDeviceManager)
     {
-        var graphicsDevice = graphicsDeviceManager.GraphicsDevice;
+        _maskBlend?.SetValue(_maskBlendValue);
+        _frameBlend?.SetValue(_frameBlendValue);
 
-        var screenSpaceEffects = ContentLoader.Load<Effect>("shaders/screenspaceeffects");
-        screenSpaceEffects?
-            .Parameters["MaskTexture"]?
-            .SetValue(ContentLoader.Load<Texture2D>("graphics/LcdMask"));
-        RtScreen.DrawWithRtOnScreen(_renderTarget, graphicsDeviceManager, spriteBatch, null, screenSpaceEffects, Color.White, () =>
+        RtScreen.DrawWithRtOnScreen(_renderTarget, graphicsDeviceManager, spriteBatch, null, _screenSpaceEffects, Color.White, () =>
         {
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             {

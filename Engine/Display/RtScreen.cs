@@ -10,6 +10,9 @@ public static class RtScreen
     private static RenderTarget2D _screenSpaceEffectRt;
     private static RenderTarget2D _lastFrameRt;
 
+    public static int LastScaledWidth { get; private set; }
+    public static int LastScaledHeight { get; private set; }
+
     public static void Init()
     {
 
@@ -109,6 +112,9 @@ public static class RtScreen
 
         int xOffset = screenWidth / 2 - newWidth / 2;
         int yOffset = screenHeight / 2 - newHeight / 2;
+
+        LastScaledWidth = newWidth;
+        LastScaledHeight = newHeight;
 
         spriteBatch.Begin(samplerState: SamplerState.AnisotropicClamp);
         {

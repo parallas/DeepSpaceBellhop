@@ -185,11 +185,13 @@ public class MainGame : Game
 
     public static event Action<Point> WindowResized;
 
+    public static bool UseNativeCursor { get; set; } = false;
+
     public MainGame(bool useSteamworks)
     {
         Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
-        IsMouseVisible = false;
+        IsMouseVisible = UseNativeCursor;
 
         UseSteamworks = useSteamworks;
 
@@ -273,6 +275,11 @@ public class MainGame : Game
         data.AudioSFXVolume = StudioSystem.GetParameterTargetValue("VolumeSounds");
 
         data.LanguagePreference = LocalizationManager.CurrentLanguage ?? "en-us";
+
+        data.LcdEffect = RenderPipeline.MaskBlend;
+        data.FrameBlending = RenderPipeline.FrameBlend;
+
+        data.UseNativeCursor = UseNativeCursor;
     }
 
     private void OnSettingsLoad(ref SettingsData data)
@@ -282,6 +289,11 @@ public class MainGame : Game
         StudioSystem.SetParameterValue("VolumeSounds", data.AudioSFXVolume);
 
         LocalizationManager.CurrentLanguage = data.LanguagePreference;
+
+        RenderPipeline.MaskBlend = data.LcdEffect;
+        RenderPipeline.FrameBlend = data.FrameBlending;
+
+        UseNativeCursor = data.UseNativeCursor;
     }
 
     protected override void LoadContent()
@@ -423,6 +435,8 @@ public class MainGame : Game
 
         DebugUpdate();
 
+        IsMouseVisible = UseNativeCursor || ShowDebug;
+
         if (UseSteamworks)
             SteamManager.Update();
 
@@ -532,6 +546,7 @@ public class MainGame : Game
         _dayTransition?.PreDraw(SpriteBatch);
         _pauseManager?.PreDraw(SpriteBatch);
         _mainMenu?.PreDraw(SpriteBatch);
+        Cursor.PreDraw(SpriteBatch);
 
         if(GameState == GameStates.Intro)
         {
@@ -573,7 +588,7 @@ public class MainGame : Game
                     case GameStates.MainMenu:
                         _mainMenu?.Draw(SpriteBatch);
                         DrawScreenTransition(SpriteBatch);
-                        if (!_isUsingGamePad)
+                        if (!_isUsingGamePad && !ShowDebug)
                             Cursor.Draw(SpriteBatch);
                         break;
                     case GameStates.Intro:
@@ -631,7 +646,7 @@ public class MainGame : Game
 
         DrawScreenTransition(spriteBatch);
 
-        if (!_isUsingGamePad)
+        if (!_isUsingGamePad && !ShowDebug)
             Cursor.Draw(spriteBatch);
     }
 
@@ -1395,7 +1410,10 @@ public class MainGame : Game
         if (InputManager.GetPressed(Keys.F3))
         {
             ShowDebug = !ShowDebug;
-            IsMouseVisible = ShowDebug;
+            if(!UseNativeCursor)
+                IsMouseVisible = ShowDebug;
+
+            Mouse.SetCursor(MouseCursor.Arrow);
         }
 
         if (InputManager.GetPressed(Keys.Y))

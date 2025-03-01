@@ -7,6 +7,9 @@
 #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
+float MaskBlend;
+float FrameBlend;
+
 Texture2D SpriteTexture;
 sampler2D SpriteTextureSampler = sampler_state
 {
@@ -46,8 +49,9 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float4 col = tex2D(SpriteTextureSampler, uv).rgba * input.Color.rgba;
     float4 maskSample = tex2D(MaskTextureSampler, uv * BackBufferResolution.xy);
     maskSample = lerp(maskSample, float4(1, 1, 1, 1), 0.85f);
+    maskSample = lerp(float4(1, 1, 1, 1), maskSample, MaskBlend);
     float3 maskColored = maskSample.rgb * col.rgb;
-    float3 blurSample = lerp(maskColored, tex2D(LastFrameTextureSampler, uv).rgb, 0.2f);
+    float3 blurSample = lerp(maskColored, tex2D(LastFrameTextureSampler, uv).rgb, 0.2f * FrameBlend);
     float3 finalSample = blurSample;
     return float4(finalSample, 1);
 }
