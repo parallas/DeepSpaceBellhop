@@ -29,7 +29,11 @@ public class Cursor()
     public CursorSprites CursorSpriteOverride { get; set; }
 
     public Vector2 ViewPosition => RtScreen.ToScreenSpace(
-        InputManager.MousePosition.ToVector2(),
+        Vector2.Lerp(
+            InputManager.MousePosition.ToVector2(),
+            MainGame.MainWindow.ClientBounds.Size.ToVector2() / 2f,
+            _cursorPosToCenterInterp
+        ),
         MainGame.RenderBufferSize,
         MainGame.ScreenBounds
     );
@@ -52,6 +56,8 @@ public class Cursor()
         (float)RtScreen.LastScaledHeight / RenderPipeline.RenderBufferSize.Y
     );
 
+    private float _cursorPosToCenterInterp;
+
     public void LoadContent()
     {
         _file = ContentLoader.Load<AsepriteFile>("graphics/Cursor");
@@ -71,6 +77,8 @@ public class Cursor()
             _rt = new(MainGame.Graphics.GraphicsDevice, MathUtil.CeilToInt(16 * CursorScale.X), MathUtil.CeilToInt(16 * CursorScale.Y));
         }
         _lastScaledSize = new(RtScreen.LastScaledWidth, RtScreen.LastScaledHeight);
+
+        _cursorPosToCenterInterp = MathUtil.ExpDecay(_cursorPosToCenterInterp, MainGame.IsUsingGamePad ? 1f : 0f, 12, 1f / 60f);
     }
 
     public void PreDraw(SpriteBatch spriteBatch)
