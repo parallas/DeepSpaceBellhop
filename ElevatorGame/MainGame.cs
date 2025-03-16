@@ -43,6 +43,8 @@ public class MainGame : Game
     public bool ShowDebug { get; private set; }
     public static readonly Point RenderBufferSize = new Point(240, 135);
 
+    public static GameWindow MainWindow => _instance.Window;
+
     public static long Step { get; private set; }
     public static long Frame { get; private set; }
 
@@ -178,8 +180,14 @@ public class MainGame : Game
     private float _previousMasterVolume;
 
     private static bool _isUsingGamePad;
+    private static bool _wasGamePadConnected;
+    private static bool _usingGamePadChanged;
+    private static bool _gamePadJustDisconnected;
 
     public static bool IsUsingGamePad => _isUsingGamePad;
+
+    public static event Action<bool> UsingGamePadChanged;
+    public static event Action GamePadDisconnected;
 
     public static bool SaveFileExists { get; private set; }
 
@@ -435,7 +443,7 @@ public class MainGame : Game
 
         DebugUpdate();
 
-        IsMouseVisible = UseNativeCursor || ShowDebug;
+        IsMouseVisible = (UseNativeCursor && !IsUsingGamePad) || ShowDebug;
 
         if (UseSteamworks)
             SteamManager.Update();
@@ -446,6 +454,14 @@ public class MainGame : Game
             _fadeoutTween.Update(1f / 60f);
             _fadeoutProgress = _fadeoutTween.CurrentValue;
         }
+
+        if(_gamePadJustDisconnected)
+        {
+            GamePadDisconnected?.Invoke();
+            UsingGamePadChanged?.Invoke(false);
+        }
+        else if(_usingGamePadChanged)
+            UsingGamePadChanged?.Invoke(_isUsingGamePad);
 
         if (GameState == GameStates.MainMenu)
         {
@@ -481,7 +497,7 @@ public class MainGame : Game
             return;
         }
 
-        if (Keybindings.Pause.Pressed && CurrentMenu != Menus.DayTransition && GameState == GameStates.Gameplay)
+        if ((Keybindings.Pause.Pressed || _gamePadJustDisconnected) && CurrentMenu != Menus.DayTransition && GameState == GameStates.Gameplay)
         {
             _pauseManager.Pause();
         }
@@ -1298,22 +1314,45 @@ public class MainGame : Game
 
     public void UpdateInput(GameTime gameTime)
     {
+        _gamePadJustDisconnected = false;
+        _usingGamePadChanged = false;
+
         InputManager.InputDisabled = !IsActive;
         InputManager.RefreshKeyboardState();
         InputManager.RefreshMouseState();
         InputManager.RefreshGamePadState();
         InputManager.UpdateTypingInput(gameTime);
         Cursor.Update();
-        if (InputManager.GetAnyPressed(InputType.GamePad))
+
+        bool gamePadConnected = InputManager.IsAnyGamePadConnected();
+
+        if(_wasGamePadConnected && !gamePadConnected)
         {
-            _isUsingGamePad = true;
-        }
-        if (_lastMouseViewPos != Cursor.ViewPosition || InputManager.GetAnyPressed(InputType.Keyboard) || InputManager.GetAnyPressed(InputType.Mouse))
-        {
+            _gamePadJustDisconnected = true;
             _isUsingGamePad = false;
+            _usingGamePadChanged = true;
         }
+
+        if(gamePadConnected)
+        {
+            var wasUsingGamePad = _isUsingGamePad;
+            if (!_wasGamePadConnected || InputManager.GetAnyPressed(InputType.GamePad))
+            {
+                _isUsingGamePad = true;
+            }
+            if (_lastMouseViewPos != Cursor.ViewPosition || InputManager.GetAnyPressed(InputType.Keyboard) || InputManager.GetAnyPressed(InputType.Mouse))
+            {
+                _isUsingGamePad = false;
+            }
+
+            if(wasUsingGamePad != _isUsingGamePad)
+                _usingGamePadChanged = true;
+        }
+
         _lastMouseViewPos = Cursor.ViewPosition;
         _lastMouseWorldPos = Cursor.WorldPosition;
+
+        _wasGamePadConnected = gamePadConnected;
     }
 
     public static Vector2 GetCursorParallaxValue(Vector2 position, float distance)

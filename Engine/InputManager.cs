@@ -92,6 +92,21 @@ public static class InputManager
         return currentGamepadStates[(int)index];
     }
 
+    public static bool IsGamePadConnected(PlayerIndex index)
+    {
+        return currentGamepadStates[(int)index].IsConnected;
+    }
+
+    public static bool IsAnyGamePadConnected()
+    {
+        bool result = false;
+        for(PlayerIndex i = 0; i < (PlayerIndex)4; i++)
+        {
+            result |= IsGamePadConnected(i);
+        }
+        return result;
+    }
+
     public static bool GetDown(Keys key)
     {
         return currentKeyboardState.IsKeyDown(key) && !InputDisabled;
@@ -122,11 +137,23 @@ public static class InputManager
         return currentGamepadStates[(int)index].IsConnected && !currentGamepadStates[(int)index].IsButtonDown(button) && previousGamepadStates[(int)index].IsButtonDown(button) && !InputDisabled;
     }
 
-    public static bool GetDown(Buttons button) => GetDown(button, PlayerIndex.One);
+    private static bool Get(Func<Buttons, PlayerIndex, bool> method, Buttons button)
+    {
+        if(method(button, PlayerIndex.One))
+            return true;
+        else if(method(button, PlayerIndex.Two))
+            return true;
+        else if(method(button, PlayerIndex.Three))
+            return true;
+        else
+            return method(button, PlayerIndex.Four);
+    }
 
-    public static bool GetPressed(Buttons button) => GetPressed(button, PlayerIndex.One);
+    public static bool GetDown(Buttons button) => Get(GetDown, button);
 
-    public static bool GetReleased(Buttons button) => GetReleased(button, PlayerIndex.One);
+    public static bool GetPressed(Buttons button) => Get(GetPressed, button);
+
+    public static bool GetReleased(Buttons button) => Get(GetReleased, button);
 
     public static bool GetDown(MouseButtons button)
     {
