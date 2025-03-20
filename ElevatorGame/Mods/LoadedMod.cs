@@ -10,6 +10,7 @@ public sealed class LoadedMod
     internal bool isNonStandard;
     internal int loadIndex;
     internal readonly Dictionary<string, bool> depAvailability = [];
+    internal bool isWorkshop;
 
     public Assembly Assembly { get; internal set; }
 

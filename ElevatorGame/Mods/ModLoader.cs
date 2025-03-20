@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using System.Text;
 
 using Semver;
+using Microsoft.Xna.Framework;
 
 namespace ElevatorGame.Mods;
 
@@ -34,19 +35,23 @@ public static class ModLoader
         return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == args.Name);
     }
 
+    private static bool CheckIsWorkshop(string basePath)
+    {
+        return FileLocations.WorkshopModsPath is not null && basePath.StartsWith(FileLocations.WorkshopModsPath);
+    }
+
     internal static void DoBeforeRun()
     {
         AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
         Console.WriteLine($"Finding mod assemblies...");
-
-        IEnumerable<string> workshopFileQuery = FileLocations.WorkshopModsPath is null ? []
-            : !Directory.Exists(FileLocations.WorkshopModsPath) ? []
-                : Directory.EnumerateDirectories(FileLocations.WorkshopModsPath);
-
-        IEnumerable<string> localFileQuery = Directory.EnumerateDirectories(FileLocations.LocalModsPath);
+        bool workshopAvailable = FileLocations.WorkshopModsPath is not null && Directory.Exists(FileLocations.WorkshopModsPath);
 
         Directory.CreateDirectory(FileLocations.LocalModsPath);
+
+        IEnumerable<string> workshopFileQuery = workshopAvailable ? Directory.EnumerateDirectories(FileLocations.WorkshopModsPath) : [];
+        IEnumerable<string> localFileQuery = Directory.EnumerateDirectories(FileLocations.LocalModsPath);
+
         foreach(var modFolder in Query(workshopFileQuery, localFileQuery))
         {
             // load top-level assemblies
@@ -76,6 +81,7 @@ public static class ModLoader
             }
         }
 
+        if(loadedMods.Count > 0)
         {
             StringBuilder modListLog = new("Mods to load:");
             for(int i = 0; i < loadedMods.Count; i++)
@@ -106,6 +112,7 @@ public static class ModLoader
 
             if(mod.failedLoad)
             {
+                Console.WriteLine($"Warning: Skipped loading {mod.Guid}");
                 loadedMods.RemoveAt(i);
                 i--;
                 continue;
@@ -116,6 +123,12 @@ public static class ModLoader
 
         // post import
 
+        if(loadedMods.Count == 0)
+        {
+            Console.WriteLine("Looks like there's nothing to do!");
+            return;
+        }
+        else
         {
             StringBuilder modListLog = new StringBuilder("Successfully loaded ").Append(loadedMods.Count).Append(" mods:");
             for(int i = 0; i < loadedMods.Count; i++)
@@ -136,13 +149,28 @@ public static class ModLoader
             Console.WriteLine(modListLog);
         }
 
+        // dispatch BeforeRun
         foreach(var mod in loadedMods)
         {
             if(!mod.isNonStandard)
             {
-                mod.Instance = (Mod)mod.MainClass.GetConstructor(Type.EmptyTypes).Invoke(null);
-                mod.Instance.OnBeforeRun();
+                try
+                {
+                    mod.Instance = (Mod)mod.MainClass.GetConstructor(Type.EmptyTypes).Invoke(null);
+                }
+                catch(Exception e)
+                {
+                    Console.Error.WriteLine($"Failed to create mod instance for {mod.Guid}: {e}");
+                }
+
+                Dispatch(() => mod.Instance?.OnBeforeRun(), mod, nameof(DoBeforeRun));
             }
+        }
+
+        // merge content
+        foreach(var mod in loadedMods)
+        {
+            //
         }
     }
 
@@ -185,13 +213,24 @@ public static class ModLoader
         {
             try
             {
-                if(type.IsSubclassOf(typeof(Mod)) && type.IsPublic)
+                if(type.IsSubclassOf(typeof(Mod)))
                 {
+                    if(!type.IsPublic)
+                    {
+                        throw new TypeAccessException("Mod class must be public and cannot be a nested type");
+                    }
+
+                    if(!type.GetConstructor(Type.EmptyTypes).IsPublic)
+                    {
+                        throw new MethodAccessException("Mod class's constructor must be public");
+                    }
+
                     LoadedMod mod = new()
                     {
                         Assembly = assembly,
                         BasePath = basePath,
-                        MainClass = type
+                        MainClass = type,
+                        isWorkshop = CheckIsWorkshop(basePath),
                     };
 
                     ImportMod(mod);
@@ -226,12 +265,10 @@ public static class ModLoader
         var jsonPath = Path.Combine(basePath, "mod.json");
         if(!File.Exists(jsonPath))
         {
-            throw new FileNotFoundException("The mod is library-only but does not contain the required mod.json file", "mod.json");
+            throw new FileNotFoundException("The mod is library-only but does not contain the required mod.json file", jsonPath);
         }
 
         ModJson modJson = JsonSerializer.Deserialize<ModJson>(File.ReadAllText(jsonPath), SerializerOptions);
-
-        nonStandardMods.TryAdd(modJson.Guid, modJson);
 
         LoadedMod mod = new()
         {
@@ -240,7 +277,15 @@ public static class ModLoader
             Guid = modJson.Guid,
             DisplayName = modJson.Name ?? modJson.Guid,
             Version = SemVersion.Parse(modJson.Version, SemVersionStyles.OptionalPatch),
+            isWorkshop = CheckIsWorkshop(basePath),
         };
+
+        CheckDuplicate(mod);
+
+        nonStandardMods.Add(mod.Guid, modJson);
+
+        if(modJson.Name == null)
+            Console.WriteLine($"{mod.Guid} is missing a display name");
 
         loadedMods.Add(mod);
     }
@@ -256,12 +301,26 @@ public static class ModLoader
         mod.DisplayName = modInfo.DisplayName ?? mod.Guid;
         mod.Version = modInfo.Version;
 
+        CheckDuplicate(mod);
+
         if(modInfo.DisplayName == null)
-        {
-            Console.WriteLine($"warning: {mod.Guid} does not have a display name set and will use its GUID instead");
-        }
+            Console.WriteLine($"{mod.Guid} is missing a display name");
 
         loadedMods.Add(mod);
+    }
+
+    private static void CheckDuplicate(LoadedMod mod)
+    {
+        int duplicateIndex = loadedMods.FindIndex(m => m.Guid == mod.Guid && !m.failedLoad);
+        if(duplicateIndex != -1)
+        {
+            var orig = loadedMods[duplicateIndex];
+            throw new InvalidOperationException(string.Join('\n', [
+                $"A mod with the GUID {mod.Guid} is already present",
+                $"  Baseline: {orig.DisplayName} ({orig.Guid}) v{orig.Version}",
+                $"  Incoming: {mod.DisplayName} ({mod.Guid}) v{mod.Version}"
+            ]));
+        }
     }
 
     private static void ResolveDependencies(LoadedMod mod)
@@ -300,7 +359,7 @@ public static class ModLoader
 
             if (errors.Count > 0)
             {
-                Console.Error.WriteLine(new AggregateException($"Failed to resolve dependencies for {mod.Guid} due to errors", errors));
+                Console.Error.WriteLine(new AggregateException($"Failed to resolve dependencies for {mod.Guid}", errors));
                 mod.failedLoad = true;
                 resolvedGuids.Add(mod.Guid);
                 return;
@@ -353,7 +412,7 @@ public static class ModLoader
 
             if(dep.Kind != ModDependencyKind.Incompatible)
             {
-                mod.depAvailability.Add(dep.Guid, depIsAvailable);
+                mod.depAvailability[dep.Guid] = depIsAvailable;
             }
 
             switch(dep.Kind)
@@ -377,7 +436,7 @@ public static class ModLoader
 
         if (dep.Kind == ModDependencyKind.Optional)
         {
-            mod.depAvailability.Add(dep.Guid, false);
+            mod.depAvailability[dep.Guid] = false;
         }
 
         if (dep.Kind == ModDependencyKind.Required)
@@ -406,7 +465,24 @@ public static class ModLoader
     {
         foreach (var mod in loadedMods)
         {
-            mod.Instance?.OnInitialize();
+            if(mod.isNonStandard)
+                continue;
+
+            if(mod.Instance is null)
+            {
+                Console.WriteLine($"Warning: Could not dispatch {nameof(DoInitialize)} for {mod.Guid}: missing mod instance");
+                continue;
+            }
+
+            try
+            {
+                mod.Instance?.OnInitialize();
+            }
+            catch(Exception e)
+            {
+                Console.Error.WriteLine($"Error: Failed to dispatch {nameof(DoInitialize)} for {mod.Guid}: {e}");
+                throw;
+            }
         }
     }
 
@@ -414,7 +490,7 @@ public static class ModLoader
     {
         foreach (var mod in loadedMods)
         {
-            mod.Instance?.OnRegistriesInit();
+            Dispatch(() => mod.Instance?.OnRegistriesInit(), mod, nameof(DoRegistriesInit));
         }
     }
 
@@ -422,7 +498,23 @@ public static class ModLoader
     {
         foreach (var mod in loadedMods)
         {
-            mod.Instance?.OnLoadContent();
+            Dispatch(() => mod.Instance?.OnLoadContent(), mod, nameof(DoLoadContent));
+        }
+    }
+
+    internal static void DoUpdate(GameTime gameTime)
+    {
+        foreach (var mod in loadedMods)
+        {
+            Dispatch(() => mod.Instance?.OnUpdate(gameTime), mod, nameof(DoUpdate));
+        }
+    }
+
+    internal static void DoGameStateChanged(MainGame.GameStates state)
+    {
+        foreach (var mod in loadedMods)
+        {
+            Dispatch(() => mod.Instance?.OnGameStateChanged(state), mod, nameof(DoGameStateChanged));
         }
     }
 
@@ -430,7 +522,29 @@ public static class ModLoader
     {
         foreach (var mod in loadedMods)
         {
-            mod.Instance?.OnEndRun();
+            Dispatch(() => mod.Instance?.OnEndRun(), mod, nameof(DoEndRun));
+        }
+    }
+
+    private static void Dispatch(Action method, LoadedMod mod, string eventName)
+    {
+        if(mod.isNonStandard)
+            return;
+
+        if(mod.Instance is null)
+        {
+            Console.WriteLine($"Warning: Could not dispatch {eventName} for {mod.Guid}: missing mod instance");
+            return;
+        }
+
+        try
+        {
+            method();
+        }
+        catch(Exception e)
+        {
+            Console.Error.WriteLine($"Error: Failed to dispatch {eventName} for {mod.Guid}: {e}");
+            throw;
         }
     }
 }

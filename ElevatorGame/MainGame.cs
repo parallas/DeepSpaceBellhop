@@ -31,6 +31,7 @@ using ElevatorGame.Source.MainMenu;
 using TinyTween;
 using ElevatorGame.Source.Intro;
 using ElevatorGame.Source.Dialog;
+using ElevatorGame.Mods;
 
 namespace ElevatorGame;
 
@@ -117,7 +118,18 @@ public class MainGame : Game
         GameOver,
     }
 
-    public static GameStates GameState { get; set; } = GameStates.Intro;
+    private static GameStates _gameState = GameStates.Intro;
+
+    public static GameStates GameState {
+        get => _gameState;
+        set {
+            if(_gameState != value)
+            {
+                _gameState = value;
+                ModLoader.DoGameStateChanged(value);
+            }
+        }
+    }
 
     public bool EndOfDaySequence { get; private set; }
 
@@ -227,6 +239,8 @@ public class MainGame : Game
 
         Graphics.ApplyChanges();
 
+        ContentLoader.Initialize(Content);
+
         if (OperatingSystem.IsWindows())
         {
             SetFullscreen(
@@ -251,7 +265,7 @@ public class MainGame : Game
 
         Exiting += Game_Exiting;
 
-        ContentLoader.Initialize(Content);
+        ModLoader.DoInitialize();
 
         FmodController.Init();
 
@@ -260,6 +274,8 @@ public class MainGame : Game
         BgCharacterRegistry.Init();
 
         CharacterRegistry.Init();
+
+        ModLoader.DoRegistriesInit();
 
         base.Initialize();
     }
@@ -321,6 +337,9 @@ public class MainGame : Game
         MusicPlayer.RegisterEventGuid("Day4", "{0db5b5ff-da7b-46a4-b2c6-8b39c311857f}");
 
         SaveManager.LoadSettings();
+
+        ModLoader.DoLoadContent();
+
         CharacterRegistry.RefreshData();
 
         RenderPipeline.LoadContent(GraphicsDevice);
@@ -463,10 +482,20 @@ public class MainGame : Game
         else if(_usingGamePadChanged)
             UsingGamePadChanged?.Invoke(_isUsingGamePad);
 
+        GameUpdate(gameTime);
+
+        base.Update(gameTime);
+
+        ModLoader.DoUpdate(gameTime);
+
+        Step++;
+    }
+
+    private void GameUpdate(GameTime gameTime)
+    {
         if (GameState == GameStates.MainMenu)
         {
             _mainMenu?.Update();
-            base.Update(gameTime);
             return;
         }
         else if (GameState == GameStates.Intro)
@@ -478,11 +507,7 @@ public class MainGame : Game
                 CreateMainMenu();
                 return;
             }
-            else
-            {
-                base.Update(gameTime);
-                return;
-            }
+            else return;
         }
         else if (GameState == GameStates.GameOver)
         {
@@ -504,10 +529,7 @@ public class MainGame : Game
         _pauseManager.Update(gameTime);
 
         if (_pauseManager.IsPaused)
-        {
-            base.Update(gameTime);
             return;
-        }
 
         // Tilt camera towards cursor (should be an option to disable)
         Camera.Position =
@@ -547,10 +569,6 @@ public class MainGame : Game
         }
         _buttonHint.Color = Color.White * _buttonHintOpacity;
         _buttonHint.Update(1f / 60f);
-
-        base.Update(gameTime);
-
-        Step++;
     }
 
     protected override void Draw(GameTime gameTime)
