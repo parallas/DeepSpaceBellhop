@@ -8,7 +8,7 @@ namespace Engine;
 
 public static class SteamManager
 {
-    public static uint steam_appid { get; private set; } = 480;
+    internal static uint steam_appid { get; private set; } = 480;
 
     public static bool IsSteamRunning { get; private set; }
 
@@ -90,6 +90,26 @@ public static class SteamManager
                select (a.Identifier, a.State);
         #else
         return [];
+        #endif
+    }
+
+    public static string? GetWorkshopModsPath()
+    {
+        #if STEAM
+
+        if(!IsSteamRunning)
+            return null;
+
+        #if WINDOWS
+        return Path.Combine("C:/Program Files (x86)/Steam/steamapps/workshop/content", steam_appid.ToString());
+        #elif OSX
+        return Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Library/Application Support/Steam/steamapps/workshop/content", steam_appid.ToString());
+        #else
+        return Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".local/share/Steam/steamapps/workshop/content", steam_appid.ToString());
+        #endif
+
+        #else
+        return null;
         #endif
     }
 
