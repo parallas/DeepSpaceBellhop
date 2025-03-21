@@ -10,7 +10,8 @@
                 "${workspaceFolder}/ElevatorGame.sln",
                 "/property:UseSteamworks=true",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign",
+                "/tl:off"
             ],
             "problemMatcher": "$msCompile",
             "linux": {
