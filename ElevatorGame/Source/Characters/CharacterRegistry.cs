@@ -124,6 +124,13 @@ public static class CharacterRegistry
                 AngryIconPosition = new(-9, -51),
                 Flags = CharacterDef.CharacterFlag.Clumsy | CharacterDef.CharacterFlag.Flippy
             },
+            new CharacterDef
+            {
+                Name = "Birthday",
+                SpritePath = "graphics/characters/Birthday",
+                WalkSpeed = 3,
+                AngryIconPosition = new(16, -47),
+            },
         ];
 
         LocalizationManager.LocalizationDataReloaded += RefreshData;
