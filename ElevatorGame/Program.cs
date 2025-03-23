@@ -1,6 +1,9 @@
 ﻿using System.Text;
 
-var steam = !args.Contains("--no-steam");
+bool steam = false;
+#if STEAM
+steam = !args.Contains("--no-steam");
+#endif
 
 using var game = new ElevatorGame.MainGame(steam);
 
