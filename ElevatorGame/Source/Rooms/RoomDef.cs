@@ -31,7 +31,7 @@ public struct RoomDef
         );
         
         var spriteFile = ContentLoader.Load<AsepriteFile>(filePath)!;
-        Console.WriteLine(Math.Min(spriteFile.FrameCount, maxIndex + 1));
+        // Console.WriteLine(Math.Min(spriteFile.FrameCount, maxIndex + 1));
         int randomFrameIndex = Random.Shared.Next(minIndex, Math.Min(spriteFile.FrameCount, maxIndex + 1));
 
         return new RoomDef()
