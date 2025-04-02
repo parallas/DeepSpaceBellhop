@@ -105,6 +105,7 @@ public class MainGame : Game
         TurnTransition,
         MainMenu,
         Intro,
+        Ending,
     }
 
     public static Menus CurrentMenu { get; set; } = Menus.Intro;
@@ -115,6 +116,7 @@ public class MainGame : Game
         MainMenu,
         Intro,
         GameOver,
+        Ending,
     }
 
     public static GameStates GameState { get; set; } = GameStates.Intro;
@@ -395,7 +397,7 @@ public class MainGame : Game
         BgCharacterRegistry.LoadContent();
         _bgCharacterRenderer = new BgCharacterRenderer();
 
-        Intro.LoadContent();
+        Intro.DoIntro();
         MusicPlayer.PlayMusic("MainMenu");
 
         Coroutines.TryRun("main_intro", DoIntro(), out _);
@@ -406,6 +408,13 @@ public class MainGame : Game
         yield return Intro.RunSequence();
 
         CreateMainMenu();
+    }
+
+    private IEnumerator DoEnding()
+    {
+        yield return Intro.RunSequence();
+
+        yield return ReturnToMainMenuSequence(false);
     }
 
     protected override void UnloadContent()
@@ -473,6 +482,28 @@ public class MainGame : Game
         {
             Intro.Update();
             if(Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed)
+            {
+                Coroutines.StopAll();
+                CreateMainMenu();
+                return;
+            }
+            else
+            {
+                base.Update(gameTime);
+                return;
+            }
+        }
+        else if (GameState == GameStates.Ending)
+        {
+            Intro.Update();
+            if(Keybindings.Confirm.IsDown)
+            {
+                Coroutines.Update();
+                Coroutines.Update();
+                Coroutines.Update(); // triple speed!!!!!!!!!
+            }
+
+            if(Keybindings.GoBack.Pressed)
             {
                 Coroutines.StopAll();
                 CreateMainMenu();
@@ -564,7 +595,7 @@ public class MainGame : Game
         _mainMenu?.PreDraw(SpriteBatch);
         Cursor.PreDraw(SpriteBatch);
 
-        if(GameState == GameStates.Intro)
+        if(GameState == GameStates.Intro || GameState == GameStates.Ending)
         {
             Intro.PreDraw(SpriteBatch);
         }
@@ -582,6 +613,7 @@ public class MainGame : Game
                     case GameStates.MainMenu:
                         break;
                     case GameStates.Intro:
+                    case GameStates.Ending:
                         break;
                     case GameStates.GameOver:
                         _gameOverScreen.Draw(SpriteBatch);
@@ -608,7 +640,9 @@ public class MainGame : Game
                             Cursor.Draw(SpriteBatch);
                         break;
                     case GameStates.Intro:
+                    case GameStates.Ending:
                         Intro.Draw(SpriteBatch);
+                        DrawScreenTransition(SpriteBatch);
                         break;
                 }
             }
@@ -721,6 +755,19 @@ public class MainGame : Game
                             }
                         }
                         ImGui.EndMenu();
+                    }
+                    ImGui.EndMenu();
+                }
+
+                if (ImGui.BeginMenu("Other"))
+                {
+                    if (ImGui.MenuItem("ending"))
+                    {
+                        CleanupAndReinitialize();
+                        CurrentMenu = Menus.Ending;
+                        GameState = GameStates.Ending;
+                        Intro.DoOutro();
+                        Coroutines.TryRun("main_ending", DoEnding(), out _);
                     }
                     ImGui.EndMenu();
                 }
@@ -1173,15 +1220,24 @@ public class MainGame : Game
 
         HasMadeMistake = false;
 
-        if (!skipTransition)
+        if (day >= DayRegistry.Days.Length)
+        {
+            yield return 60;
+        }
+        else if (!skipTransition)
         {
             yield return 60;
             yield return _dayTransition.TransitionToNextDay(day + 1);
         }
 
-        if (day >= DayRegistry.Days.Length || day < 0)
+        if (day >= DayRegistry.Days.Length)
         {
             // End of the game
+            CleanupAndReinitialize();
+            CurrentMenu = Menus.Ending;
+            GameState = GameStates.Ending;
+            Intro.DoOutro();
+            Coroutines.TryRun("main_ending", DoEnding(), out _);
             if (!skipTransition)
             {
                 yield return FadeFromBlack();
@@ -1309,6 +1365,11 @@ public class MainGame : Game
             _fadeoutProgress = MathUtil.ExpDecay(_fadeoutProgress, 0, 5, 1f/60f);
             yield return null;
         }
+        _fadeoutProgress = 0;
+    }
+
+    public static void FadeFromBlackInstant()
+    {
         _fadeoutProgress = 0;
     }
 

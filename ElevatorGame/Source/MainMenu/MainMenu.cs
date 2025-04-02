@@ -42,7 +42,7 @@ public class MainMenu
 
     public void LoadContent()
     {
-        _intro = new();
+        _intro = new(4);
         _intro.LoadContent();
 
         _titleButtons.AddRange([

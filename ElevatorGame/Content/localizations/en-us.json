@@ -88,6 +88,14 @@
 
         "dialog.character.Flippy.enter.0": "Up or down, I can't decide! Take me here, I love this ride!",
         "dialog.character.Flippy.exit.0": "Yahoo! That was fun! Anywho, I gotta run!",
-        "dialog.character.Flippy.angry.0": "I'm not having fun anymore..."
+        "dialog.character.Flippy.angry.0": "I'm not having fun anymore...",
+
+        "credits.section.team": "Team",
+        "credits.section.cast": "Cast",
+        "credits.section.playtesters": "Playtesters",
+        "credits.section.special_thanks": "Special Thanks",
+        "credits.and": "and",
+        "credits.and_you": "...And You!",
+        "credits.the_end": "Mission Complete"
     }
 }
