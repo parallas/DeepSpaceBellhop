@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>DeepSpaceBellhop</AssemblyName>
     <PlatformTarget>anycpu</PlatformTarget>
+    <Version>1.0.0</Version>
 
     <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     <DefineConstants Condition=" '$(UseSteamworks)' == 'true' ">$(DefineConstants);STEAM</DefineConstants>
