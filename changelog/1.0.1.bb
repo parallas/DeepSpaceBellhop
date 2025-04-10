@@ -6,6 +6,12 @@ We're incredibly grateful for the support we've received in the initial launch o
 
 Patch 1.0.1 includes fixes to Helper Character spawning, and missing logs.
 
+[h1]Changes[/h1]
+[list]
+  [*] Added Emalyn to the credits, under Special Thanks
+  [*] Fixed alphanumeric order of the Playtesters section in the credits
+[/list]
+
 [h1]Bug Fixes[/h1]
 [list]
   [*] Helper characters no longer appear before they become relevant ([url=https://github.com/parallas/DeepSpaceBellhop/issues/65]#65[/url])
