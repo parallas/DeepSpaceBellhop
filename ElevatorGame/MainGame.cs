@@ -1059,26 +1059,37 @@ public class MainGame : Game
         CurrentFloor = floorNumber;
         _roomRenderer.SetDefinition(_roomDefs[floorNumber - 1]);
 
+        if(EndOfDaySequence)
+            return;
+
         bool isProductiveTurn = CharacterManager.IsCharacterWaitingOnFloor(CurrentFloor) ||
                                 CharacterManager.IsCharacterWaitingToGoToFloor(CurrentFloor);
 
-        if (!isProductiveTurn)
+        if (isProductiveTurn)
         {
-            int countClamped = MathUtil.ClampToInt(_comboCount, 0, 9);
-            double chanceToSpawn = Math.Pow(MathUtil.InverseLerp01(0, 10, countClamped), 2);
-            double roll = Random.Shared.NextDouble();
-            if (roll < chanceToSpawn)
-            {
-                _bgCharacterRenderer.SetCharacterDef(BgCharacterRegistry.GetRandomCharacter());
-            }
-            else
-            {
-                _bgCharacterRenderer.SetCharacterDef(null);
-            }
+            _comboCount++;
+            _bgCharacterRenderer.SetCharacterDef(null);
+            return;
+        }
+
+        if(!DayRegistry.Days[CurrentDay].PunishMistakes)
+        {
+            if(!isProductiveTurn)
+                _comboCount = 0;
+            return;
+        }
+
+        const int maxCombo = 10;
+        int countClamped = Math.Min(_comboCount, maxCombo);
+        double chanceToSpawn = Math.Pow((double)countClamped / (maxCombo + 1), 2);
+        double roll = Random.Shared.NextDouble();
+        if (roll < chanceToSpawn)
+        {
+            _bgCharacterRenderer.SetCharacterDef(BgCharacterRegistry.GetRandomCharacter());
+            _comboCount = 0;
         }
         else
         {
-            _comboCount++;
             _bgCharacterRenderer.SetCharacterDef(null);
         }
     }
