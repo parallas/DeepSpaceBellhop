@@ -194,6 +194,16 @@ public class MainMenu
         }
 
         _settings?.Draw(spriteBatch);
+
+        if(_state != State.None && GameMetadata.Version is not null)
+        {
+            spriteBatch.DrawString(
+                MainGame.FontIntro,
+                $"v{GameMetadata.Version}",
+                new Vector2(1, MainGame.GameBounds.Height - 10),
+                Color.White * 0.5f
+            );
+        }
     }
 
     private void RemoveButton(int index)

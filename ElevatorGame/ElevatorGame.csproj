@@ -8,7 +8,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>DeepSpaceBellhop</AssemblyName>
     <PlatformTarget>anycpu</PlatformTarget>
-    <Version>1.0.1</Version>
 
     <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     <DefineConstants Condition=" '$(UseSteamworks)' == 'true' ">$(DefineConstants);STEAM</DefineConstants>
@@ -53,7 +52,11 @@
     <None Include="..\README.md">
       <Link>README.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </None>
+    </None>
+    <None Include="..\VERSION">
+      <Link>VERSION.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
