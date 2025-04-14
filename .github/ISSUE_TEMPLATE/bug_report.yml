@@ -54,6 +54,8 @@ body:
     label: Game Versions
     options:
       - 1.0.0
+      - 1.0.1
+      - 1.0.2
     multiple: true
   validations:
     required: true
