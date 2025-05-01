@@ -540,6 +540,28 @@ public class MainGame : Game
                 return;
             }
         }
+        else if (GameState == GameStates.Ending)
+        {
+            Intro.Update();
+            if(Keybindings.Confirm.IsDown)
+            {
+                Coroutines.Update();
+                Coroutines.Update();
+                Coroutines.Update(); // triple speed!!!!!!!!!
+            }
+
+            if(Keybindings.GoBack.Pressed)
+            {
+                Coroutines.StopAll();
+                CreateMainMenu();
+                return;
+            }
+            else
+            {
+                base.Update(gameTime);
+                return;
+            }
+        }
         else if (GameState == GameStates.GameOver)
         {
             _gameOverScreen.Update();
