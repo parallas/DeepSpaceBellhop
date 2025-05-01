@@ -12,7 +12,7 @@ public static class Intro
 
     private static IntroScene[] _scenes;
 
-    public static void LoadContent()
+    public static void DoIntro()
     {
         _scenes = [
             // new IntroSceneTest(),
@@ -28,8 +28,23 @@ public static class Intro
         }
     }
 
+    public static void DoOutro()
+    {
+        _scenes = [
+            new IntroSceneEnding(),
+            new IntroScenePostEnding(),
+        ];
+
+        foreach (var scene in _scenes)
+        {
+            scene.LoadContent();
+        }
+    }
+
     public static IEnumerator RunSequence()
     {
+        _currentScene = -1;
+
         yield return 10;
 
         for(int i = 0; i < _scenes.Length; i++)
@@ -43,11 +58,11 @@ public static class Intro
 
     public static void Update()
     {
-        if (Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed)
-        {
-            MainGame.Coroutines.Stop("main_intro");
-            OnComplete?.Invoke();
-        }
+        // if (Keybindings.Confirm.Pressed || Keybindings.GoBack.Pressed)
+        // {
+        //     MainGame.Coroutines.Stop("main_intro");
+        //     OnComplete?.Invoke();
+        // }
     }
 
     public static void PreDraw(SpriteBatch spriteBatch)

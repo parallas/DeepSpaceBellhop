@@ -1,17 +1,23 @@
 ﻿using System.Text;
+using ElevatorGame;
 
-var steam = !args.Contains("--no-steam");
+bool steam = false;
+#if STEAM
+steam = !args.Contains("--no-steam");
+#endif
 
-using var game = new ElevatorGame.MainGame(steam);
+using var game = new MainGame(steam);
 
 FileStream logFile = null;
 StreamWriter logWriter = null;
+
 if(!Console.IsOutputRedirected)
 {
-    string logPath = Path.Combine(ElevatorGame.FileLocations.ProgramPath, "latest.log");
-    if(File.Exists(logPath + ".old"))
+    string logPath = Path.Combine(FileLocations.ProgramPath, "latest.log");
+
+    if(File.Exists(logPath + ".old")) // remove previous-previous log
         File.Delete(logPath + ".old");
-    if(File.Exists(logPath))
+    if(File.Exists(logPath)) // backup previous log
         File.Copy(logPath, logPath + ".old");
 
     logFile = File.Open(logPath, FileMode.Create, FileAccess.Write);
@@ -29,9 +35,26 @@ if(!Console.IsOutputRedirected)
 
 ElevatorGame.Mods.ModLoader.DoBeforeRun();
 
+#if DEBUG
+
 game.Run();
 
 ElevatorGame.Mods.ModLoader.DoEndRun();
+
+#else
+
+try
+{
+    game.Run();
+    ElevatorGame.Mods.ModLoader.DoEndRun();
+}
+catch(Exception e)
+{
+    Console.Error.WriteLine($"Game Crashed!!!\n  at {DateTime.Now.ToShortTimeString()}, {DateTime.Now.ToShortDateString()}");
+    Console.Error.WriteLine($"Fatal Error: {e}\n");
+}
+
+#endif
 
 logWriter?.Flush();
 logWriter?.Close();

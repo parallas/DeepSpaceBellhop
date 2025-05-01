@@ -1,6 +1,6 @@
 name: "Volunteer to translate"
 description: "Submit localization data to translate the game, use /Content/localizations for reference"
-title: "[LOCALE] Name (xx-xx)"
+title: "[LOCALE] Language Name Here"
 labels: ["localization"]
 assignees: []
 body:
@@ -10,7 +10,7 @@ body:
 - type: markdown
   attributes:
     value: |
-      Thank you for contributing! Please use the json file located at `/Content/localizations/en-us.json` for reference!
+      Thank you for contributing! Please use the json file located at `/Content/localizations/en-us.json` for reference! Note - the submitted text must have UTF-8 encoding.
 - type: input
   id: "lname"
   attributes:

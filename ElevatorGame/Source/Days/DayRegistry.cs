@@ -48,7 +48,7 @@ public static class DayRegistry
                 CharacterIds =
                 [
                     "Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime",
-                    "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy"
+                    "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy", "Birthday"
                 ],
                 SpecialCharacters = [
                     new() {CharacterName = "Benbo", ChanceToSpawn = 20, MinSpawnCompletionPercent = 20, MaxSpawnCompletionPercent = 60},
@@ -67,7 +67,7 @@ public static class DayRegistry
                 CharacterIds =
                 [
                     "Blueulet", "Greenulet", "Kloob", "Beebo", "EmalynCat", "JellyfishGirl", "Robot", "Slime",
-                    "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy"
+                    "ShroomKing", "Hourglass", "SeaDragon", "Box", "Alieno", "Flippy", "Birthday"
                 ],
                 SpecialCharacters = [
                     new() {CharacterName = "Benbo", ChanceToSpawn = 20, MinSpawnCompletionPercent = 20, MaxSpawnCompletionPercent = 60},

@@ -76,7 +76,7 @@ public class Elevator(Action<int> onChangeFloorNumber, Func<IEnumerator> endOfTu
         _audioBellUpEvent = StudioSystem.GetEvent("event:/SFX/Elevator/Bell/Up").CreateInstance();
         _audioBellDownEvent = StudioSystem.GetEvent("event:/SFX/Elevator/Bell/Down").CreateInstance();
 
-        _doors.Open(1);
+        _doors.Open(2);
     }
 
     public void UnloadContent()

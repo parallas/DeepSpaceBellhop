@@ -1,0 +1,102 @@
+{
+    "name": "Français (FR)",
+    "values": {
+        "ui.main_menu.new_game": "Nouvelle partie",
+        "ui.main_menu.continue": "Continuer",
+        "ui.main_menu.settings": "Paramètres",
+        "ui.main_menu.quit": "Quitter",
+
+        "ui.settings": "Paramètres",
+
+        "ui.settings.tab.game": "Jeu",
+        "ui.settings.tab.game.section.general": "Général",
+        "ui.settings.tab.game.option.language": "Langue",
+
+        "ui.settings.tab.audio": "Audio",
+        "ui.settings.tab.audio.section.volume": "Volume",
+        "ui.settings.tab.audio.option.master_volume": "Général",
+        "ui.settings.tab.audio.option.music_volume": "Musique",
+        "ui.settings.tab.audio.option.sfx_volume": "Bruitages",
+        "ui.settings.tab.audio.option.mute_when_unfocused": "Muet en arrière-plan",
+
+        "ui.settings.tab.interface": "Interface",
+        "ui.settings.tab.interface.section.system": "Système",
+        "ui.settings.tab.interface.option.native_cursor": "Curseur natif",
+        "ui.settings.tab.interface.option.fullscreen": "Plein écran",
+
+        "ui.settings.tab.graphics": "Graphismes",
+        "ui.settings.tab.graphics.section.post_processing": "Post-traitement",
+        "ui.settings.tab.graphics.option.lcd_effect": "Effet LCD",
+        "ui.settings.tab.graphics.option.frame_blending": "Fusion d'images",
+
+        "ui.gameplay.turn_counter": "Trajet #{0}",
+
+        "dialog.intro": "Briefing de mission:\nVotre travail est de prendre et déposer les clients dans les meilleurs délais.\nLe nombre de clients augmentera ces quatre prochains jours.\nPrécision et tact sont de la plus haute importance pour le client.",
+
+        "dialog.phone.tutorial.intro": "Salut ! Assure-toi de regarder mon écran pour voir où l'ascenseur a été appelé.<PAGE>Bonne chance !",
+        "dialog.phone.tutorial.end_of_day": "Journée terminée - c'est l'heure de rentrer à la maison !<PAGE>Retourne au rez-de-chaussée pour partir.",
+        "dialog.phone.tutorial.character_effects": "Certains clients pourraient réagir bizarrement si vous les emmenez dans la mauvaise direction.<PAGE>Rassurez-vous, ces étranges effets devraient disparaître d'ici quelques trajets !",
+        "dialog.phone.tutorial.punish": "Hey salut ! Dû à la popularité grandissante de l'hôtel, tu dois faire plus attention à chaque trajet.<PAGE>Je perds de la batterie à chaque erreur que tu fais.",
+
+        "dialog.character.Blueulet.enter.0": "Pouvez-vous m'emmener à cet étage ?",
+        "dialog.character.Blueulet.exit.0": "Merci.",
+        "dialog.character.Blueulet.angry.0": "En fait, je crois qu'elle est peut-être à cet étage...",
+
+        "dialog.character.Greenulet.enter.0": "Bonjour, pouvez-vous m'emmener à l'étage $floorNumDest, s'il vous plaît ?",
+        "dialog.character.Greenulet.exit.0": "Bye bye !",
+        "dialog.character.Greenulet.angry.0": "À ce rythme je ne vais jamais le trouver. Salut...",
+
+        "dialog.character.EmalynCat.enter.0": "Je veux voir le monde à travers les yeux d'une fille normale !",
+        "dialog.character.EmalynCat.enter.1": "Maow Maow Maow !",
+        "dialog.character.EmalynCat.exit.0": "Merci!",
+        "dialog.character.EmalynCat.exit.1": "Je ne me suis pas sentie aussi heureuse depuis si longtemps !",
+        "dialog.character.EmalynCat.angry.0": "Je t'ai fait peur ? Bon, je suis désolée. Mais pas assez désolée pour m'arrêter !",
+        "dialog.character.EmalynCat.angry.1": "Je me sens prise au piège entre des extrêmes dangereux...",
+
+        "dialog.character.Robot.enter.0": "var Greeting = \"BONJOUR HUMAIN\", Destination = $floorNumDest;",
+        "dialog.character.Robot.enter.1": "InvalidCastException: [$floorNumDest] is not a string (Dialog.cs:74);",
+        "dialog.character.Robot.exit.0": "[GRATITUDE];",
+        "dialog.character.Robot.exit.1": "The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).",
+        "dialog.character.Robot.angry.0": "Unhandled Exception in thread 'Main': Timed out;",
+
+        "dialog.character.ShroomKing.enter.0": "Salutations ! Mes hommes et moi avons affaire à l'étage $floorNumDest.",
+        "dialog.character.ShroomKing.enter.1": "Il s'agit de moi ! Le Roi Champignon ! Je requiers votre assistance pour atteindre l'étage $floorNumDest.",
+        "dialog.character.ShroomKing.exit.0": "Vive le Roi Champignon !",
+        "dialog.character.ShroomKing.exit.1": "Je veillerai à vous octroyer une parcelle de terrain pour vos services rendus au roi !",
+        "dialog.character.ShroomKing.angry.0": "L'heure est à la trahison alors...",
+        "dialog.character.ShroomKing.angry.1": "Cette faute envers moi était la dernière !",
+
+        "dialog.character.Beebo.enter.0": "Étage $floorNumDest s'il vous plaît.",
+        "dialog.character.Beebo.exit.0": "...<PAGE>Merci.",
+        "dialog.character.Beebo.angry.0": "C'est énervant.",
+
+        "dialog.character.Benbo.enter.0": "...",
+        "dialog.character.Benbo.exit.0": "...",
+        "dialog.character.Benbo.angry.0": "...",
+
+        "dialog.character.JellyfishGirl.enter.0": "Vous m'emmenez à l’étage $floorNumDest, please?",
+        "dialog.character.JellyfishGirl.exit.0": "Thank you! Thank you!",
+        "dialog.character.JellyfishGirl.angry.0": "Good night...",
+
+        "dialog.character.Box.enter.0": "...",
+        "dialog.character.Box.exit.0": "...",
+        "dialog.character.Box.angry.0": "...",
+
+        "dialog.character.Alieno.enter.0": "Yo.",
+        "dialog.character.Alieno.exit.0": "À plus.",
+        "dialog.character.Alieno.angry.0": "Pas cool...",
+
+        "dialog.character.Flippy.enter.0": "Monter ou descendre, quel dilemme ! Prends-moi ici, ce trajet je l'aime !",
+        "dialog.character.Flippy.exit.0": "Yahou ! C'était marrant ! Allez, faut filer maintenant !",
+        "dialog.character.Flippy.angry.0": "Je ne m'amuse plus...",
+
+        "credits.section.team": "Équipe",
+        "credits.section.cast": "Distribution",
+        "credits.section.playtesters": "Testeurs",
+        "credits.section.translators": "Traducteurs",
+        "credits.section.special_thanks": "Remerciements spéciaux",
+        "credits.and": "et",
+        "credits.and_you": "...Et Vous !",
+        "credits.the_end": "Mission accomplie"
+    }
+}

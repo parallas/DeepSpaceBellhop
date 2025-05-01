@@ -6,9 +6,7 @@ namespace ElevatorGame;
 
 public static class FileLocations
 {
-    private static readonly string assemblyLocation = Assembly.GetEntryAssembly().Location;
-
-    public static string ProgramPath => Path.GetDirectoryName(assemblyLocation);
+    public static string ProgramPath => AppDomain.CurrentDomain.BaseDirectory;
 
     public static string LocalMods => Path.Combine(ProgramPath, "mods");
 
