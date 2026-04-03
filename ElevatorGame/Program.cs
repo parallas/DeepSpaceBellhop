@@ -11,11 +11,15 @@ using var game = new MainGame(steam);
 FileStream logFile = null;
 StreamWriter logWriter = null;
 
-Directory.CreateDirectory(Path.Combine(FileLocations.LocalData, "logs"));
-
 if(!Console.IsOutputRedirected)
 {
-    string logPath = Path.Combine(FileLocations.LocalData, "logs", "latest.log");
+    string logDir = Path.Combine(FileLocations.LocalData, "logs");
+    if(OperatingSystem.IsMacOS())
+        logDir = Path.Combine(FileLocations.ProgramPath, "logs");
+
+    Directory.CreateDirectory(logDir);
+
+    string logPath = Path.Combine(logDir, "latest.log");
 
     if(File.Exists(logPath + ".old")) // remove previous-previous log
         File.Delete(logPath + ".old");
