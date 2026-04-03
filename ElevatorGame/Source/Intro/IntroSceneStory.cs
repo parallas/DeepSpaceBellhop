@@ -81,7 +81,7 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene, IDisposabl
             for (int w = 0; w < words.Length; w++)
             {
                 var word = words[w];
-                if(MainGame.FontIntro.MeasureString(currentLine.ToString() + word).X > 128)
+                if(MainGame.FontIntro.MeasureString(currentLine.ToString() + word).X > 144)
                 {
                     lines.Add(currentLine.ToString());
                     currentLine = new();
@@ -191,11 +191,8 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene, IDisposabl
         while (textCounter < 60 * 8)
         {
             textCounter++;
-            _textCharacterIndex++;
-            if (_textCharacterIndex >= _introText.Length)
-            {
-                _textCharacterIndex = _introText.Length;
-            }
+            if (_textCharacterIndex < _introText.Length)
+                _textCharacterIndex++;
 
             _elevatorPos = MathUtil.ExpDecay(_elevatorPos, 64, 2, 1f / 60f);
 
@@ -204,11 +201,9 @@ public class IntroSceneStory(int startingStarSpeed = 0) : IntroScene, IDisposabl
 
         _elevatorPos = MathUtil.ExpDecay(_elevatorPos, 64, 2, 1f / 60f);
 
-        yield return 60 * 4;
+        yield return 270;
 
         _showText = false;
-
-        yield return 30;
 
         _elevatorHover = false;
         _elevatorFlamesActive = true;
