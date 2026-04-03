@@ -401,6 +401,7 @@ public class MainGame : Game
 
         BgCharacterRegistry.LoadContent();
         _bgCharacterRenderer = new BgCharacterRenderer();
+        _bgCharacterRenderer.LoadContent();
 
         Intro.DoIntro();
         MusicPlayer.PlayMusic("MainMenu");

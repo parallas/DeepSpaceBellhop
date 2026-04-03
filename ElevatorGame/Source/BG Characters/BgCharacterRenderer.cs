@@ -12,6 +12,8 @@ public class BgCharacterRenderer
     public AnimatedSprite CurrentSpriteAnim { get; private set; }
     public bool HasCharacter { get; private set; }
 
+    private Texture2D _partyHatTexture;
+
     private struct AnimationEventData
     {
         public AnimationEventData(int frameStart, int frameEnd, string eventName, string eventData)
@@ -30,6 +32,11 @@ public class BgCharacterRenderer
     private List<AnimationEventData> AnimationEventDatas { get; set; } = new List<AnimationEventData>();
 
     private int _lastFrame = -1;
+
+    public void LoadContent()
+    {
+        _partyHatTexture = ContentLoader.Load<Texture2D>("graphics/BirthdayHat");
+    }
 
     public void SetCharacterDef(BgCharacterDef? character)
     {
@@ -91,5 +98,26 @@ public class BgCharacterRenderer
         if (!HasCharacter) return;
         CurrentSpriteAnim.Draw(spriteBatch,
             MainGame.Camera.GetParallaxPosition(new Vector2(80, 55), Elevator.Elevator.ParallaxDoors + 10));
+
+        if(MainGame.ItsBirthdayTimeYay)
+        {
+            switch(CharacterDef.Name)
+            {
+                case "Mimi":
+                    spriteBatch.Draw(
+                        _partyHatTexture,
+                        MainGame.Camera.GetParallaxPosition(new Vector2(80 + 33, 55 + 42), Elevator.Elevator.ParallaxDoors + 10),
+                        Color.White
+                    );
+                    break;
+                case "Yeti":
+                    spriteBatch.Draw(
+                        _partyHatTexture,
+                        MainGame.Camera.GetParallaxPosition(new Vector2(80 + 38, 55 + 4), Elevator.Elevator.ParallaxDoors + 10),
+                        Color.White
+                    );
+                    break;
+            }
+        }
     }
 }
