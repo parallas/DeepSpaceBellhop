@@ -43,7 +43,7 @@
         "dialog.character.Blueulet.angry.0": "En fait, je crois qu'elle est peut-être à cet étage...",
 
         "dialog.character.Greenulet.enter.0": "Bonjour, pouvez-vous m'emmener à l'étage $floorNumDest, s'il vous plaît ?",
-        "dialog.character.Greenulet.exit.0": "Bye bye !",
+        "dialog.character.Greenulet.exit.0": "Ciao~!",
         "dialog.character.Greenulet.angry.0": "À ce rythme je ne vais jamais le trouver. Salut...",
 
         "dialog.character.EmalynCat.enter.0": "Je veux voir le monde à travers les yeux d'une fille normale !",
@@ -53,10 +53,10 @@
         "dialog.character.EmalynCat.angry.0": "Je t'ai fait peur ? Bon, je suis désolée. Mais pas assez désolée pour m'arrêter !",
         "dialog.character.EmalynCat.angry.1": "Je me sens prise au piège entre des extrêmes dangereux...",
 
-        "dialog.character.Robot.enter.0": "var Greeting = \"BONJOUR HUMAIN\", Destination = $floorNumDest;",
+        "dialog.character.Robot.enter.0": "var Salutation = \"BONJOUR HUMAIN\", Destination = $floorNumDest;",
         "dialog.character.Robot.enter.1": "InvalidCastException: [$floorNumDest] is not a string (Dialog.cs:74);",
         "dialog.character.Robot.exit.0": "[GRATITUDE];",
-        "dialog.character.Robot.exit.1": "The program '[23056] RobotDialog.dll' has exited with code 0 (0x0).",
+        "dialog.character.Robot.exit.1": "Le programme '[23056] RobotDialog.dll' s'est terminé avec le code 0 (0x0).",
         "dialog.character.Robot.angry.0": "Unhandled Exception in thread 'Main': Timed out;",
 
         "dialog.character.ShroomKing.enter.0": "Salutations ! Mes hommes et moi avons affaire à l'étage $floorNumDest.",
@@ -74,7 +74,7 @@
         "dialog.character.Benbo.exit.0": "...",
         "dialog.character.Benbo.angry.0": "...",
 
-        "dialog.character.JellyfishGirl.enter.0": "Vous m'emmenez à l’étage $floorNumDest, please?",
+        "dialog.character.JellyfishGirl.enter.0": "Vous m'emmenez à l'étage $floorNumDest, please?",
         "dialog.character.JellyfishGirl.exit.0": "Thank you! Thank you!",
         "dialog.character.JellyfishGirl.angry.0": "Good night...",
 
