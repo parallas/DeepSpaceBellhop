@@ -36,7 +36,7 @@ public class MainMenuButton(
         _bounds = new Rectangle(
             MathUtil.RoundToInt(position.X),
             MathUtil.RoundToInt(position.Y),
-            MathUtil.RoundToInt(textSize.X),
+            MathUtil.RoundToInt(Math.Max(textSize.X, 80)),
             MathUtil.RoundToInt(textSize.Y)
         );
 

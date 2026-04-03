@@ -31,12 +31,11 @@ public static class LocalizationManager
             value ??= "en-us";
 
             if (_lang == value) return;
+            _lang = value;
 
             ReloadAsync().Wait();
 
-            if (loadedLanguages.ContainsKey(value))
-                _lang = value;
-            else
+            if (!loadedLanguages.ContainsKey(value))
                 throw new InvalidOperationException("Unknown language identifier");
         }
     }
@@ -122,7 +121,7 @@ public static class LocalizationManager
     {
         if (!IsInitialized)
         {
-            _ = ReloadAsync();
+            ReloadAsync().Wait();
             return token;
         }
 
