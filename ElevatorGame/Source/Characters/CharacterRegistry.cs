@@ -19,6 +19,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/BlueAxolotl",
                 WalkSpeed = 10,
                 AngryIconPosition = new(-13, -72),
+                PartyHatPosition = new(0, -73),
                 Flags = CharacterDef.CharacterFlag.Clumsy
             },
             new CharacterDef
@@ -27,6 +28,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/GreenAxolotl",
                 WalkSpeed = 6,
                 AngryIconPosition = new(-13, -69),
+                PartyHatPosition = new(-1, -70),
             },
             new CharacterDef
             {
@@ -34,6 +36,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/EmalynCat",
                 WalkSpeed = 6,
                 AngryIconPosition = new(-10, -46),
+                PartyHatPosition = new(-2, -48),
             },
             new CharacterDef
             {
@@ -41,6 +44,8 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Kloob",
                 WalkSpeed = 2,
                 AngryIconPosition = new(-10, -76),
+                PartyHatPosition = new(0, -76),
+                PartyHatInFront = false,
                 Flags = CharacterDef.CharacterFlag.Clumsy
             },
             new CharacterDef
@@ -49,6 +54,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Robot",
                 WalkSpeed = 6,
                 AngryIconPosition = new(-6, -39),
+                PartyHatPosition = new(0, -40),
             },
             new CharacterDef
             {
@@ -56,6 +62,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Slime",
                 WalkSpeed = 4,
                 AngryIconPosition = new(-13, -40),
+                PartyHatPosition = new(0, -44),
                 Flags = CharacterDef.CharacterFlag.Slimy
             },
             new CharacterDef
@@ -64,6 +71,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/ShroomKing",
                 WalkSpeed = 6,
                 AngryIconPosition = new(-13, -74),
+                PartyHatPosition = new(0, -22),
                 Flags = CharacterDef.CharacterFlag.Toxic
             },
             new CharacterDef
@@ -71,7 +79,8 @@ public static class CharacterRegistry
                 Name = "Benbo",
                 SpritePath = "graphics/characters/Benbo",
                 WalkSpeed = 16,
-                AngryIconPosition = new(-4, -12)
+                AngryIconPosition = new(-4, -12),
+                PartyHatPosition = new(0, -15),
             },
             new CharacterDef
             {
@@ -79,6 +88,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Beebo",
                 WalkSpeed = 6,
                 AngryIconPosition = new(-13, -69),
+                PartyHatPosition = new(-1, -70),
             },
             new CharacterDef
             {
@@ -86,6 +96,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Hourglass",
                 WalkSpeed = 8,
                 AngryIconPosition = new(-15, -76),
+                PartyHatPosition = new(0, -77),
                 Flags = CharacterDef.CharacterFlag.Psychedelic
             },
             new CharacterDef
@@ -94,6 +105,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/JellyfishGirl",
                 WalkSpeed = 4,
                 AngryIconPosition = new(-13, -64),
+                PartyHatPosition = new(0, -65),
             },
             new CharacterDef
             {
@@ -101,6 +113,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/SeaDragon",
                 WalkSpeed = 6,
                 AngryIconPosition = new(-12, -58),
+                PartyHatPosition = new(-2, -70),
             },
             new CharacterDef
             {
@@ -108,6 +121,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Box",
                 WalkSpeed = 4,
                 AngryIconPosition = new(-11, -49),
+                PartyHatPosition = new(2, -50),
             },
             new CharacterDef
             {
@@ -115,6 +129,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Alieno",
                 WalkSpeed = 4,
                 AngryIconPosition = new(-8, -46),
+                PartyHatPosition = new(-1, -49),
             },
             new CharacterDef
             {
@@ -122,6 +137,8 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Flippy",
                 WalkSpeed = 4,
                 AngryIconPosition = new(-9, -51),
+                PartyHatPosition = new(-9, -51),
+                PartyHatHidden = true,
                 Flags = CharacterDef.CharacterFlag.Clumsy | CharacterDef.CharacterFlag.Flippy
             },
             new CharacterDef
@@ -130,6 +147,7 @@ public static class CharacterRegistry
                 SpritePath = "graphics/characters/Birthday",
                 WalkSpeed = 3,
                 AngryIconPosition = new(16, -47),
+                PartyHatPosition = new(22, 49),
             },
         ];
 

@@ -33,6 +33,9 @@ public class CharacterActor
     private AnimatedSprite _animBack;
     private AnimatedSprite _animAngry;
     private AnimatedSprite _angryIcon;
+    private Texture2D _partyHatTexture;
+    private Vector2 _partyHatPos;
+    private Vector2 _partyHatPosFlipped;
     private bool _isInElevator;
     private float _currentWalkSpeed;
     private int _turnAroundCooldown;
@@ -64,6 +67,10 @@ public class CharacterActor
             .CreateAnimatedSprite("Tag");
         _angryIcon.Origin = Vector2.One * 7 - Def.AngryIconPosition;
         _angryIcon.Play();
+
+        _partyHatTexture = ContentLoader.Load<Texture2D>("graphics/BirthdayHat");
+        _partyHatPos = new Vector2(8, 13) - Def.PartyHatPosition;
+        _partyHatPosFlipped = new Vector2(9, 13) - (Def.PartyHatPosition with { X = -Def.PartyHatPosition.X });
 
         PlayAnimation(_animFront);
 
@@ -124,7 +131,13 @@ public class CharacterActor
         );
         pos = Vector2.Round(pos);
 
+        bool isTurnedAround = _currentAnimation == _animBack;
+        bool party = MainGame.ItsBirthdayTimeYay && !Def.PartyHatHidden;
+
         _currentAnimation.Color = Color.Black;
+        if(party && (isTurnedAround ^ !Def.PartyHatInFront))
+            DrawPartyHat(spriteBatch, pos + Vector2.One * 2, isTurnedAround);
+
         _currentAnimation.Draw(
             spriteBatch,
             MainGame.Camera.GetParallaxPosition(
@@ -145,7 +158,13 @@ public class CharacterActor
             );
         }
 
+        if(party && (isTurnedAround ^ Def.PartyHatInFront))
+            DrawPartyHat(spriteBatch, pos + Vector2.One * 2, isTurnedAround);
+
         _currentAnimation.Color = Color.White;
+        if(party && (isTurnedAround ^ Def.PartyHatInFront))
+            DrawPartyHat(spriteBatch, pos, isTurnedAround);
+
         _currentAnimation.Draw(
             spriteBatch,
             MainGame.Camera.GetParallaxPosition(
@@ -165,6 +184,9 @@ public class CharacterActor
                 )
             );
         }
+
+        if (party && (isTurnedAround ^ !Def.PartyHatInFront))
+            DrawPartyHat(spriteBatch, pos, isTurnedAround);
     }
 
     public void MoveOutOfTheWay()
@@ -240,5 +262,23 @@ public class CharacterActor
     {
         _squashStretchOffset = -0.1f;
         PlayAnimation(_currentAnimation == _animFront ? _animBack : _animFront);
+    }
+
+    private void DrawPartyHat(SpriteBatch spriteBatch, Vector2 pos, bool isTurnedAround)
+    {
+        spriteBatch.Draw(
+            _partyHatTexture,
+            MainGame.Camera.GetParallaxPosition(
+                pos,
+                _renderDepth
+            ),
+            null,
+            _currentAnimation.Color,
+            _currentAnimation.Rotation,
+            isTurnedAround ? _partyHatPosFlipped : _partyHatPos,
+            _currentAnimation.Scale,
+            isTurnedAround ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+            _currentAnimation.LayerDepth
+        );
     }
 }

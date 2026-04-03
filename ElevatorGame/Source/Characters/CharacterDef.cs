@@ -24,5 +24,8 @@ public class CharacterDef()
     public DialogDef[] ExitPhrases { get; set; } = [];
     public DialogDef[] AngryPhrases { get; set; } = [];
     public required Vector2 AngryIconPosition { get; set; }
+    public required Vector2 PartyHatPosition { get; set; }
+    public bool PartyHatInFront { get; set; }
+    public bool PartyHatHidden { get; set; }
     public CharacterFlag Flags { get; set; } = CharacterFlag.None;
 }

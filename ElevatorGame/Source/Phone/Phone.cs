@@ -45,6 +45,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
     private AnimatedSprite _dotStarSpriteAnim;
     private AnimatedSprite _dotTransitionSpriteAnim;
 
+    private Texture2D _partyHatTexture;
+
     private Rectangle _mouseRegion = new(193, 75, 38, 200);
 
     // sprite origin: 202, 79
@@ -167,6 +169,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _audioHurt = StudioSystem.GetEvent("event:/SFX/UI/Phone/Hurt").CreateInstance();
         _audioHeal = StudioSystem.GetEvent("event:/SFX/UI/Phone/Heal").CreateInstance();
         _audioCorrect = StudioSystem.GetEvent("event:/SFX/UI/Phone/Correct").CreateInstance();
+
+        _partyHatTexture = ContentLoader.Load<Texture2D>("graphics/BirthdayHat");
     }
     
     public void UnloadContent()
@@ -299,6 +303,8 @@ public class Phone(Elevator.Elevator elevator) : IDisposable
         _faceSpriteAnim.Draw(spriteBatch, phonePos + _faceSliceKey.Location.ToVector2());
         _buttonsSpriteAnim.Draw(spriteBatch, phonePos + _buttonsSliceKey.Location.ToVector2());
         _dotSpriteAnim.Draw(spriteBatch, phonePos + _dotSliceKey.Location.ToVector2());
+
+        spriteBatch.Draw(_partyHatTexture, phonePos + _faceSliceKey.Location.ToVector2() + new Vector2(5, -14), Color.White);
 
         Vector2 screenPos = phonePos + _screenSliceKey.Location.ToVector2() + Vector2.One;
         spriteBatch.Draw(_screenRenderTarget, screenPos + Vector2.One, Color.Black * 0.1f);

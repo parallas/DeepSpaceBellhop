@@ -129,6 +129,8 @@ public class MainGame : Game
 
     public static bool UseSteamworks { get; private set; }
 
+    public static bool ItsBirthdayTimeYay { get; private set; }
+
     public static bool HasMadeMistake { get; set; }
 
     private Elevator.Elevator _elevator;
@@ -204,6 +206,9 @@ public class MainGame : Game
         IsMouseVisible = UseNativeCursor;
 
         UseSteamworks = useSteamworks;
+
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        ItsBirthdayTimeYay = date.Month == 4 && date.Day == 10;
 
         _instance = this;
     }
@@ -1438,7 +1443,7 @@ public class MainGame : Game
                 new(240, 135)
             ) - new Vector2(240, 135) / 2f
         ) * (8 / 120f);
-        return position + Vector2.Round(checkPos * MathUtil.InverseLerp(0, 100, distance));
+        return position + (checkPos * MathUtil.InverseLerp(0, 100, distance));
     }
 
     private static void ResetShaderProperties()
